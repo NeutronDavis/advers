@@ -21,7 +21,7 @@ export default function LoginPage() {
     setTimeout(() => {
       setLoading(false);
       if (role === "admin") {
-        router.push("/admin/inbox");
+        router.push("/admin");
       } else if (role === "active-client") {
         router.push("/portal/dashboard");
       } else {
@@ -45,7 +45,7 @@ export default function LoginPage() {
     setTimeout(() => {
       setLoading(false);
       if (email.includes("admin")) {
-        router.push("/admin/inbox");
+        router.push("/admin");
       } else if (email === "client@advers.ng") {
         router.push("/portal/dashboard");
       } else {

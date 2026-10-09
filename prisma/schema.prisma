@@ -21,6 +21,13 @@ enum OrgRole {
   MEMBER
 }
 
+enum UserStatus {
+  UNVERIFIED
+  PROSPECT
+  ACTIVE
+  DEACTIVATED
+}
+
 enum FeedbackType {
   ENQUIRY
   FEEDBACK
@@ -59,26 +66,64 @@ enum EngagementStatus {
   COMPLETED
 }
 
+enum InvoiceStatus {
+  DRAFT
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum PaymentStatus {
+  SUCCESS
+  FAILED
+  PENDING
+}
+
+enum QuoteStatus {
+  DRAFT
+  SENT
+  VIEWED
+  ACCEPTED
+  REJECTED
+  EXPIRED
+}
+
+enum RenewalStatus {
+  UPCOMING
+  RENEWED
+  CANCELLED
+}
+
 model User {
-  id                 String     @id @default(cuid())
-  email              String     @unique
+  id                 String        @id @default(cuid())
+  email              String        @unique
   passwordHash       String?
   name               String
   phone              String?
-  role               Role       @default(CLIENT)
-  orgRole            OrgRole    @default(MEMBER)
+  role               Role          @default(CLIENT)
+  orgRole            OrgRole       @default(MEMBER)
+  status             UserStatus    @default(UNVERIFIED)
+  source             String?       @default("ORGANIC")
+  utmSource          String?
+  utmCampaign        String?
   emailVerifiedAt    DateTime?
   profileCompleteAt  DateTime?
   termsAcceptedAt    DateTime?
-  termsVersion       String?    @default("1.0")
+  termsVersion       String?       @default("1.0")
   lastLoginAt        DateTime?
   clientId           String?
-  client             Client?    @relation(fields: [clientId], references: [id], onDelete: SetNull)
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
+  client             Client?       @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  invoices           Invoice[]
+  activityLogs       ActivityLog[]
+  auditLogs          AuditLog[]    @relation("AuditActor")
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
 
   @@index([email])
   @@index([clientId])
+  @@index([createdAt])
+  @@index([status])
 }
 
 model Client {
@@ -90,6 +135,10 @@ model Client {
   users        User[]
   engagements  Engagement[]
   invitations  Invitation[]
+  invoices     Invoice[]
+  quotes       Quote[]
+  renewals     Renewal[]
+  activityLogs ActivityLog[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
 }
@@ -117,13 +166,19 @@ model Lead {
   phone              String?
   company            String?
   source             String?   @default("WEBSITE")
+  utmSource          String?
+  utmCampaign        String?
   packageInterest    String?
   budgetRange        String?
   timeline           String?
   status             String    @default("NEW")
   convertedClientId  String?
+  quotes             Quote[]
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt
+
+  @@index([createdAt])
+  @@index([status])
 }
 
 model Feedback {
@@ -146,6 +201,9 @@ model Feedback {
   repliedAt      DateTime?
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
 }
 
 model Package {
@@ -173,10 +231,14 @@ model Engagement {
   onboardingProgress Int                  @default(0)
   waitingOnClient    Boolean              @default(false)
   responses          OnboardingResponse[]
+  invoices           Invoice[]
+  renewals           Renewal[]
   createdAt          DateTime             @default(now())
   updatedAt          DateTime             @updatedAt
 
   @@index([clientId])
+  @@index([status])
+  @@index([createdAt])
 }
 
 model OnboardingResponse {
@@ -188,4 +250,109 @@ model OnboardingResponse {
   completedAt  DateTime   @default(now())
 
   @@unique([engagementId, stepKey])
+}
+
+model Invoice {
+  id            String        @id @default(cuid())
+  invoiceNumber String        @unique
+  clientId      String
+  client        Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  engagementId  String?
+  engagement    Engagement?   @relation(fields: [engagementId], references: [id], onDelete: SetNull)
+  userId        String?
+  user          User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  title         String
+  amount        Int
+  serviceType   String        @default("DIGITAL_PACKAGE")
+  status        InvoiceStatus @default(PENDING)
+  dueDate       DateTime
+  paidAt        DateTime?
+  payments      Payment[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([clientId])
+  @@index([status])
+  @@index([dueDate])
+  @@index([createdAt])
+}
+
+model Payment {
+  id            String        @id @default(cuid())
+  invoiceId     String
+  invoice       Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  amount        Int
+  paymentMethod String        @default("PAYSTACK")
+  reference     String        @unique
+  status        PaymentStatus @default(SUCCESS)
+  createdAt     DateTime      @default(now())
+
+  @@index([invoiceId])
+  @@index([createdAt])
+}
+
+model Quote {
+  id          String      @id @default(cuid())
+  quoteNumber String      @unique
+  leadId      String?
+  lead        Lead?       @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  clientId    String?
+  client      Client?     @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  title       String
+  amount      Int
+  status      QuoteStatus @default(SENT)
+  openedAt    DateTime?
+  sentAt      DateTime    @default(now())
+  expiresAt   DateTime
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Renewal {
+  id           String        @id @default(cuid())
+  clientId     String
+  client       Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  engagementId String?
+  engagement   Engagement?   @relation(fields: [engagementId], references: [id], onDelete: SetNull)
+  title        String
+  amount       Int
+  renewalDate  DateTime
+  status       RenewalStatus @default(UPCOMING)
+  createdAt    DateTime      @default(now())
+
+  @@index([clientId])
+  @@index([status])
+  @@index([renewalDate])
+}
+
+model ActivityLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  clientId    String?
+  client      Client?  @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  action      String
+  description String   @db.Text
+  metadata    String?  @db.Text
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String
+  actor      User     @relation("AuditActor", fields: [actorId], references: [id], onDelete: Cascade)
+  action     String
+  targetType String
+  targetId   String
+  details    String?  @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([actorId])
+  @@index([createdAt])
 }

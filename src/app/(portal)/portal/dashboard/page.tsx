@@ -39,10 +39,6 @@ export default function ClientDashboardPage() {
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 space-y-4">
-          <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md px-3.5 py-1 rounded-full text-xs font-bold">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-            <span>Active Engagement</span>
-          </div>
 
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
