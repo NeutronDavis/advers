@@ -79,28 +79,28 @@ export default function ClientDashboardPage() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-base-100 p-5 rounded-3xl border border-base-200 shadow-sm space-y-1">
-          <div className="text-xs font-bold text-base-content/60 uppercase">Package Tier</div>
-          <div className="text-lg font-extrabold text-primary">Look Professional</div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="bg-base-100 p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-base-200 shadow-sm space-y-1 min-w-0">
+          <div className="text-[10px] sm:text-xs font-bold text-base-content/60 uppercase tracking-wider">Package Tier</div>
+          <div className="text-xs sm:text-base lg:text-lg font-extrabold text-primary leading-tight break-words">Look Professional</div>
           <div className="text-[10px] text-emerald-600 font-bold">Verified Client</div>
         </div>
 
-        <div className="bg-base-100 p-5 rounded-3xl border border-base-200 shadow-sm space-y-1">
-          <div className="text-xs font-bold text-base-content/60 uppercase">Domain Status</div>
-          <div className="text-lg font-extrabold text-base-content">adebayoholdings.ng</div>
+        <div className="bg-base-100 p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-base-200 shadow-sm space-y-1 min-w-0">
+          <div className="text-[10px] sm:text-xs font-bold text-base-content/60 uppercase tracking-wider">Domain Status</div>
+          <div className="text-xs sm:text-base lg:text-lg font-extrabold text-base-content truncate leading-tight" title="adebayoholdings.ng">adebayoholdings.ng</div>
           <div className="text-[10px] text-emerald-600 font-bold">Provisioned</div>
         </div>
 
-        <div className="bg-base-100 p-5 rounded-3xl border border-base-200 shadow-sm space-y-1">
-          <div className="text-xs font-bold text-base-content/60 uppercase">Dedicated Lead</div>
-          <div className="text-lg font-extrabold text-base-content">{engagement.assignedManager}</div>
+        <div className="bg-base-100 p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-base-200 shadow-sm space-y-1 min-w-0">
+          <div className="text-[10px] sm:text-xs font-bold text-base-content/60 uppercase tracking-wider">Dedicated Lead</div>
+          <div className="text-xs sm:text-base lg:text-lg font-extrabold text-base-content leading-tight truncate">{engagement.assignedManager}</div>
           <div className="text-[10px] text-base-content/50 font-bold">Operations Lead</div>
         </div>
 
-        <div className="bg-base-100 p-5 rounded-3xl border border-base-200 shadow-sm space-y-1">
-          <div className="text-xs font-bold text-base-content/60 uppercase">Care Plan</div>
-          <div className="text-lg font-extrabold text-emerald-600">Active (Year 1)</div>
+        <div className="bg-base-100 p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl border border-base-200 shadow-sm space-y-1 min-w-0">
+          <div className="text-[10px] sm:text-xs font-bold text-base-content/60 uppercase tracking-wider">Care Plan</div>
+          <div className="text-xs sm:text-base lg:text-lg font-extrabold text-emerald-600 leading-tight">Active (Year 1)</div>
           <div className="text-[10px] text-base-content/50 font-bold">24/7 Monitoring</div>
         </div>
       </div>
