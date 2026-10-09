@@ -55,7 +55,7 @@ export default function OnboardingWizardPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 pt-2 sm:pt-6 animate-entrance">
+    <div className="w-full space-y-6 pt-2 sm:pt-6 animate-entrance">
       {/* Step Indicator Bar using daisyUI steps */}
       <div className="bg-base-100/90 backdrop-blur-xl border border-base-200 rounded-3xl p-4 sm:p-6 shadow-3d text-center">
         <div className="flex items-center justify-between mb-4 px-2">

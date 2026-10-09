@@ -44,7 +44,7 @@ export default function ProfileWelcomePage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto space-y-6 pt-4 sm:pt-8 animate-entrance">
+    <div className="w-full space-y-6 pt-4 sm:pt-8 animate-entrance">
       <div className="text-center space-y-2">
         <span className="badge badge-primary badge-lg gap-1.5 font-bold shadow-sm">
           <Sparkles className="w-3.5 h-3.5" />

@@ -17,7 +17,7 @@ export default function ClientSettingsPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6 animate-entrance">
+    <div className="w-full space-y-6 animate-entrance">
       <div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-base-content tracking-tight">
           Account &amp; Organization Settings

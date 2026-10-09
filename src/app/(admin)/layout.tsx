@@ -22,6 +22,7 @@ import {
   ShieldCheck,
   ChevronRight,
   ExternalLink,
+  SlidersHorizontal,
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -51,10 +52,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { name: "Team & Settings", href: "/admin/settings", icon: Settings },
   ];
 
+  const mobileDockTabs = [
+    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    { name: "Inbox", href: "/admin/inbox", icon: Inbox, badge: "2" },
+    { name: "Users", href: "/admin/users", icon: Users },
+    { name: "Leads", href: "/admin/leads", icon: FileSpreadsheet },
+  ];
+
   return (
     <div className="min-h-screen bg-base-100 text-base-content flex flex-col lg:flex-row transition-colors duration-300">
-      {/* Mobile Top Header Navigation */}
-      <div className="lg:hidden flex items-center justify-between p-4 bg-base-200/60 border-b border-base-200 sticky top-0 z-40 backdrop-blur-md">
+      {/* Mobile Top Header Bar */}
+      <div className="lg:hidden flex items-center justify-between p-4 bg-base-100/90 border-b border-base-200 sticky top-0 z-40 backdrop-blur-md">
         <Link href="/admin" className="flex items-center gap-2">
           <img src="/logo.png" alt="Advers Logo" className="h-7 w-auto" />
           <span className="font-extrabold text-lg tracking-tight">Advers Admin</span>
@@ -65,14 +73,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             onClick={() => setMobileOpen(!mobileOpen)}
             className="btn btn-square btn-ghost btn-sm text-base-content"
           >
-            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {mobileOpen ? <X className="w-5 h-5" /> : <SlidersHorizontal className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
-      {/* Sidebar Navigation */}
+      {/* Sidebar Navigation (Desktop & Mobile Drawer) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-base-200/80 border-r border-base-200 flex flex-col justify-between transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-base-200/95 border-r border-base-200 flex flex-col justify-between transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -199,7 +207,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-base-100">
+      <div className="flex-1 flex flex-col min-w-0 bg-base-100 pb-20 lg:pb-0">
         {/* Top Header Bar for Desktop */}
         <header className="hidden lg:flex items-center justify-between px-8 py-4 bg-base-100 border-b border-base-200 sticky top-0 z-30">
           <div className="flex items-center gap-3">
@@ -226,7 +234,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </header>
 
         {/* Dynamic Page Content */}
-        <main className="flex-1 p-4 sm:p-8 max-w-[1400px] w-full mx-auto">{children}</main>
+        <main className="flex-1 p-4 sm:p-8 w-full">{children}</main>
+      </div>
+
+      {/* Mobile Bottom Dock Navigation Bar - Native App Vibe */}
+      <div className="dock dock-lg lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-base-100/95 backdrop-blur-2xl border-t border-base-200 shadow-2xl">
+        {mobileDockTabs.map((item) => {
+          const Icon = item.icon;
+          const active = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`dock-item ${active ? "dock-active text-primary" : "text-base-content/60"}`}
+            >
+              <Icon className="w-5 h-5" />
+              <span className="dock-label text-[11px] font-semibold">{item.name}</span>
+            </Link>
+          );
+        })}
+        <button
+          onClick={() => setMobileOpen(!mobileOpen)}
+          className="dock-item text-base-content/60"
+        >
+          <Menu className="w-5 h-5" />
+          <span className="dock-label text-[11px] font-semibold">More</span>
+        </button>
       </div>
     </div>
   );
