@@ -1,0 +1,121 @@
+# ROLE
+You are a senior full-stack engineer. You are extending an EXISTING Next.js project (it already contains my marketing landing page and website) by adding a client onboarding and management web application in the same codebase.
+
+# FIRST: INSPECT BEFORE YOU BUILD
+Before writing code:
+1. Read the existing project: Next.js version, router type (App Router expected), TypeScript use, styling approach (Tailwind/CSS), folder structure, existing components, fonts, colors and branding.
+2. Reuse the existing design language so the app looks like the same brand.
+3. Produce a short written plan (files to add, packages to install, env vars needed, risks). Wait for my approval before implementing.
+Do NOT modify or break existing landing page/website routes.
+
+# BUSINESS CONTEXT
+The company sells:
+1. Digital visibility packages (project-based): Get Visible (N150k-200k), Look Professional (N250k-350k), Launch Ready (N450k-650k), Build Authority (N750k-1.2M+).
+2. Digital Ecosystem (custom, scoped, N1.5M+): corporate site, customer portals, e-commerce, booking, CRM, APIs.
+3. LED billboard advertising (booking-based: screens, slots, dates, creative specs, proof of display).
+4. Recurring services: Website Care Plan (N25k/month or N250k/year), domain/hosting/email renewals.
+Currency is Nigerian Naira. Clients are mostly SMEs and individuals in Nigeria who use WhatsApp heavily. Times default to Africa/Lagos.
+
+# GOAL
+Build one system with a single Client record per customer, where all purchases ("Engagements") hang off it:
+Lead -> Qualification -> Quote -> Acceptance + deposit -> Account invite -> Onboarding wizard -> Production (milestones/approvals) -> Launch -> Handover -> Retention (renewals, care plan, billboard upsell).
+
+# TECH STACK (adjust only if the existing project conflicts, and tell me why)
+- Next.js App Router + TypeScript (strict), Server Components and Server Actions by default
+- PostgreSQL + Prisma
+- Auth.js (NextAuth) with: email+password (bcrypt/argon2), Google, and magic link. Roles: ADMIN, STAFF, CLIENT. Org roles: OWNER, MEMBER
+- Zod for all validation (client and server)
+- Paystack for payments (deposits, milestone invoices, renewals) with webhook verification
+- Resend for email; design the notification layer so WhatsApp Business API can be added later
+- File storage: S3-compatible (Cloudflare R2 or UploadThing) with signed URLs and file type/size validation
+- Background jobs/reminders: Inngest or cron route handlers
+- Tailwind + shadcn/ui, react-hook-form, Upstash Ratelimit
+
+# ROUTE STRUCTURE (use route groups; keep (marketing) untouched)
+app/
+  (marketing)/  existing landing page and website
+  (auth)/       login, signup, verify-email, accept-invite, forgot-password, reset-password
+  (portal)/portal/  welcome, dashboard, onboarding/[engagementId], projects/[id], approvals, files, invoices, billboard-bookings, renewals, messages, settings (profile, team)
+  (admin)/admin/    inbox, leads, clients, projects, quotes, invoices, bookings, screens (calendar), renewals, packages, reports, team
+  api/          feedback, webhooks/paystack, uploads
+
+# DATA MODEL (Prisma; refine as needed)
+- User (email, passwordHash?, name, phone, role, orgRole, emailVerifiedAt, profileCompleteAt, termsAcceptedAt, termsVersion, lastLoginAt, clientId?)
+- Client (organization: name, industry, address, notes) with Contacts = Users
+- Invitation (email, tokenHash unique, clientId, orgRole, expiresAt, acceptedAt, invitedById). Store only the HASH of the token; single-use; 7-day expiry; resend supported
+- Lead (name, contact, source, packageInterest, budgetRange, timeline, status, convertedClientId?)
+- Feedback/Inbox (type: ENQUIRY|FEEDBACK|COMPLAINT|BILLBOARD_ENQUIRY|OTHER; status: NEW|IN_REVIEW|REPLIED|RESOLVED|ARCHIVED|SPAM; name, email, phone, company, message, rating?, packageInterest?, source, isTestimonial, isPublished, internalNote, assignedToId, leadId, repliedAt)
+- Package (template: key, name, priceMin, priceMax, inclusions[], defaultMilestones[], intakeFormSchema, checklist)
+- Engagement (clientId, type: DIGITAL_PACKAGE|ECOSYSTEM|BILLBOARD|CARE_PLAN, packageId?, status, onboardingProgress %, waitingOnClient flag)
+- Quote (engagementId, lineItems, total, inclusions snapshot, exclusions, renewalCostsShown separately, status, acceptedAt, acceptedByUserId, termsVersion)
+- Invoice and Payment (milestone-based: default 50% deposit, 30% on design approval, 20% before launch)
+- Project -> Milestone -> Task; Deliverable -> Approval/Revision (revision cap per stage, default 2 rounds)
+- OnboardingResponse (engagementId, stepKey, data JSON, completedAt) saved per step
+- Asset/File (clientId, engagementId?, key, type, size, uploadedById)
+- Renewal (clientId, item: DOMAIN|HOSTING|EMAIL|CARE_PLAN, startDate, renewalDate, price, status; reminders at 60/30/7 days)
+- Screen (billboard inventory: name, location, resolution, aspect ratio, allowed formats, max duration, loopSeconds, spotsPerHour), Slot, Booking, Creative, ProofOfDisplay, CampaignReport
+- Message and ActivityLog (timeline of every message, file, payment, status change)
+
+# AUTH AND ONBOARDING FLOWS
+Door A, Invitation (main path for paying clients):
+1. Paystack webhook confirms deposit -> in one DB transaction create Client, User(contact), Engagement, Invitation.
+2. Send invite email: "Payment received", package name, button "Set up your portal" -> /accept-invite?token=...
+3. Accept-invite page: email/company/package pre-filled and read-only; choose password OR Google OR magic link; checkbox to accept Terms and Privacy (store timestamp + version). No separate email verification needed because the invite proves ownership.
+4. Welcome step (/portal/welcome): full name, WhatsApp number, job title, notification preference (email/WhatsApp/both), timezone default Africa/Lagos.
+5. Package onboarding wizard: multi-step, autosaves every step, resumable, skippable ("Do this later"), progress % per engagement. Questions differ by tier:
+   - Get Visible: business name, 3 domain options, preferred email address, bio/services, social links, WhatsApp number, reference sites.
+   - Look Professional: all above + brand colors/tone, existing logo, sitemap for 3-5 pages, Google Business details, up to 3 email account names.
+   - Launch Ready / Build Authority: all above + audience, competitors, values, tagline, team details, product/service content, blog topics, newsletter tool.
+   Never collect passwords; use an access-request checklist (e.g. "add us as manager on your Google Business Profile").
+6. Redirect to dashboard.
+
+Door B, Self sign-up (prospects): /signup (name, email, phone, password or Google, honeypot, rate limit) -> email verification (6-digit code or link) -> "What brings you here?" (website/brand package | LED billboard | not sure) -> short business profile that creates a Lead and alerts admin -> dashboard in "prospect" state. When a quote is accepted and paid, UPGRADE the same account by attaching Client + Engagement. Never create a second account.
+
+Login: password, Google, magic link. Same error for wrong email/wrong password. Rate limiting and temporary lockout. Forgot-password link is single-use, 1 hour. Sessions about 30 days with "log out of all devices". Optional 2FA for ADMIN/STAFF.
+
+Post-login redirect function:
+  non-client -> /admin; unverified -> /verify-email; profile incomplete -> /portal/welcome; else -> /portal/dashboard.
+Unfinished onboarding must NOT block the dashboard; show it as a checklist banner.
+
+Edge cases to handle: expired invite (offer resend to the invited email only), already-used invite (redirect to login), signup with an email that has a pending invite (merge after verification), login before deposit clears (prospect dashboard with "Payment pending"), bank-transfer payments (admin marks received -> same invite trigger), admin changes client email (re-verify), contact leaves company (deactivate, keep history), OWNER can invite MEMBERs from Settings > Team.
+
+# DASHBOARD (portal), content by account state
+- Prospect: welcome card, enquiry/quote status, "Request a quote" and "Book a billboard" buttons.
+- Quote sent: quote summary with "Accept & Pay".
+- Active, onboarding incomplete: banner "N things we need from you" with progress bar.
+- In production: stage tracker (Discovery > Design > Build > Review > Launch), pending approvals, latest files, upcoming invoice.
+- Launched: Care Plan status, renewal dates, billboard offer, request-a-change.
+- Billboard client: campaigns, booking status, proof of display, reports.
+Layout top to bottom: 1) "What we need from you" (uploads, approvals, payments awaiting action), 2) project progress tracker, 3) invoices summary, 4) recent activity/messages, 5) renewals and recommended next service. Use helpful empty states, never blank tables.
+
+# ADMIN
+- Inbox: the landing page form posts to /api/feedback (Zod validation, honeypot, IP rate limit, saved as NEW, admin email alert). Admin can filter by status/type, search, open detail, reply by email (sets REPLIED), add internal notes, assign, mark spam, convert to Lead, and publish as testimonial (only with consent and rating 4-5; show on landing page). Sidebar shows unread count; flag items NEW for over 24h.
+- Leads and quotes pipeline, projects by stage with overdue/blocked flags, outstanding invoices, renewals due in 30 days, client timeline, package template editor, billboard calendar (later phase).
+
+# BUSINESS RULES TO ENFORCE IN CODE
+- "Waiting on client" status pauses the project clock and triggers automatic reminders.
+- Revision cap per approval stage (default 2); extras become a quoted change request.
+- Quote copies the package inclusions so extras are tracked as change requests (anti scope-creep).
+- Renewal costs are displayed separately in every quote.
+- Domain/site transfer is released only after final payment.
+- Only OWNER can approve designs and pay invoices (configurable).
+
+# SECURITY (non-negotiable)
+- Middleware protects /portal/* and /admin/*, AND every server action, route handler and page re-checks role and that the record belongs to the user's client (prevent IDOR).
+- Hash invite/reset tokens; verify Paystack webhook signatures; make webhooks idempotent.
+- Validate all input with Zod; validate uploads (type, size, ownership); use signed URLs.
+- Rate limit auth, signup, feedback and invite endpoints.
+- No secrets in code; provide .env.example. Do not log PII or tokens.
+- Follow Nigeria's NDPA principles: collect minimum data, record consent, keep a privacy note.
+
+# WORKING METHOD
+Work in phases. After each phase: summarize what changed, list files touched, give run/test instructions, and WAIT for my approval.
+- Phase 1 (MVP): schema + migrations + seed data (4 packages, 1 admin, 1 demo client); auth (login, signup, accept-invite, verify email, reset); feedback inbox (API + admin pages); lead capture; quote creation and online acceptance; Paystack deposit + webhook; invitation creation; welcome page; onboarding wizard with autosave; portal dashboard (state-based); basic project tracker with milestones and approvals.
+- Phase 2: invoices and milestone payments, automated reminders, renewals tracker, file management, handover pack.
+- Phase 3: billboard module (screens, availability calendar, creative spec validation, proof of display, campaign reports, renewal prompts).
+- Phase 4: Care Plan subscriptions, reports/analytics, referral tracking, upsell automations, WhatsApp notifications.
+
+START NOW WITH: inspection of the existing project and a Phase 1 plan only. Do not write code until I approve the plan.
+
+# QUALITY BAR
+TypeScript strict, no `any` without justification, accessible and mobile-first UI (most users are on phones), loading and error states everywhere, meaningful commit-sized changes, and tests for auth guards, token handling, webhook idempotency and the post-login redirect logic.

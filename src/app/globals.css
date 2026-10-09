@@ -1,0 +1,209 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+@import "tailwindcss";
+
+@plugin "daisyui" {
+  themes: light --default, dark;
+}
+
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+  prefersdark: false;
+  color-scheme: light;
+
+  --color-base-100: #faf8ff;
+  --color-base-200: #f2f3ff;
+  --color-base-300: #e2e7ff;
+  --color-base-content: #131b2e;
+  --color-primary: #3525cd;
+  --color-primary-content: #ffffff;
+  --color-secondary: #712ae2;
+  --color-secondary-content: #ffffff;
+  --color-accent: #4f46e5;
+  --color-accent-content: #ffffff;
+  --color-neutral: #131b2e;
+  --color-neutral-content: #faf8ff;
+  --color-info: #0284c7;
+  --color-info-content: #ffffff;
+  --color-success: #16a34a;
+  --color-success-content: #ffffff;
+  --color-warning: #ea580c;
+  --color-warning-content: #ffffff;
+  --color-error: #dc2626;
+  --color-error-content: #ffffff;
+
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+  name: "dark";
+  default: false;
+  prefersdark: false;
+  color-scheme: dark;
+
+  --color-base-100: #0b0f19;
+  --color-base-200: #131b2e;
+  --color-base-300: #1e293b;
+  --color-base-content: #f8fafc;
+  --color-primary: #6366f1;
+  --color-primary-content: #ffffff;
+  --color-secondary: #a855f7;
+  --color-secondary-content: #ffffff;
+  --color-accent: #818cf8;
+  --color-accent-content: #ffffff;
+  --color-neutral: #f8fafc;
+  --color-neutral-content: #0b0f19;
+  --color-info: #38bdf8;
+  --color-info-content: #0b0f19;
+  --color-success: #4ade80;
+  --color-success-content: #0b0f19;
+  --color-warning: #fb923c;
+  --color-warning-content: #0b0f19;
+  --color-error: #f87171;
+  --color-error-content: #0b0f19;
+
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  background-color: var(--color-base-100);
+  color: var(--color-base-content);
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Theme Adaptive Hero Overlay Gradients */
+[data-theme="dark"] .hero-overlay-gradient {
+  background: linear-gradient(to right, #0b0f19, rgba(11, 15, 25, 0.94) 55%, rgba(11, 15, 25, 0.35));
+}
+
+[data-theme="light"] .hero-overlay-gradient {
+  background: linear-gradient(to right, #faf8ff, rgba(250, 248, 255, 0.92) 55%, rgba(250, 248, 255, 0.3));
+}
+
+/* Glass & Card Adaptive Styles */
+[data-theme="dark"] .glass-card {
+  background: rgba(19, 27, 46, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] .glass-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="dark"] .shadow-3d {
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.5),
+    0 4px 6px -2px rgba(0, 0, 0, 0.3),
+    0 30px 60px -12px rgba(0, 0, 0, 0.7);
+}
+
+[data-theme="light"] .shadow-3d {
+  box-shadow:
+    0 10px 15px -3px rgba(19, 27, 46, 0.1),
+    0 4px 6px -2px rgba(19, 27, 46, 0.05),
+    0 30px 60px -12px rgba(19, 27, 46, 0.15);
+}
+
+/* Animations */
+@keyframes heroEntranceBg {
+  0% {
+    opacity: 0;
+    transform: scale(1.08) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.02) translateY(0);
+  }
+}
+
+.hero-animate-bg {
+  animation: heroEntranceBg 1.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes heroContentEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(35px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-animate-title {
+  animation: heroContentEntrance 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.15s forwards;
+  opacity: 0;
+}
+
+.hero-animate-sub {
+  animation: heroContentEntrance 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  opacity: 0;
+}
+
+.hero-animate-btns {
+  animation: heroContentEntrance 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.45s forwards;
+  opacity: 0;
+}
+
+/* Scroll Section Animator */
+.section-animate {
+  opacity: 0;
+  transform: translateY(36px) scale(0.98);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1), transform 0.85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.section-animate.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.stagger-child {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.75s cubic-bezier(0.16, 1, 0.3, 1), transform 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.is-visible .stagger-child:nth-child(1) { transition-delay: 0.08s; opacity: 1; transform: translateY(0); }
+.is-visible .stagger-child:nth-child(2) { transition-delay: 0.18s; opacity: 1; transform: translateY(0); }
+.is-visible .stagger-child:nth-child(3) { transition-delay: 0.28s; opacity: 1; transform: translateY(0); }
+.is-visible .stagger-child:nth-child(4) { transition-delay: 0.38s; opacity: 1; transform: translateY(0); }
+.is-visible .stagger-child:nth-child(5) { transition-delay: 0.48s; opacity: 1; transform: translateY(0); }
+
+.floating-shape {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(1px);
+  opacity: 0.45;
+  will-change: transform;
+}
