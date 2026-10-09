@@ -64,15 +64,18 @@ export default function Navbar() {
         {/* Action Buttons (Desktop) */}
         <div className="hidden md:flex items-center space-x-3 lg:space-x-4">
           <ThemeToggle />
-          <button className="text-base-content/80 font-semibold hover:text-primary transition-colors text-sm lg:text-base px-3 py-2">
+          <Link
+            href="/login"
+            className="text-base-content/80 font-semibold hover:text-primary transition-colors text-sm lg:text-base px-3 py-2"
+          >
             Log In
-          </button>
-          <a
-            href="/#cta"
+          </Link>
+          <Link
+            href="/signup"
             className="bg-[#4f46e5] text-white px-5 lg:px-6 py-2.5 rounded-xl font-bold hover:shadow-lg hover:shadow-indigo-500/30 hover:bg-[#3525cd] transition-all text-sm"
           >
             Get Started
-          </a>
+          </Link>
         </div>
 
         {/* Mobile Hamburger & Theme Toggle */}
@@ -141,16 +144,20 @@ export default function Navbar() {
           </nav>
 
           <div className="pt-3 border-t border-base-200 flex flex-col gap-2.5">
-            <button className="w-full text-center py-2.5 font-semibold text-base-content/80 hover:bg-base-200 rounded-xl transition-colors">
-              Log In
-            </button>
-            <a
-              href="/#cta"
+            <Link
+              href="/login"
               onClick={() => setMobileOpen(false)}
-              className="btn bg-[#4f46e5] hover:bg-[#3525cd] text-white w-full rounded-xl text-center border-none shadow-md font-bold py-3 text-base"
+              className="w-full text-center py-2.5 font-semibold text-base-content/80 hover:bg-base-200 rounded-xl transition-colors block"
+            >
+              Log In
+            </Link>
+            <Link
+              href="/signup"
+              onClick={() => setMobileOpen(false)}
+              className="btn bg-[#4f46e5] hover:bg-[#3525cd] text-white w-full rounded-xl text-center border-none shadow-md font-bold py-3 text-base block"
             >
               Get Started
-            </a>
+            </Link>
           </div>
         </div>
       )}

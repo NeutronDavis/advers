@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 
 export default function CtaBanner() {
   return (
@@ -21,19 +22,19 @@ export default function CtaBanner() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-3.5 sm:gap-5 justify-center pt-3 sm:pt-4">
-            <a
-              href="#placements"
+            <Link
+              href="/signup"
               className="bg-base-100 text-primary hover:bg-base-200 px-8 sm:px-10 py-3.5 sm:py-4.5 rounded-2xl font-extrabold text-base sm:text-lg shadow-3d hover:shadow-2xl hover:scale-105 hover:-translate-y-1 transition-all active:scale-95 text-center"
             >
               Get Started Free
-            </a>
+            </Link>
 
-            <a
-              href="#contact"
+            <Link
+              href="/contact"
               className="border border-primary-content/30 backdrop-blur-md text-primary-content px-8 sm:px-10 py-3.5 sm:py-4.5 rounded-2xl font-extrabold text-base sm:text-lg hover:bg-primary-content/10 transition-all text-center"
             >
               Talk to Sales
-            </a>
+            </Link>
           </div>
         </div>
       </div>

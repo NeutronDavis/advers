@@ -56,21 +56,26 @@ export default function Footer() {
         </div>
 
         <div className="space-y-4">
-          <h5 className="font-bold text-base-content text-base">Company</h5>
+          <h5 className="font-bold text-base-content text-base">Account</h5>
           <ul className="space-y-2.5 text-sm text-base-content/75">
+            <li>
+              <Link href="/login" className="hover:text-primary font-semibold transition-colors">
+                Client Portal Login
+              </Link>
+            </li>
+            <li>
+              <Link href="/signup" className="hover:text-primary font-semibold transition-colors text-primary">
+                Client Sign Up
+              </Link>
+            </li>
             <li>
               <Link href="/about" className="hover:text-primary transition-colors">
                 About Us
               </Link>
             </li>
             <li>
-              <a href="/about" className="hover:text-primary transition-colors">
-                Careers
-              </a>
-            </li>
-            <li>
-              <Link href="/contact" className="hover:text-primary transition-colors font-semibold">
-                Contact
+              <Link href="/contact" className="hover:text-primary transition-colors">
+                Contact Us
               </Link>
             </li>
           </ul>
