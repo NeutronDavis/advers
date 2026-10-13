@@ -1,23 +1,47 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Sparkles, Menu, X ,Package} from "lucide-react";
+import { Sparkles, Menu, X, Package } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const pathname = usePathname();
+  const isHome = pathname === "/";
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 40) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const isTransparent = isHome && !isScrolled && !mobileOpen;
 
   return (
-    <header className="sticky top-0 w-full z-[100] bg-base-100/85 backdrop-blur-xl border-b border-base-200 transition-colors">
+    <header
+      className={`sticky top-0 w-full z-[100] transition-all duration-300 ${
+        isTransparent
+          ? "bg-transparent border-b border-transparent shadow-none"
+          : "bg-base-100/90 backdrop-blur-xl border-b border-base-200 shadow-sm"
+      }`}
+    >
       <div className="flex justify-between items-center max-w-[1200px] mx-auto px-4 sm:px-6 h-16 sm:h-20">
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
           <img
             src="/logo.png"
-            alt="Advers Logo"
+            alt="Advers"
             className="h-7 sm:h-9 w-auto object-contain group-hover:scale-105 transition-transform filter drop-shadow-sm"
           />
           <span className="text-xl sm:text-2xl font-extrabold text-base-content tracking-tight">
