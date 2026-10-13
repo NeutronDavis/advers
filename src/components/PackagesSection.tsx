@@ -70,10 +70,6 @@ export default function PackagesSection() {
   return (
     <section id="packages" className="py-16 sm:py-24 max-w-[1240px] mx-auto px-4 sm:px-6">
       <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-3 sm:space-y-4">
-        <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Transparent Visibility Packages</span>
-        </div>
 
         <h2 className="text-2xl sm:text-4xl font-extrabold text-base-content tracking-tight">
           Everything Your Business Needs to Grow, <br className="hidden sm:block" />

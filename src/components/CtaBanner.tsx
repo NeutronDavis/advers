@@ -12,9 +12,6 @@ export default function CtaBanner() {
         <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-secondary/30 rounded-full blur-3xl pointer-events-none" />
 
         <div className="relative z-10 space-y-6 sm:space-y-8 max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
-            <span>Ready for Real Commercial Growth?</span>
-          </div>
 
           <h2 className="text-2xl sm:text-5xl lg:text-6xl font-extrabold leading-tight tracking-tight text-white">
             Your competitors aren&apos;t better than you. <br className="hidden sm:block" />

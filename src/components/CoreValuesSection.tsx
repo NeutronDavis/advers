@@ -30,10 +30,6 @@ export default function CoreValuesSection() {
   return (
     <section className="py-14 sm:py-24 max-w-[1240px] mx-auto px-4 sm:px-6">
       <div className="mb-10 sm:mb-14 space-y-2.5 sm:space-y-3 text-center max-w-3xl mx-auto">
-        <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>The Advers Standard</span>
-        </div>
 
         <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-base-content tracking-tight">
           How We Deliver Unmatched Brand Authority

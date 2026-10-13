@@ -27,10 +27,6 @@ export default function PremiumPlacementsSection() {
       <div className="max-w-[1240px] mx-auto px-4 sm:px-6 preserve-3d">
         
         <div className="mb-10 sm:mb-14 space-y-3 sm:space-y-4 text-center max-w-3xl mx-auto">
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
-            <Eye className="w-3.5 h-3.5" />
-            <span>The Outdoor Visibility Pillar</span>
-          </div>
 
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-base-content tracking-tight">
             From the Screen in Their Hands to the Screen on the Highway

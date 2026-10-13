@@ -115,10 +115,6 @@ export default function AboutPage() {
         {/* Narrative Hero Header */}
         <header className="relative pt-14 sm:pt-24 pb-14 sm:pb-20 overflow-hidden">
           <div className="relative max-w-[1200px] mx-auto px-4 sm:px-6 animate-entrance">
-            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider mb-5">
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Full-Service Brand Visibility Partner</span>
-            </div>
 
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-base-content mb-5 sm:mb-6 leading-tight max-w-4xl tracking-tight">
               We Don&apos;t Just Build Assets. <br className="hidden sm:block" />
@@ -164,15 +160,6 @@ export default function AboutPage() {
 
               {/* Native daisyUI Interactive Preview Window */}
               <div className="w-full lg:w-1/2">
-                <div className="mockup-browser border border-base-300 bg-base-100 shadow-3d rounded-3xl overflow-hidden">
-                  <div className="mockup-browser-toolbar bg-base-200 px-4 py-3 flex items-center justify-between">
-                    <div className="input input-sm bg-base-100 text-xs text-base-content/70 flex items-center gap-2 max-w-xs w-full">
-                      <span className="w-2 h-2 rounded-full bg-success"></span>
-                      advers.ng/growth-engine
-                    </div>
-                    <span className="badge badge-primary text-[10px] font-bold">100% UNIFIED</span>
-                  </div>
-
                   <div className="p-6 sm:p-8 bg-base-100 space-y-6">
                     <div className="flex items-center gap-4 pb-5 border-b border-base-200">
                       <img 
@@ -231,7 +218,7 @@ export default function AboutPage() {
                       </div>
                     </div>
                   </div>
-                </div>
+
               </div>
             </div>
           </section>
@@ -242,10 +229,6 @@ export default function AboutPage() {
           <section className="py-14 sm:py-24 bg-base-200/50 border-t border-base-200">
             <div className="max-w-[1240px] mx-auto px-4 sm:px-6">
               <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16 space-y-3">
-                <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
-                  <Layers className="w-3.5 h-3.5" />
-                  <span>The Advers Methodology</span>
-                </div>
 
                 <h2 className="text-2xl sm:text-4xl font-extrabold text-base-content tracking-tight">
                   Three Pillars. One Undeniable Brand.
