@@ -29,9 +29,9 @@ export default function HomePage() {
         <Hero />
 
         {/* Scroll-Driven Section Reveal & Reset Animators */}
-        <SectionAnimator>
+        {/* <SectionAnimator>
           <StatsSection />
-        </SectionAnimator>
+        </SectionAnimator> */}
 
         <SectionAnimator>
           <ModernStandardSection />

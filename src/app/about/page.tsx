@@ -120,12 +120,6 @@ export default function AboutPage() {
               We Don&apos;t Just Build Assets. <br className="hidden sm:block" />
               <span className="text-primary">We Put Your Brand on the Front Page.</span>
             </h1>
-
-            <p className="text-base sm:text-xl text-base-content/80 max-w-3xl leading-relaxed font-normal">
-              Advers bridges the gap between ambitious SMEs and undeniable market authority across Nigeria. 
-              By uniting brand identity design, custom web engineering, and high-impact digital LED billboards under one roof, 
-              we help growing businesses get seen, get trusted, and dominate their local market.
-            </p>
           </div>
         </header>
 
