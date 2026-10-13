@@ -37,12 +37,6 @@ export default function CtaBanner() {
               Talk to Growth Strategists
             </Link>
           </div>
-
-          <div className="pt-4 flex flex-wrap items-center justify-center gap-6 text-xs text-white/75 font-medium">
-            <span className="flex items-center gap-1.5">✓ Complete Brand-to-Billboard Delivery</span>
-            <span className="flex items-center gap-1.5">✓ Zero Tech Headaches</span>
-            <span className="flex items-center gap-1.5">✓ 100% Guaranteed Market Presence</span>
-          </div>
         </div>
       </div>
     </section>
