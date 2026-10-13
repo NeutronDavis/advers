@@ -1,41 +1,46 @@
 "use client";
 
 import React from "react";
-import { Eye, Sparkles, MapPin, Zap } from "lucide-react";
+import { Layers, Zap, ShieldCheck, TrendingUp, Sparkles } from "lucide-react";
 
 export default function CoreValuesSection() {
   const values = [
     {
-      icon: <Eye className="w-8 h-8" />,
-      title: "Transparency",
-      desc: "Honest pricing and verified availability for every billboard in our network.",
+      icon: <Layers className="w-7 h-7 sm:w-8 sm:h-8" />,
+      title: "Omnichannel Cohesion",
+      desc: "Every touchpoint—from your logo to your website and billboard—speaks with one authoritative voice.",
     },
     {
-      icon: <Sparkles className="w-8 h-8" />,
-      title: "Impact",
-      desc: "Strategically placed media that turns heads and drives real business growth.",
+      icon: <Zap className="w-7 h-7 sm:w-8 sm:h-8" />,
+      title: "Speed to Market",
+      desc: "Eliminating months of agency bureaucracy. We launch complete brand foundations and campaigns in days.",
     },
     {
-      icon: <MapPin className="w-8 h-8" />,
-      title: "Local Innovation",
-      desc: "Solutions built specifically for the unique dynamics of the Nigerian market.",
+      icon: <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8" />,
+      title: "Radical Transparency",
+      desc: "Predictable package pricing, zero hidden retainers, and verified analytics for every campaign dollar.",
     },
     {
-      icon: <Zap className="w-8 h-8" />,
-      title: "Simplicity",
-      desc: "Eliminating the red tape. Book, launch, and track in three easy steps.",
+      icon: <TrendingUp className="w-7 h-7 sm:w-8 sm:h-8" />,
+      title: "Tangible ROI",
+      desc: "We don't build vanity assets. We engineer high-converting digital engines and placements that drive real revenue.",
     },
   ];
 
   return (
-    <section className="py-14 sm:py-24 max-w-[1200px] mx-auto px-4 sm:px-6">
-      <div className="mb-8 sm:mb-14 space-y-2.5 sm:space-y-3 text-center">
-        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-base-content">
-          Our Core Values
+    <section className="py-14 sm:py-24 max-w-[1240px] mx-auto px-4 sm:px-6">
+      <div className="mb-10 sm:mb-14 space-y-2.5 sm:space-y-3 text-center max-w-3xl mx-auto">
+        <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>The Advers Standard</span>
+        </div>
+
+        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-base-content tracking-tight">
+          How We Deliver Unmatched Brand Authority
         </h2>
-        <p className="text-base sm:text-lg text-base-content/80 max-w-2xl mx-auto font-normal">
-          The principles that drive our mission to revolutionize outdoor
-          advertising.
+        
+        <p className="text-base sm:text-lg text-base-content/80 font-normal leading-relaxed">
+          The core principles that drive our mission to make growing Nigerian businesses impossible to ignore.
         </p>
       </div>
 
@@ -43,9 +48,9 @@ export default function CoreValuesSection() {
         {values.map((v, idx) => (
           <div
             key={idx}
-            className="stagger-child group hover:-translate-y-2 transition-transform duration-300 bg-base-100 sm:bg-transparent p-5 sm:p-0 rounded-2xl border border-base-200 sm:border-none shadow-sm sm:shadow-none"
+            className="stagger-child group hover:-translate-y-2 transition-transform duration-300 bg-base-100 p-6 rounded-3xl border border-base-200 shadow-sm hover:shadow-xl hover:border-primary/30"
           >
-            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-base-200 text-primary flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-primary group-hover:text-primary-content transition-colors shadow-sm border border-base-300">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-primary group-hover:text-primary-content transition-colors shadow-sm">
               {v.icon}
             </div>
             <h4 className="text-lg sm:text-xl font-bold text-base-content mb-1.5 sm:mb-2">{v.title}</h4>

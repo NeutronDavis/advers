@@ -8,6 +8,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import StatsSection from "@/components/StatsSection";
 import ModernStandardSection from "@/components/ModernStandardSection";
+import PackagesSection from "@/components/PackagesSection";
 import PremiumPlacementsSection from "@/components/PremiumPlacementsSection";
 import VisionAndFeaturesSection from "@/components/VisionAndFeaturesSection";
 import CoreValuesSection from "@/components/CoreValuesSection";
@@ -20,20 +21,6 @@ export default function HomePage() {
     <div className="relative min-h-screen bg-base-100 text-base-content flex flex-col transition-colors duration-300">
       {/* Scroll-Driven Floating Parallax Background Elements */}
       <BackgroundParallax />
-
-      {/* Top Banner for PDF Visibility Journey */}
-      {/* <div className="relative z-[101] bg-gradient-to-r from-[#131b2e] via-[#3525cd] to-[#712ae2] text-white text-xs font-semibold py-2.5 px-6 text-center flex items-center justify-center gap-2">
-        <span className="text-slate-100">
-          Looking for web presence &amp; brand packages?
-        </span>
-        <Link
-          href="/visibility-journey"
-          className="text-white underline font-bold hover:text-indigo-200 inline-flex items-center gap-1 ml-1"
-        >
-          Explore The Visibility Journey
-          <ArrowRight className="w-3.5 h-3.5" />
-        </Link>
-      </div> */}
 
       <Navbar />
 
@@ -48,6 +35,10 @@ export default function HomePage() {
 
         <SectionAnimator>
           <ModernStandardSection />
+        </SectionAnimator>
+
+        <SectionAnimator>
+          <PackagesSection />
         </SectionAnimator>
 
         <SectionAnimator>

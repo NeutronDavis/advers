@@ -20,8 +20,7 @@ export default function Footer() {
           </Link>
 
           <p className="text-base-content/80 text-sm leading-relaxed max-w-xs font-normal">
-            The modern operating system for outdoor advertising and digital brand
-            visibility across West Africa.
+            The full-service brand visibility and marketing partner for growing businesses across Nigeria.
           </p>
 
           <div className="text-xs text-base-content/50 pt-1">
