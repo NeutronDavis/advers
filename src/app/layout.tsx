@@ -23,26 +23,22 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" data-theme="light" data-scroll-behavior="smooth" suppressHydrationWarning>
-      <head>
+      <body
+        suppressHydrationWarning
+        className="antialiased min-h-screen flex flex-col bg-base-100 text-base-content selection:bg-primary/20 selection:text-primary transition-colors duration-300"
+      >
         <Script
           id="advers-theme-init"
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
-              (function() {
-                try {
-                  var saved = localStorage.getItem('advers-theme') || 'light';
-                  document.documentElement.setAttribute('data-theme', saved);
-                } catch (e) {}
-              })();
+              try {
+                var saved = localStorage.getItem('advers-theme') || 'light';
+                document.documentElement.setAttribute('data-theme', saved);
+              } catch (e) {}
             `,
           }}
         />
-      </head>
-      <body
-        suppressHydrationWarning
-        className="antialiased min-h-screen flex flex-col bg-base-100 text-base-content selection:bg-primary/20 selection:text-primary transition-colors duration-300"
-      >
         {children}
       </body>
     </html>
