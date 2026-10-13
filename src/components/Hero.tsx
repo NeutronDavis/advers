@@ -26,12 +26,6 @@ export default function Hero() {
       <div className="relative z-10 max-w-[1200px] mx-auto px-4 sm:px-6 w-full">
         <div className="max-w-2xl lg:max-w-3xl space-y-6 sm:space-y-8">
           
-          {/* Service Pillar Badge */}
-          <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold border border-primary/20 shadow-sm backdrop-blur-md">
-            <Sparkles className="w-4 h-4" />
-            <span>Full-Service Brand Visibility &amp; Growth</span>
-          </div>
-
           {/* High-Converting Main Headline */}
           <h1 className="hero-animate-title text-3xl sm:text-5xl lg:text-[4rem] font-extrabold text-base-content leading-[1.1] tracking-tight">
             Stop Being Invisible. <br className="hidden sm:block" />
@@ -63,23 +57,6 @@ export default function Hero() {
               <ChevronRight className="w-5 h-5 opacity-60" />
             </a>
           </div>
-
-          {/* Micro Trust Indicators */}
-          <div className="pt-2 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs sm:text-sm text-base-content/85 font-semibold">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-              <span>Brand, Web &amp; Outdoor</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-              <span>Days, Not Months</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-              <span>Across Lagos, Abuja &amp; PH</span>
-            </div>
-          </div>
-
         </div>
       </div>
     </section>

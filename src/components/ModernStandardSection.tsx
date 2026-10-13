@@ -10,10 +10,7 @@ export default function ModernStandardSection() {
         
         {/* Left Column: Problem & Solution Copy */}
         <div className="w-full lg:w-1/2 space-y-6">
-          <div className="inline-flex items-center gap-2 bg-secondary/10 text-secondary px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>The Unified Visibility Engine</span>
-          </div>
+  
 
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-base-content leading-tight tracking-tight">
             Why Most Growing Businesses Stay Invisible{" "}

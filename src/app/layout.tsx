@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Advers - Put Your Brand on Every Screen | Digital Outdoor Advertising",
+  title: "Advers | Full-Service Brand Visibility & Marketing Partner",
   description:
-    "Connect with premium billboard networks across Nigeria. Create, manage, and track your outdoor advertising campaigns – all from one powerful dashboard.",
+    "Advers builds your brand identity, launches high-speed custom websites, and puts your business on prime digital LED billboards across Nigeria.",
   icons: {
     icon: [
       { url: "/icon.png", type: "image/png" },
@@ -21,9 +22,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="light" suppressHydrationWarning>
+    <html lang="en" data-theme="light" data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
-        <script
+        <Script
+          id="advers-theme-init"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               (function() {

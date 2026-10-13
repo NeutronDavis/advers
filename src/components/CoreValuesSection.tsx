@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Layers, Zap, ShieldCheck, TrendingUp, Sparkles } from "lucide-react";
+import { Layers, Zap, Shield, TrendingUp, Sparkles } from "lucide-react";
 
 export default function CoreValuesSection() {
   const values = [
@@ -16,7 +16,7 @@ export default function CoreValuesSection() {
       desc: "Eliminating months of agency bureaucracy. We launch complete brand foundations and campaigns in days.",
     },
     {
-      icon: <ShieldCheck className="w-7 h-7 sm:w-8 sm:h-8" />,
+      icon: <Shield className="w-7 h-7 sm:w-8 sm:h-8" />,
       title: "Radical Transparency",
       desc: "Predictable package pricing, zero hidden retainers, and verified analytics for every campaign dollar.",
     },
