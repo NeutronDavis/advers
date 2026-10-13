@@ -137,13 +137,6 @@ export default function Navbar() {
             >
               About
             </Link>
-            <a
-              href="/#how-it-works"
-              onClick={() => setMobileOpen(false)}
-              className="text-base font-medium text-base-content/80 py-2 px-3 rounded-xl hover:bg-base-200 transition-colors"
-            >
-              How it works
-            </a>
             <Link
               href="/visibility-journey"
               onClick={() => setMobileOpen(false)}
