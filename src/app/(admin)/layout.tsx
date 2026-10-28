@@ -5,24 +5,19 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
-  Inbox,
-  Users,
-  FileSpreadsheet,
-  Briefcase,
-  Receipt,
-  RefreshCw,
+  ShieldCheck,
   Tv,
-  Package,
-  BarChart3,
-  Settings,
-  Menu,
+  Camera,
+  Sparkles,
+  Receipt,
+  Users,
+  SlidersHorizontal,
   X,
   LogOut,
-  Sparkles,
-  ShieldCheck,
+  Bell,
   ChevronRight,
-  ExternalLink,
-  SlidersHorizontal,
+  Radio,
+  FileCheck,
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -31,7 +26,6 @@ interface SidebarItem {
   href: string;
   icon: React.ComponentType<{ className?: string }>;
   badge?: string | number;
-  disabled?: boolean;
 }
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -39,39 +33,47 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navigation: SidebarItem[] = [
-    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-    { name: "Inbox", href: "/admin/inbox", icon: Inbox, badge: "2 New" },
-    { name: "Users & Clients", href: "/admin/users", icon: Users },
-    { name: "Leads & Quotes", href: "/admin/leads", icon: FileSpreadsheet },
-    { name: "Projects", href: "/admin/projects", icon: Briefcase },
-    { name: "Invoices & Payments", href: "/admin/invoices", icon: Receipt },
-    { name: "Renewals", href: "/admin/renewals", icon: RefreshCw },
-    { name: "Billboard", href: "#", icon: Tv, badge: "Soon", disabled: true },
-    { name: "Packages", href: "/admin/packages", icon: Package },
-    { name: "Reports", href: "/admin/reports", icon: BarChart3 },
-    { name: "Team & Settings", href: "/admin/settings", icon: Settings },
+    { name: "Operations Cockpit", href: "/admin", icon: LayoutDashboard },
+    {
+      name: "Campaign Moderation",
+      href: "/admin/moderation",
+      icon: ShieldCheck,
+      badge: "3 New",
+    },
+    { name: "Media Inventory", href: "/admin/inventory", icon: Tv },
+    { name: "Proof of Performance", href: "/admin/pop", icon: FileCheck },
+    { name: "AdBoosters Network", href: "/admin/adboosters", icon: Sparkles },
+    { name: "Escrow & Settlements", href: "/admin/finance", icon: Receipt },
+    { name: "Users & Advertisers", href: "/admin/users", icon: Users },
   ];
 
   const mobileDockTabs = [
-    { name: "Dashboard", href: "/admin", icon: LayoutDashboard },
-    { name: "Inbox", href: "/admin/inbox", icon: Inbox, badge: "2" },
-    { name: "Users", href: "/admin/users", icon: Users },
-    { name: "Leads", href: "/admin/leads", icon: FileSpreadsheet },
+    { name: "Cockpit", href: "/admin", icon: LayoutDashboard },
+    { name: "Moderation", href: "/admin/moderation", icon: ShieldCheck, badge: "3" },
+    { name: "Inventory", href: "/admin/inventory", icon: Tv },
+    { name: "Finance", href: "/admin/finance", icon: Receipt },
   ];
 
   return (
     <div className="min-h-screen bg-base-100 text-base-content flex flex-col lg:flex-row transition-colors duration-300">
       {/* Mobile Top Header Bar */}
       <div className="lg:hidden flex items-center justify-between p-4 bg-base-100/90 border-b border-base-200 sticky top-0 z-40 backdrop-blur-md">
-        <Link href="/admin" className="flex items-center gap-2">
-          <img src="/logo.png" alt="Advers Logo" className="h-7 w-auto" />
-          <span className="font-extrabold text-lg tracking-tight">Advers Admin</span>
+        <Link href="/admin" className="flex items-center gap-2.5">
+          <img
+            src="/logo.png"
+            alt="Advers Logo"
+            className="h-7 w-auto object-contain"
+          />
+          <span className="font-extrabold text-base tracking-tight text-base-content">
+            Advers Media Operations
+          </span>
         </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="btn btn-square btn-ghost btn-sm text-base-content"
+            aria-label="Toggle menu"
           >
             {mobileOpen ? <X className="w-5 h-5" /> : <SlidersHorizontal className="w-5 h-5" />}
           </button>
@@ -84,21 +86,21 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="p-6 space-y-6 overflow-y-auto">
+        <div className="p-5 space-y-6 overflow-y-auto">
           {/* Logo & Brand Header */}
           <div className="flex items-center justify-between">
             <Link href="/admin" className="flex items-center gap-2.5 group">
               <img
                 src="/logo.png"
                 alt="Advers Logo"
-                className="h-8 w-auto object-contain group-hover:scale-105 transition-transform"
+                className="h-8 w-auto object-contain group-hover:scale-105 transition-transform drop-shadow-sm"
               />
               <div>
-                <span className="text-xl font-extrabold tracking-tight text-base-content block leading-tight">
-                  Advers
+                <span className="text-lg font-extrabold tracking-tight text-base-content block leading-tight">
+                  ADVERS
                 </span>
                 <span className="text-[10px] font-bold text-primary uppercase tracking-wider block">
-                  Staff Backoffice
+                  Media Operations Desk
                 </span>
               </div>
             </Link>
@@ -117,61 +119,46 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 AD
               </div>
               <div className="truncate">
-                <div className="text-xs font-bold text-base-content truncate">Advers Admin</div>
-                <div className="text-[10px] text-base-content/60 truncate">admin@advers.ng</div>
+                <div className="text-xs font-bold text-base-content truncate">
+                  Chief Media Controller
+                </div>
+                <div className="text-[10px] text-base-content/60">
+                  Broadcast & DOOH Staff
+                </div>
               </div>
             </div>
-            <span className="badge badge-primary badge-xs text-[9px] font-bold shrink-0">
-              ADMIN
-            </span>
+            <span className="w-2 h-2 rounded-full bg-success ring-4 ring-success/20 shrink-0" />
           </div>
 
-          {/* Navigation Links */}
-          <nav className="space-y-1">
+          {/* Nav List */}
+          <div className="space-y-1">
+            <div className="text-[10px] font-bold text-base-content/50 uppercase tracking-wider px-3 mb-2">
+              Operations Control
+            </div>
             {navigation.map((item) => {
-              const isActive = pathname === item.href;
-              const IconComponent = item.icon;
-
-              if (item.disabled) {
-                return (
-                  <div
-                    key={item.name}
-                    className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-base-content/40 cursor-not-allowed opacity-60 select-none"
-                  >
-                    <div className="flex items-center gap-3">
-                      <IconComponent className="w-4 h-4 shrink-0" />
-                      <span>{item.name}</span>
-                    </div>
-                    {item.badge && (
-                      <span className="badge badge-ghost text-[9px] font-bold py-0.5 px-1.5">
-                        {item.badge}
-                      </span>
-                    )}
-                  </div>
-                );
-              }
-
+              const Icon = item.icon;
+              const active = pathname === item.href;
               return (
                 <Link
-                  key={item.name}
+                  key={item.href}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all duration-200 ${
-                    isActive
-                      ? "bg-primary text-primary-content shadow-sm"
-                      : "text-base-content/75 hover:bg-base-300/60 hover:text-base-content"
+                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl font-medium text-xs transition-all ${
+                    active
+                      ? "bg-primary text-primary-content font-bold shadow-md"
+                      : "text-base-content/70 hover:bg-base-100 hover:text-base-content"
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <IconComponent className="w-4 h-4 shrink-0" />
+                  <div className="flex items-center gap-2.5">
+                    <Icon className="w-4 h-4 shrink-0" />
                     <span>{item.name}</span>
                   </div>
                   {item.badge && (
                     <span
-                      className={`badge text-[10px] font-extrabold py-0.5 px-1.5 border-none ${
-                        isActive
+                      className={`badge badge-xs font-bold ${
+                        active
                           ? "bg-white text-primary"
-                          : "bg-primary/15 text-primary"
+                          : "badge-warning badge-soft"
                       }`}
                     >
                       {item.badge}
@@ -180,87 +167,59 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 </Link>
               );
             })}
-          </nav>
+          </div>
         </div>
 
-        {/* Sidebar Footer Actions */}
-        <div className="p-4 border-t border-base-200 space-y-2">
-          <Link
-            href="/portal/dashboard"
-            className="flex items-center justify-between w-full px-3.5 py-2 rounded-xl text-xs font-bold text-base-content/70 hover:bg-base-300 hover:text-base-content transition-colors"
-          >
-            <span className="flex items-center gap-2">
-              <ExternalLink className="w-4 h-4 text-primary" />
-              <span>Go to Client View</span>
-            </span>
-            <ChevronRight className="w-3.5 h-3.5 text-base-content/40" />
-          </Link>
+        {/* Sidebar Footer */}
+        <div className="p-5 border-t border-base-300/50 space-y-3">
+          <div className="flex items-center justify-between text-xs text-base-content/60">
+            <span>Client View</span>
+            <Link
+              href="/portal/dashboard"
+              className="text-primary font-bold hover:underline"
+            >
+              Open Portal →
+            </Link>
+          </div>
 
-          <Link
-            href="/login"
-            className="flex items-center gap-2 w-full px-3.5 py-2 rounded-xl text-xs font-bold text-error hover:bg-error/10 transition-colors"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Sign Out</span>
-          </Link>
+          <div className="flex items-center justify-between pt-1">
+            <span className="text-[10px] text-base-content/40 font-mono">
+              ADVERS BACKOFFICE
+            </span>
+            <ThemeToggle />
+          </div>
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-base-100 pb-20 lg:pb-0">
-        {/* Top Header Bar for Desktop */}
-        <header className="hidden lg:flex items-center justify-between px-8 py-4 bg-base-100 border-b border-base-200 sticky top-0 z-30">
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-bold text-base-content/50 uppercase tracking-wider">
-              Staff Backoffice Portal
-            </span>
-            <span className="text-base-content/30">•</span>
-            <div className="flex items-center gap-1.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-2.5 py-1 rounded-full text-xs font-bold">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>System Operational</span>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <ThemeToggle />
-            <Link
-              href="/portal/dashboard"
-              className="btn btn-outline border-base-300 text-xs font-bold rounded-xl h-9 min-h-0 px-3.5 gap-1.5"
-            >
-              <span>Client View</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-        </header>
-
-        {/* Dynamic Page Content */}
-        <main className="flex-1 p-4 sm:p-8 w-full">{children}</main>
+      {/* Main Backoffice Area */}
+      <div className="flex-1 flex flex-col min-w-0 pb-20 lg:pb-0">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1440px] w-full mx-auto">
+          {children}
+        </main>
       </div>
 
-      {/* Mobile Bottom Dock Navigation Bar - Native App Vibe */}
-      <div className="dock dock-lg lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-base-100/95 backdrop-blur-2xl border-t border-base-200 shadow-2xl">
-        {mobileDockTabs.map((item) => {
-          const Icon = item.icon;
-          const active = pathname === item.href;
+      {/* Mobile Admin Bottom Dock (< lg) */}
+      <nav
+        aria-label="Admin Navigation"
+        className="dock dock-md lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-base-100/95 backdrop-blur-xl border-t border-base-200 shadow-2xl py-1 pb-[max(6px,env(safe-area-inset-bottom))]"
+      >
+        {mobileDockTabs.map((tab) => {
+          const Icon = tab.icon;
+          const active = pathname === tab.href;
           return (
             <Link
-              key={item.href}
-              href={item.href}
-              className={`dock-item ${active ? "dock-active text-primary" : "text-base-content/60"}`}
+              key={tab.name}
+              href={tab.href}
+              className={`flex flex-col items-center justify-center ${
+                active ? "dock-active text-primary font-bold" : "text-base-content/60"
+              }`}
             >
               <Icon className="w-5 h-5" />
-              <span className="dock-label text-[11px] font-semibold">{item.name}</span>
+              <span className="dock-label text-[10px]">{tab.name}</span>
             </Link>
           );
         })}
-        <button
-          onClick={() => setMobileOpen(!mobileOpen)}
-          className="dock-item text-base-content/60"
-        >
-          <Menu className="w-5 h-5" />
-          <span className="dock-label text-[11px] font-semibold">More</span>
-        </button>
-      </div>
+      </nav>
     </div>
   );
 }

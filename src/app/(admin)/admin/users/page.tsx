@@ -14,6 +14,8 @@ import {
 import { requireStaff } from "@/lib/auth";
 import { getUsersList } from "@/lib/kpi";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminUsersPage({
   searchParams,
 }: {

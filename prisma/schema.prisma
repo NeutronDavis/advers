@@ -115,6 +115,8 @@ model User {
   clientId           String?
   client             Client?       @relation(fields: [clientId], references: [id], onDelete: SetNull)
   invoices           Invoice[]
+  campaigns          Campaign[]
+  wallet             Wallet?
   activityLogs       ActivityLog[]
   auditLogs          AuditLog[]    @relation("AuditActor")
   createdAt          DateTime      @default(now())
@@ -134,6 +136,7 @@ model Client {
   notes        String?       @db.Text
   users        User[]
   engagements  Engagement[]
+  campaigns    Campaign[]
   invitations  Invitation[]
   invoices     Invoice[]
   quotes       Quote[]
@@ -356,3 +359,194 @@ model AuditLog {
   @@index([actorId])
   @@index([createdAt])
 }
+
+// ==========================================
+// ADVERS MULTI-CHANNEL ADVERTISING PLATFORM
+// ==========================================
+
+enum ChannelType {
+  DIGITAL_BILLBOARD
+  STATIC_BILLBOARD
+  FM_RADIO
+  TELEVISION
+  NEWSPAPER
+  PODCAST
+  ADBOOSTERS
+  INFLUENCER
+}
+
+enum CampaignStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  SCHEDULED
+  ACTIVE
+  COMPLETED
+  REVISION_REQUESTED
+  CANCELLED
+}
+
+model Campaign {
+  id                 String              @id @default(cuid())
+  campaignNumber     String              @unique
+  name               String
+  channel            ChannelType
+  status             CampaignStatus      @default(PENDING_REVIEW)
+  objective          String
+  targetLocation     String
+  budget             Int                 // in Naira (₦)
+  duration           String              // e.g. "2 weeks"
+  startDate          DateTime?
+  endDate            DateTime?
+  creativeAssetUrl   String?
+  creativeAssetType  String?             // e.g. "MP4 Video 1080x1920"
+  arconCode          String?             // ARCON approval number
+  complianceNotes    String?             @db.Text
+  channelConfigJson  String?             @db.Text
+  userId             String
+  user               User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientId           String?
+  client             Client?             @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  inventoryId        String?
+  inventory          MediaInventory?     @relation(fields: [inventoryId], references: [id], onDelete: SetNull)
+  proofs             ProofOfPerformance[]
+  boosterLinks       BoosterLink[]
+  settlements        MediaSettlement[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@index([userId])
+  @@index([clientId])
+  @@index([status])
+  @@index([channel])
+  @@index([createdAt])
+}
+
+model MediaInventory {
+  id              String       @id @default(cuid())
+  inventoryCode   String       @unique
+  name            String
+  channel         ChannelType
+  city            String
+  state           String
+  locationDetails String
+  screenSpecs     String?
+  loopCapacity    String?      // e.g. "12 slots (15s spot)"
+  availableSlots  Int          @default(1)
+  ratePerUnit     Int          // in Naira (₦)
+  unitType        String       // "per_day", "per_spot_30s", "per_issue", "per_episode"
+  vendorName      String
+  vendorContact   String?
+  status          String       @default("OPERATIONAL")
+  campaigns       Campaign[]
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([channel])
+  @@index([city])
+  @@index([status])
+}
+
+model ProofOfPerformance {
+  id                 String    @id @default(cuid())
+  proofCode          String    @unique
+  campaignId         String
+  campaign           Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  type               String    // "DAY_PHOTO", "NIGHT_PHOTO", "BROADCAST_AFFIDAVIT", "TEARSHEET"
+  fileUrl            String
+  thumbnailUrl       String?
+  caption            String?
+  broadcastTimestamp DateTime?
+  verifiedBy         String
+  verifiedAt         DateTime  @default(now())
+  createdAt          DateTime  @default(now())
+
+  @@index([campaignId])
+}
+
+model AdBooster {
+  id                    String        @id @default(cuid())
+  userId                String?
+  name                  String
+  handle                String
+  phone                 String
+  networkType           String        // "WhatsApp & Telegram", "Instagram", "X"
+  audienceReach         Int           @default(0)
+  bankName              String?
+  bankAccountNumber     String?
+  bankAccountName       String?
+  totalEarnedCommission Int           @default(0)
+  fraudRisk             String        @default("LOW") // "LOW", "MEDIUM", "CRITICAL_BOT"
+  status                String        @default("ACTIVE")
+  links                 BoosterLink[]
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  @@index([status])
+}
+
+model BoosterLink {
+  id                 String    @id @default(cuid())
+  code               String    @unique
+  campaignId         String
+  campaign           Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  boosterId          String
+  booster            AdBooster @relation(fields: [boosterId], references: [id], onDelete: Cascade)
+  clicksCount        Int       @default(0)
+  sharesCount        Int       @default(0)
+  conversionsCount   Int       @default(0)
+  commissionAccrued  Int       @default(0)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([campaignId])
+  @@index([boosterId])
+}
+
+model MediaSettlement {
+  id               String    @id @default(cuid())
+  settlementNumber String    @unique
+  campaignId       String
+  campaign         Campaign  @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  vendorName       String
+  grossAmount      Int       // Total client budget
+  vendorPayout     Int       // Amount paid to TV/Radio/Screen owner
+  adversFee        Int       // Advers agency fee
+  status           String    @default("READY_FOR_PAYOUT") // "LOCKED_IN_ESCROW", "READY_FOR_PAYOUT", "SETTLED"
+  settledAt        DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([campaignId])
+  @@index([status])
+}
+
+model Wallet {
+  id               String              @id @default(cuid())
+  userId           String              @unique
+  user             User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  availableBalance Int                 @default(0)
+  escrowBalance    Int                 @default(0)
+  totalSpent       Int                 @default(0)
+  transactions     WalletTransaction[]
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+
+  @@index([userId])
+}
+
+model WalletTransaction {
+  id          String   @id @default(cuid())
+  walletId    String
+  wallet      Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  type        String   // "DEPOSIT", "ESCROW_LOCK", "ESCROW_RELEASE", "REFUND"
+  amount      Int      // in Naira (₦)
+  reference   String   @unique
+  description String
+  status      String   @default("SUCCESS")
+  createdAt   DateTime @default(now())
+
+  @@index([walletId])
+  @@index([createdAt])
+}
+

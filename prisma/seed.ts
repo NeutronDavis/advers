@@ -1,73 +1,75 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, ChannelType, CampaignStatus } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🌱 Seeding comprehensive Advers database for Admin Dashboard...");
+  console.log("🌱 Seeding realistic ADVERS Multi-Channel Advertising Database...");
 
   const passwordHash = await bcrypt.hash("password123", 10);
   const now = new Date();
   const daysAgo = (d: number) => new Date(now.getTime() - d * 24 * 60 * 60 * 1000);
   const daysAhead = (d: number) => new Date(now.getTime() + d * 24 * 60 * 60 * 1000);
 
-  // 1. Create Demo Client Organizations
+  // 1. Core Client Organizations
+  console.log("🏢 Seeding client organizations...");
   const clientAdebayo = await prisma.client.upsert({
     where: { id: "client-adebayo-01" },
     update: {},
     create: {
       id: "client-adebayo-01",
-      name: "Adebayo Holdings",
-      industry: "Real Estate & Logistics",
-      address: "Victoria Island, Lagos, Nigeria",
-      notes: "VIP Client for Look Professional Package & Billboard reservation",
+      name: "Adebayo Holdings Limited",
+      industry: "Real Estate, Consumer Goods & Logistics",
+      address: "14 Ahmadu Bello Way, Victoria Island, Lagos & GRA, Port Harcourt",
+      notes: "Key enterprise advertiser across DOOH billboards and FM radio channels.",
+      createdAt: daysAgo(90),
+    },
+  });
+
+  const clientZinox = await prisma.client.upsert({
+    where: { id: "client-zinox-02" },
+    update: {},
+    create: {
+      id: "client-zinox-02",
+      name: "Zinox Retail Group",
+      industry: "Retail & Electronics",
+      address: "Trans-Amadi Industrial Layout, Port Harcourt, Rivers State",
+      notes: "Active advertiser focusing on radio drive-time promotions and AdBoosters crowd sharing.",
       createdAt: daysAgo(60),
     },
   });
 
-  const clientLekki = await prisma.client.upsert({
-    where: { id: "client-lekki-02" },
+  const clientGreenEnergy = await prisma.client.upsert({
+    where: { id: "client-green-03" },
     update: {},
     create: {
-      id: "client-lekki-02",
-      name: "Lekki Retail Hub",
-      industry: "Retail & Fashion",
-      address: "Admiralty Way, Lekki Phase 1, Lagos",
-      notes: "Digital package + VI LED screen slot reservation",
-      createdAt: daysAgo(35),
+      id: "client-green-03",
+      name: "GreenEnergy Nigeria",
+      industry: "Renewable Energy & Solar Power",
+      address: "Central Business District, Abuja, FCT",
+      notes: "Nationwide TV broadcast advertiser and digital press announcements.",
+      createdAt: daysAgo(40),
     },
   });
 
-  const clientEko = await prisma.client.upsert({
-    where: { id: "client-eko-03" },
-    update: {},
-    create: {
-      id: "client-eko-03",
-      name: "Eko FinTech Solutions",
-      industry: "Financial Technology",
-      address: "Marina, Lagos Island, Lagos",
-      notes: "Onboarding progress currently stalled awaiting brand asset upload",
-      createdAt: daysAgo(20),
-    },
-  });
-
-  // 2. Create Users across all roles and statuses
+  // 2. Platform Users
+  console.log("👤 Seeding platform users...");
   const adminUser = await prisma.user.upsert({
     where: { email: "admin@advers.ng" },
     update: { passwordHash, status: "ACTIVE" },
     create: {
       id: "usr-admin-01",
       email: "admin@advers.ng",
-      name: "Advers Admin",
-      phone: "+234 800 ADVERS",
+      name: "Advers Chief Media Controller",
+      phone: "+234 800 238377",
       passwordHash,
       role: "ADMIN",
       orgRole: "OWNER",
       status: "ACTIVE",
       source: "INTERNAL",
-      profileCompleteAt: daysAgo(100),
+      profileCompleteAt: daysAgo(120),
       lastLoginAt: daysAgo(0.1),
-      createdAt: daysAgo(100),
+      createdAt: daysAgo(120),
     },
   });
 
@@ -77,16 +79,16 @@ async function main() {
     create: {
       id: "usr-staff-01",
       email: "staff@advers.ng",
-      name: "Bisi Akande (Staff)",
+      name: "Bisi Akande (Traffic Lead)",
       phone: "+234 802 111 2222",
       passwordHash,
       role: "STAFF",
       orgRole: "MEMBER",
       status: "ACTIVE",
       source: "INTERNAL",
-      profileCompleteAt: daysAgo(45),
-      lastLoginAt: daysAgo(0.5),
-      createdAt: daysAgo(50),
+      profileCompleteAt: daysAgo(60),
+      lastLoginAt: daysAgo(0.3),
+      createdAt: daysAgo(60),
     },
   });
 
@@ -102,527 +104,454 @@ async function main() {
       role: "CLIENT",
       orgRole: "OWNER",
       status: "ACTIVE",
-      source: "GOOGLE_ADS",
-      utmSource: "google",
-      utmCampaign: "ooh_search_lagos",
       clientId: clientAdebayo.id,
-      profileCompleteAt: daysAgo(55),
-      lastLoginAt: daysAgo(1),
-      createdAt: daysAgo(60),
+      source: "ORGANIC",
+      profileCompleteAt: daysAgo(90),
+      lastLoginAt: daysAgo(0.2),
+      createdAt: daysAgo(90),
     },
   });
 
-  const clientUser2 = await prisma.user.upsert({
-    where: { email: "chidi@lekkiretail.com" },
-    update: { passwordHash, clientId: clientLekki.id, status: "ACTIVE" },
+  // 3. User Media Wallet & Transactions
+  console.log("💳 Seeding advertiser media wallet...");
+  const clientWallet = await prisma.wallet.upsert({
+    where: { userId: clientUser.id },
+    update: {
+      availableBalance: 485000,
+      escrowBalance: 225000,
+      totalSpent: 710000,
+    },
     create: {
-      id: "usr-client-02",
-      email: "chidi@lekkiretail.com",
-      name: "Chidi Nwosu",
-      phone: "+234 802 987 6543",
-      passwordHash,
-      role: "CLIENT",
-      orgRole: "OWNER",
-      status: "ACTIVE",
-      source: "LINKEDIN",
-      utmSource: "linkedin",
-      utmCampaign: "retail_billboard_promo",
-      clientId: clientLekki.id,
-      profileCompleteAt: daysAgo(30),
-      lastLoginAt: daysAgo(2),
-      createdAt: daysAgo(35),
+      id: "wallet-olumide-01",
+      userId: clientUser.id,
+      availableBalance: 485000,
+      escrowBalance: 225000,
+      totalSpent: 710000,
+      transactions: {
+        create: [
+          {
+            reference: "PAY-DEP-99201",
+            type: "DEPOSIT",
+            amount: 500000,
+            description: "Direct Bank Card Top-Up via Paystack Checkout",
+            status: "SUCCESS",
+            createdAt: daysAgo(14),
+          },
+          {
+            reference: "ESC-LOCK-8841",
+            type: "ESCROW_LOCK",
+            amount: 150000,
+            description: "Escrow reservation for Summer Product Launch (Port Harcourt DOOH)",
+            status: "SUCCESS",
+            createdAt: daysAgo(7),
+          },
+          {
+            reference: "ESC-LOCK-8840",
+            type: "ESCROW_LOCK",
+            amount: 75000,
+            description: "Escrow reservation for Brand Awareness Drive (Cool FM Rivers)",
+            status: "SUCCESS",
+            createdAt: daysAgo(3),
+          },
+        ],
+      },
     },
   });
 
-  const clientUser3 = await prisma.user.upsert({
-    where: { email: "fatima@ekofintech.ng" },
-    update: { passwordHash, clientId: clientEko.id, status: "PROSPECT" },
+  // 4. Media Inventory Directory
+  console.log("📺 Seeding media inventory directory...");
+  const invLekki = await prisma.mediaInventory.upsert({
+    where: { inventoryCode: "INV-DOOH-01" },
+    update: {},
     create: {
-      id: "usr-client-03",
-      email: "fatima@ekofintech.ng",
-      name: "Fatima Bello",
-      phone: "+234 805 555 7777",
-      passwordHash,
-      role: "CLIENT",
-      orgRole: "OWNER",
-      status: "PROSPECT",
-      source: "DIRECT",
-      clientId: clientEko.id,
-      createdAt: daysAgo(20),
+      inventoryCode: "INV-DOOH-01",
+      name: "Lekki Toll Gate Phase 1 Mega Screen",
+      channel: ChannelType.DIGITAL_BILLBOARD,
+      city: "Lagos",
+      state: "Lagos State",
+      locationDetails: "Lekki-Epe Expressway corridor, directly opposite Phase 1 Toll Gate",
+      screenSpecs: "18m x 6m (1080x1920 portrait) High-Brightness LED (6500 nits)",
+      loopCapacity: "12 commercial slots (15s spot in 180s cycle)",
+      availableSlots: 4,
+      ratePerUnit: 25000,
+      unitType: "per_day",
+      vendorName: "Elevate Media Network Limited",
+      vendorContact: "traffic@elevatemedia.ng / +234 1 234 5678",
+      status: "OPERATIONAL",
     },
   });
 
-  const clientUser4 = await prisma.user.upsert({
-    where: { email: "tunde@zariaagro.ng" },
-    update: { passwordHash, status: "UNVERIFIED" },
+  const invPortHarcourt = await prisma.mediaInventory.upsert({
+    where: { inventoryCode: "INV-DOOH-02" },
+    update: {},
     create: {
-      id: "usr-client-04",
-      email: "tunde@zariaagro.ng",
-      name: "Tunde Bakare",
-      phone: "+234 807 888 9999",
-      passwordHash,
-      role: "CLIENT",
-      orgRole: "OWNER",
-      status: "UNVERIFIED",
-      source: "WEBSITE",
+      inventoryCode: "INV-DOOH-02",
+      name: "Peter Odili Road Trans-Amadi Hub",
+      channel: ChannelType.DIGITAL_BILLBOARD,
+      city: "Port Harcourt",
+      state: "Rivers State",
+      locationDetails: "Peter Odili Roundabout intersection connecting Woji & Trans-Amadi",
+      screenSpecs: "12m x 4m (1920x1080 landscape) SMD LED Screen",
+      loopCapacity: "10 commercial slots (15s spot)",
+      availableSlots: 2,
+      ratePerUnit: 18000,
+      unitType: "per_day",
+      vendorName: "Rivers Outdoor Advertising Ltd",
+      vendorContact: "ops@riversoutdoor.ng",
+      status: "OPERATIONAL",
+    },
+  });
+
+  const invCoolFm = await prisma.mediaInventory.upsert({
+    where: { inventoryCode: "INV-RAD-01" },
+    update: {},
+    create: {
+      inventoryCode: "INV-RAD-01",
+      name: "Cool FM 96.9 & Nigeria Info 99.3 Network",
+      channel: ChannelType.FM_RADIO,
+      city: "Port Harcourt / Lagos",
+      state: "Rivers & Lagos",
+      locationDetails: "Broadcasting across the Niger Delta and Greater Lagos commercial zones",
+      screenSpecs: "Broadcast Audio (44.1kHz / 320kbps stereo) or Live OAP Mention",
+      loopCapacity: "30 commercial breaks daily (Morning, Afternoon, Evening drive)",
+      availableSlots: 8,
+      ratePerUnit: 15000,
+      unitType: "per_spot_30s",
+      vendorName: "AIM Group Broadcasters",
+      vendorContact: "bookings@coolfm.ng",
+      status: "OPERATIONAL",
+    },
+  });
+
+  const invChannelsTv = await prisma.mediaInventory.upsert({
+    where: { inventoryCode: "INV-TV-01" },
+    update: {},
+    create: {
+      inventoryCode: "INV-TV-01",
+      name: "Channels Television Prime Evening News",
+      channel: ChannelType.TELEVISION,
+      city: "Nationwide",
+      state: "National Terrestrial & DStv Channel 418",
+      locationDetails: "Prime news broadcast block (7:00 PM – 10:00 PM WAT)",
+      screenSpecs: "Full HD Broadcast Master (ProRes 422 / MP4 1080p)",
+      loopCapacity: "12 commercial breaks per news hour",
+      availableSlots: 3,
+      ratePerUnit: 95000,
+      unitType: "per_spot_30s",
+      vendorName: "Channels Media Group",
+      vendorContact: "commercial@channelstv.com",
+      status: "OPERATIONAL",
+    },
+  });
+
+  const invPunch = await prisma.mediaInventory.upsert({
+    where: { inventoryCode: "INV-PRINT-01" },
+    update: {},
+    create: {
+      inventoryCode: "INV-PRINT-01",
+      name: "The Punch National Newspaper",
+      channel: ChannelType.NEWSPAPER,
+      city: "Nationwide Daily Circulation",
+      state: "All 36 States & FCT",
+      locationDetails: "Distributed in print and online across all state capitals",
+      screenSpecs: "Full Color 300 DPI CMYK PDF (Full page, half page, front strip)",
+      loopCapacity: "Daily Edition",
+      availableSlots: 5,
+      ratePerUnit: 320000,
+      unitType: "per_issue",
+      vendorName: "Punch Nigeria Limited",
+      vendorContact: "advert@punchng.com",
+      status: "OPERATIONAL",
+    },
+  });
+
+  // 5. Campaigns Across Multiple Channels
+  console.log("📢 Seeding multi-channel advertising campaigns...");
+  const camp1 = await prisma.campaign.upsert({
+    where: { campaignNumber: "CAMP-2026-001" },
+    update: {},
+    create: {
+      campaignNumber: "CAMP-2026-001",
+      name: "Summer Product Launch",
+      channel: ChannelType.DIGITAL_BILLBOARD,
+      status: CampaignStatus.ACTIVE,
+      objective: "Brand awareness & foot traffic",
+      targetLocation: "Port Harcourt (GRA Junction & Peter Odili)",
+      budget: 150000,
+      duration: "2 weeks",
+      startDate: daysAgo(5),
+      endDate: daysAhead(9),
+      creativeAssetUrl: "https://assets.advers.ng/creatives/summer-launch-ph.mp4",
+      creativeAssetType: "MP4 Video (1080x1920, 15s, 60fps)",
+      arconCode: "ARCON/RIV/2026/041",
+      complianceNotes: "Creative validated for visual clarity and ARCON registration seal included.",
+      userId: clientUser.id,
+      clientId: clientAdebayo.id,
+      inventoryId: invPortHarcourt.id,
+      createdAt: daysAgo(7),
+    },
+  });
+
+  const camp2 = await prisma.campaign.upsert({
+    where: { campaignNumber: "CAMP-2026-002" },
+    update: {},
+    create: {
+      campaignNumber: "CAMP-2026-002",
+      name: "Brand Awareness Drive",
+      channel: ChannelType.FM_RADIO,
+      status: CampaignStatus.APPROVED,
+      objective: "Drive store visits and customer phone enquiries",
+      targetLocation: "Rivers State (Cool FM & Nigeria Info)",
+      budget: 75000,
+      duration: "1 week",
+      startDate: daysAgo(1),
+      endDate: daysAhead(6),
+      creativeAssetUrl: "https://assets.advers.ng/creatives/coolfm-rivers-jingle.wav",
+      creativeAssetType: "Broadcast Audio WAV (44.1kHz, 30s)",
+      arconCode: "ARCON/RAD/2026/119",
+      complianceNotes: "Loudness standard conforming to EBU R128 (-23 LUFS). Approved for broadcast.",
+      userId: clientUser.id,
+      clientId: clientAdebayo.id,
+      inventoryId: invCoolFm.id,
       createdAt: daysAgo(3),
     },
   });
 
-  const deactivatedUser = await prisma.user.upsert({
-    where: { email: "deactivated@advers.ng" },
-    update: { passwordHash, status: "DEACTIVATED" },
-    create: {
-      id: "usr-client-05",
-      email: "deactivated@advers.ng",
-      name: "Former Client User",
-      phone: "+234 800 000 0000",
-      passwordHash,
-      role: "CLIENT",
-      orgRole: "MEMBER",
-      status: "DEACTIVATED",
-      source: "WEBSITE",
-      createdAt: daysAgo(120),
-    },
-  });
-
-  // 3. Create Packages
-  const pkgVisible = await prisma.package.upsert({
-    where: { key: "get-visible" },
+  const camp3 = await prisma.campaign.upsert({
+    where: { campaignNumber: "CAMP-2026-003" },
     update: {},
     create: {
-      id: "pkg-visible",
-      key: "get-visible",
-      name: "Get Visible",
-      tagline: "For individuals and startups getting started",
-      priceMin: 150000,
-      priceMax: 200000,
-      inclusionsJson: JSON.stringify([
-        "1-page custom responsive website",
-        "Custom domain (.ng / .com)",
-        "1 business email account",
-        "WhatsApp contact button & lead capture",
-      ]),
-    },
-  });
-
-  const pkgProfessional = await prisma.package.upsert({
-    where: { key: "look-professional" },
-    update: {},
-    create: {
-      id: "pkg-professional",
-      key: "look-professional",
-      name: "Look Professional",
-      tagline: "For established SMEs and small businesses",
-      priceMin: 250000,
-      priceMax: 350000,
-      inclusionsJson: JSON.stringify([
-        "3–5 page custom website",
-        "Logo suite & brand color guidelines",
-        "Up to 3 business email accounts",
-        "Google Business Profile setup",
-      ]),
-    },
-  });
-
-  const pkgEcosystem = await prisma.package.upsert({
-    where: { key: "ecosystem-growth" },
-    update: {},
-    create: {
-      id: "pkg-ecosystem",
-      key: "ecosystem-growth",
-      name: "Ecosystem Growth",
-      tagline: "Full-stack digital + OOH billboard campaign setup",
-      priceMin: 650000,
-      priceMax: 1200000,
-      inclusionsJson: JSON.stringify([
-        "Multi-page enterprise site + CMS",
-        "4-week Victoria Island LED billboard slot",
-        "Full brand guidelines & social templates",
-        "Real-time analytics dashboard integration",
-      ]),
-    },
-  });
-
-  // 4. Create Engagements
-  const eng1 = await prisma.engagement.upsert({
-    where: { id: "eng-101" },
-    update: {},
-    create: {
-      id: "eng-101",
+      campaignNumber: "CAMP-2026-003",
+      name: "Lekki Toll Mega Display",
+      channel: ChannelType.DIGITAL_BILLBOARD,
+      status: CampaignStatus.ACTIVE,
+      objective: "High-impact luxury brand positioning",
+      targetLocation: "Lagos (Lekki Toll Gate Phase 1)",
+      budget: 350000,
+      duration: "1 month",
+      startDate: daysAgo(12),
+      endDate: daysAhead(18),
+      creativeAssetUrl: "https://assets.advers.ng/creatives/lekki-toll-luxury.mp4",
+      creativeAssetType: "4K Video Master (1080x1920, 15s loop)",
+      arconCode: "ARCON/LAG/2026/891",
+      complianceNotes: "Night-time luminance calibration verified.",
+      userId: clientUser.id,
       clientId: clientAdebayo.id,
-      packageId: pkgProfessional.id,
-      type: "DIGITAL_PACKAGE",
-      status: "ONBOARDING_IN_PROGRESS",
-      onboardingProgress: 75,
-      waitingOnClient: false,
-      createdAt: daysAgo(50),
-    },
-  });
-
-  const eng2 = await prisma.engagement.upsert({
-    where: { id: "eng-102" },
-    update: {},
-    create: {
-      id: "eng-102",
-      clientId: clientLekki.id,
-      packageId: pkgEcosystem.id,
-      type: "ECOSYSTEM",
-      status: "IN_PRODUCTION",
-      onboardingProgress: 40,
-      waitingOnClient: true, // waiting > 5 days!
-      createdAt: daysAgo(30),
-    },
-  });
-
-  const eng3 = await prisma.engagement.upsert({
-    where: { id: "eng-103" },
-    update: {},
-    create: {
-      id: "eng-103",
-      clientId: clientEko.id,
-      packageId: pkgVisible.id,
-      type: "DIGITAL_PACKAGE",
-      status: "PROSPECT",
-      onboardingProgress: 20, // stuck < 50% for 7+ days!
-      waitingOnClient: true,
+      inventoryId: invLekki.id,
       createdAt: daysAgo(14),
     },
   });
 
-  // 5. Create Leads
-  const leadsData = [
-    {
-      id: "lead-01",
-      name: "Amaka Eze",
-      email: "amaka@ezelogistics.com",
-      phone: "+234 803 444 5555",
-      company: "Eze Freight",
-      source: "GOOGLE_ADS",
-      utmSource: "google",
-      utmCampaign: "lagos_logistics_ads",
-      packageInterest: "Look Professional",
-      budgetRange: "₦300,000",
-      status: "NEW",
-      createdAt: daysAgo(2),
-    },
-    {
-      id: "lead-02",
-      name: "David Adeleke",
-      email: "david@30bg.ng",
-      phone: "+234 809 300 0000",
-      company: "30BG Entertainment",
-      source: "LINKEDIN",
-      utmSource: "linkedin",
-      utmCampaign: "billboard_vi",
-      packageInterest: "Ecosystem Growth",
-      budgetRange: "₦1,500,000",
-      status: "QUALIFIED",
-      createdAt: daysAgo(8),
-    },
-    {
-      id: "lead-03",
-      name: "Kemi Balogun",
-      email: "kemi@balogunlaw.ng",
-      phone: "+234 802 777 8888",
-      company: "Balogun & Co Legal",
-      source: "WEBSITE",
-      packageInterest: "Get Visible",
-      budgetRange: "₦200,000",
-      status: "NEW",
-      createdAt: daysAgo(1),
-    },
-  ];
-
-  for (const l of leadsData) {
-    await prisma.lead.upsert({
-      where: { id: l.id },
-      update: {},
-      create: l,
-    });
-  }
-
-  // 6. Create Feedback & Inquiries (Inbox)
-  await prisma.feedback.upsert({
-    where: { id: "FB-101" },
+  const camp4 = await prisma.campaign.upsert({
+    where: { campaignNumber: "CAMP-2026-004" },
     update: {},
     create: {
-      id: "FB-101",
-      name: "Olumide Adebayo",
-      email: "olumide@adebayoholdings.ng",
-      phone: "+234 803 123 4567",
-      company: "Adebayo Holdings",
-      type: "ENQUIRY",
-      status: "NEW", // NEW > 24h attention item!
-      packageInterest: "Look Professional (₦250k - ₦350k)",
-      message: "Interested in setting up 3-5 page custom website and business email provisioning for our Lagos operations.",
-      createdAt: daysAgo(2), // 48 hours ago
-    },
-  });
-
-  await prisma.feedback.upsert({
-    where: { id: "FB-102" },
-    update: {},
-    create: {
-      id: "FB-102",
-      name: "Chidi Nwosu",
-      email: "chidi@lekkiretail.com",
-      phone: "+234 802 987 6543",
-      company: "Lekki Retail Hub",
-      type: "BILLBOARD_ENQUIRY",
-      status: "IN_REVIEW",
-      packageInterest: "LED Billboard Slot (Victoria Island)",
-      message: "Looking for 4-week slot reservation on the Victoria Island digital screen.",
-      createdAt: daysAgo(1),
-    },
-  });
-
-  await prisma.feedback.upsert({
-    where: { id: "FB-103" },
-    update: {},
-    create: {
-      id: "FB-103",
-      name: "Amaka Eze",
-      email: "amaka@ezelogistics.com",
-      company: "Eze Freight",
-      type: "ENQUIRY",
-      status: "NEW", // NEW < 24h
-      packageInterest: "Look Professional",
-      message: "Can we get a quick call to discuss domain transfer and custom email setups?",
-      createdAt: daysAgo(0.2),
-    },
-  });
-
-  // 7. Create Quotes
-  await prisma.quote.upsert({
-    where: { quoteNumber: "QUO-2026-001" },
-    update: {},
-    create: {
-      id: "quote-01",
-      quoteNumber: "QUO-2026-001",
-      leadId: "lead-01",
-      title: "Custom Web Suite & Email Provisioning",
-      amount: 320000,
-      status: "SENT", // Unopened > 3 days!
-      sentAt: daysAgo(4),
-      expiresAt: daysAhead(10),
-      createdAt: daysAgo(4),
-    },
-  });
-
-  await prisma.quote.upsert({
-    where: { quoteNumber: "QUO-2026-002" },
-    update: {},
-    create: {
-      id: "quote-02",
-      quoteNumber: "QUO-2026-002",
-      clientId: clientLekki.id,
-      title: "Victoria Island LED Screen 4-Week Slot",
-      amount: 850000,
-      status: "ACCEPTED",
-      openedAt: daysAgo(12),
-      sentAt: daysAgo(15),
-      expiresAt: daysAhead(15),
-      createdAt: daysAgo(15),
-    },
-  });
-
-  // 8. Create Invoices & Payments
-  const inv1 = await prisma.invoice.upsert({
-    where: { invoiceNumber: "INV-2026-001" },
-    update: {},
-    create: {
-      id: "inv-01",
-      invoiceNumber: "INV-2026-001",
-      clientId: clientAdebayo.id,
-      engagementId: eng1.id,
+      campaignNumber: "CAMP-2026-004",
+      name: "Solar Inverter Product Showcase",
+      channel: ChannelType.TELEVISION,
+      status: CampaignStatus.PENDING_REVIEW,
+      objective: "Nationwide commercial launch & dealer network expansion",
+      targetLocation: "Nationwide (Channels TV)",
+      budget: 750000,
+      duration: "1 week",
+      creativeAssetUrl: "https://assets.advers.ng/creatives/greenenergy-solar.mp4",
+      creativeAssetType: "ProRes 422 (1080p, 45s TVC)",
+      arconCode: "ARCON/NAT/2026/102",
+      complianceNotes: "Submitted for broadcast clearance by GreenEnergy NG.",
       userId: clientUser.id,
-      title: "Look Professional Package Deposit (50%)",
-      amount: 175000,
-      serviceType: "DIGITAL_PACKAGE",
-      status: "PAID",
-      dueDate: daysAgo(20),
-      paidAt: daysAgo(22),
-      createdAt: daysAgo(25),
+      clientId: clientGreenEnergy.id,
+      inventoryId: invChannelsTv.id,
+      createdAt: daysAgo(1),
     },
   });
 
-  await prisma.payment.upsert({
-    where: { reference: "PAY-ADVERS-001" },
+  const camp5 = await prisma.campaign.upsert({
+    where: { campaignNumber: "CAMP-2026-005" },
     update: {},
     create: {
-      id: "pay-01",
-      invoiceId: inv1.id,
-      amount: 175000,
-      paymentMethod: "PAYSTACK",
-      reference: "PAY-ADVERS-001",
-      status: "SUCCESS",
+      campaignNumber: "CAMP-2026-005",
+      name: "Corporate Public Notice & Financial Announcement",
+      channel: ChannelType.NEWSPAPER,
+      status: CampaignStatus.COMPLETED,
+      objective: "Statutory public announcement in national press",
+      targetLocation: "Nationwide Daily Press",
+      budget: 320000,
+      duration: "1 day publication",
+      startDate: daysAgo(20),
+      endDate: daysAgo(20),
+      creativeAssetUrl: "https://assets.advers.ng/creatives/public-notice-punch.pdf",
+      creativeAssetType: "High-Res PDF CMYK (300 DPI, Page 8 Strip)",
+      arconCode: "EXEMPT-PUBLIC-NOTICE",
+      complianceNotes: "Official corporate resolution verified.",
+      userId: clientUser.id,
+      clientId: clientAdebayo.id,
+      inventoryId: invPunch.id,
       createdAt: daysAgo(22),
     },
   });
 
-  const inv2 = await prisma.invoice.upsert({
-    where: { invoiceNumber: "INV-2026-002" },
+  // 6. Proof of Performance (PoP) Records
+  console.log("📸 Seeding verified proof of performance records...");
+  await prisma.proofOfPerformance.upsert({
+    where: { proofCode: "POP-901" },
     update: {},
     create: {
-      id: "inv-02",
-      invoiceNumber: "INV-2026-002",
-      clientId: clientLekki.id,
-      engagementId: eng2.id,
-      userId: clientUser2.id,
-      title: "Ecosystem Growth Package & Screen Deposit",
-      amount: 450000,
-      serviceType: "ECOSYSTEM",
-      status: "PAID",
-      dueDate: daysAgo(10),
-      paidAt: daysAgo(12),
-      createdAt: daysAgo(15),
+      proofCode: "POP-901",
+      campaignId: camp1.id,
+      type: "DAY_PHOTO",
+      fileUrl: "https://assets.advers.ng/proofs/ph-gra-daytime-playback.jpg",
+      caption: "Day-time loop display confirmed on Peter Odili LED Screen with clear daylight visibility.",
+      broadcastTimestamp: daysAgo(4),
+      verifiedBy: "Samuel (Advers Port Harcourt Field Officer)",
+      verifiedAt: daysAgo(4),
     },
   });
 
-  await prisma.payment.upsert({
-    where: { reference: "PAY-ADVERS-002" },
+  await prisma.proofOfPerformance.upsert({
+    where: { proofCode: "POP-902" },
     update: {},
     create: {
-      id: "pay-02",
-      invoiceId: inv2.id,
-      amount: 450000,
-      paymentMethod: "PAYSTACK",
-      reference: "PAY-ADVERS-002",
-      status: "SUCCESS",
-      createdAt: daysAgo(12),
+      proofCode: "POP-902",
+      campaignId: camp2.id,
+      type: "BROADCAST_AFFIDAVIT",
+      fileUrl: "https://assets.advers.ng/proofs/coolfm-transmission-certificate.pdf",
+      caption: "Signed Station Broadcast Affidavit for morning drive-time airing (7:45 AM & 8:30 AM).",
+      broadcastTimestamp: daysAgo(1),
+      verifiedBy: "AIM Group Traffic Management Dept",
+      verifiedAt: daysAgo(1),
     },
   });
 
-  // Overdue Invoice (Needs Attention!)
-  await prisma.invoice.upsert({
-    where: { invoiceNumber: "INV-2026-003" },
+  await prisma.proofOfPerformance.upsert({
+    where: { proofCode: "POP-903" },
     update: {},
     create: {
-      id: "inv-03",
-      invoiceNumber: "INV-2026-003",
-      clientId: clientEko.id,
-      engagementId: eng3.id,
-      userId: clientUser3.id,
-      title: "Get Visible Web Suite Final Milestone",
-      amount: 150000,
-      serviceType: "DIGITAL_PACKAGE",
-      status: "OVERDUE",
-      dueDate: daysAgo(8), // Overdue by 8 days
-      createdAt: daysAgo(25),
+      proofCode: "POP-903",
+      campaignId: camp3.id,
+      type: "NIGHT_PHOTO",
+      fileUrl: "https://assets.advers.ng/proofs/lekki-toll-night-illumination.jpg",
+      caption: "Night-time illuminated loop playback footage recorded at Lekki Toll Plaza Phase 1.",
+      broadcastTimestamp: daysAgo(10),
+      verifiedBy: "Lagos Field Surveillance Patrol",
+      verifiedAt: daysAgo(10),
     },
   });
 
-  // 9. Create Renewals
-  await prisma.renewal.upsert({
-    where: { id: "ren-01" },
+  // 7. AdBoosters Crowd Referral Network
+  console.log("✦ Seeding AdBoosters promoters and tracking links...");
+  const boosterChuks = await prisma.adBooster.upsert({
+    where: { id: "booster-chuks-01" },
     update: {},
     create: {
-      id: "ren-01",
-      clientId: clientAdebayo.id,
-      engagementId: eng1.id,
-      title: "Annual Domain & Business Email Renewal (Adebayo Holdings)",
-      amount: 45000,
-      renewalDate: daysAhead(18), // Due in 18 days
-      status: "UPCOMING",
-      createdAt: daysAgo(50),
+      id: "booster-chuks-01",
+      name: "Chukwudi Eze",
+      handle: "@chuks_hype",
+      phone: "+234 806 555 1234",
+      networkType: "WhatsApp & Telegram (14k Reach)",
+      audienceReach: 14000,
+      bankName: "Access Bank Nigeria",
+      bankAccountNumber: "0123456789",
+      bankAccountName: "Chukwudi Eze",
+      totalEarnedCommission: 32500,
+      fraudRisk: "LOW",
+      status: "ACTIVE",
     },
   });
 
-  await prisma.renewal.upsert({
-    where: { id: "ren-02" },
+  const boosterBlessing = await prisma.adBooster.upsert({
+    where: { id: "booster-blessing-02" },
     update: {},
     create: {
-      id: "ren-02",
-      clientId: clientLekki.id,
-      engagementId: eng2.id,
-      title: "Victoria Island LED Screen Monthly Subscription",
-      amount: 250000,
-      renewalDate: daysAhead(24), // Due in 24 days
-      status: "UPCOMING",
-      createdAt: daysAgo(30),
+      id: "booster-blessing-02",
+      name: "Blessing Johnson",
+      handle: "@blessing_promo",
+      phone: "+234 813 888 4321",
+      networkType: "X & Instagram (22k Reach)",
+      audienceReach: 22000,
+      bankName: "Guaranty Trust Bank (GTBank)",
+      bankAccountNumber: "0987654321",
+      bankAccountName: "Blessing Johnson",
+      totalEarnedCommission: 25900,
+      fraudRisk: "LOW",
+      status: "ACTIVE",
     },
   });
 
-  // 10. Create Activity Logs
-  const activityLogs = [
-    {
-      id: "act-01",
-      userId: clientUser.id,
-      clientId: clientAdebayo.id,
-      action: "USER_SIGNUP",
-      description: "New client registered: Olumide Adebayo (Adebayo Holdings)",
-      createdAt: daysAgo(60),
-    },
-    {
-      id: "act-02",
-      userId: clientUser.id,
-      clientId: clientAdebayo.id,
-      action: "PAYMENT_RECEIVED",
-      description: "Received payment of ₦175,000 via Paystack for INV-2026-001",
-      createdAt: daysAgo(22),
-    },
-    {
-      id: "act-03",
-      userId: clientUser2.id,
-      clientId: clientLekki.id,
-      action: "FILE_UPLOADED",
-      description: "Uploaded high-resolution brand logo & Victoria Island billboard creative",
-      createdAt: daysAgo(5),
-    },
-    {
-      id: "act-04",
-      userId: staffUser.id,
-      action: "STATUS_CHANGED",
-      description: "Staff updated Engagement #eng-101 onboarding status to 75%",
-      createdAt: daysAgo(2),
-    },
-    {
-      id: "act-05",
-      userId: clientUser4.id,
-      action: "USER_SIGNUP",
-      description: "New user registered: Tunde Bakare (tunde@zariaagro.ng)",
-      createdAt: daysAgo(3),
-    },
-  ];
-
-  for (const act of activityLogs) {
-    await prisma.activityLog.upsert({
-      where: { id: act.id },
-      update: {},
-      create: act,
-    });
-  }
-
-  // 11. Create Audit Logs
-  await prisma.auditLog.upsert({
-    where: { id: "audit-01" },
+  // Create trackable booster links for campaigns
+  await prisma.boosterLink.upsert({
+    where: { code: "BOOST-PH-CHUK" },
     update: {},
     create: {
-      id: "audit-01",
-      actorId: adminUser.id,
-      action: "CLIENT_IMPERSONATION",
-      targetType: "User",
-      targetId: clientUser.id,
-      details: "Admin initiated read-only client dashboard impersonation session",
-      createdAt: daysAgo(1),
+      code: "BOOST-PH-CHUK",
+      campaignId: camp1.id,
+      boosterId: boosterChuks.id,
+      clicksCount: 1840,
+      sharesCount: 420,
+      conversionsCount: 48,
+      commissionAccrued: 32500,
     },
   });
 
-  console.log("✅ Database seeding completed successfully!");
-  console.log("--------------------------------------------------");
-  console.log("🔐 ADMIN LOGIN:");
-  console.log("   Email: admin@advers.ng");
-  console.log("   Password: password123");
-  console.log("--------------------------------------------------");
-  console.log("🛡️ STAFF LOGIN:");
-  console.log("   Email: staff@advers.ng");
-  console.log("   Password: password123");
-  console.log("--------------------------------------------------");
-  console.log("👤 CLIENT LOGIN:");
-  console.log("   Email: client@advers.ng");
-  console.log("   Password: password123");
-  console.log("--------------------------------------------------");
+  await prisma.boosterLink.upsert({
+    where: { code: "BOOST-LEKKI-BLES" },
+    update: {},
+    create: {
+      code: "BOOST-LEKKI-BLES",
+      campaignId: camp3.id,
+      boosterId: boosterBlessing.id,
+      clicksCount: 1420,
+      sharesCount: 310,
+      conversionsCount: 36,
+      commissionAccrued: 25900,
+    },
+  });
+
+  // 8. Media Settlements Ledger
+  console.log("🧾 Seeding media partner settlements & fee ledger...");
+  await prisma.mediaSettlement.upsert({
+    where: { settlementNumber: "SET-401" },
+    update: {},
+    create: {
+      settlementNumber: "SET-401",
+      campaignId: camp1.id,
+      vendorName: "Rivers Outdoor Advertising Ltd",
+      grossAmount: 150000,
+      vendorPayout: 110000,
+      adversFee: 40000,
+      status: "READY_FOR_PAYOUT",
+    },
+  });
+
+  await prisma.mediaSettlement.upsert({
+    where: { settlementNumber: "SET-402" },
+    update: {},
+    create: {
+      settlementNumber: "SET-402",
+      campaignId: camp2.id,
+      vendorName: "AIM Group Broadcasters (Cool FM)",
+      grossAmount: 75000,
+      vendorPayout: 55000,
+      adversFee: 20000,
+      status: "READY_FOR_PAYOUT",
+    },
+  });
+
+  await prisma.mediaSettlement.upsert({
+    where: { settlementNumber: "SET-400" },
+    update: {},
+    create: {
+      settlementNumber: "SET-400",
+      campaignId: camp5.id,
+      vendorName: "Punch Nigeria Limited",
+      grossAmount: 320000,
+      vendorPayout: 240000,
+      adversFee: 80000,
+      status: "SETTLED",
+      settledAt: daysAgo(18),
+    },
+  });
+
+  console.log("✅ ADVERS database seeding completed successfully!");
 }
 
 main()

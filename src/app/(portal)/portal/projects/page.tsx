@@ -2,6 +2,8 @@ import React from "react";
 import { prisma } from "@/lib/prisma";
 import ProjectsGrid, { DynamicProjectItem } from "./ProjectsGrid";
 
+export const dynamic = "force-dynamic";
+
 export default async function ClientProjectsPage() {
   // Query active client user & engagements from Prisma DB
   const clientUser = await prisma.user.findFirst({

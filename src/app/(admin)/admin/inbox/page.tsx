@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { requireStaff } from "@/lib/auth";
 import InboxClient, { DatabaseFeedbackDTO } from "./InboxClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminInboxPage() {
   await requireStaff();
 
