@@ -48,15 +48,15 @@ export default function HelpAndSupportPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#e8e9ed]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[var(--portal-line)]">
         <div>
-          <div className="text-[10px] font-black uppercase tracking-widest text-[#9a752b]">
+          <div className="text-[10px] font-black uppercase tracking-widest text-[var(--portal-gold-ink-strong)]">
             Direct Media Desk
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#15171b] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--portal-ink)] tracking-tight">
             Help & Media Support
           </h1>
-          <p className="text-xs sm:text-sm text-[#7c818b] mt-0.5">
+          <p className="text-xs sm:text-sm text-[var(--portal-muted)] mt-0.5">
             Connect with our media planning specialists for slot clearances, rate quotes, and technical specs.
           </p>
         </div>
@@ -65,15 +65,15 @@ export default function HelpAndSupportPage() {
       {/* Contact Channels Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* WhatsApp Direct */}
-        <div className="card bg-white border border-[#e8e9ed] rounded-3xl p-5 shadow-xs space-y-3">
-          <div className="w-10 h-10 rounded-xl bg-[#e4f6ec] text-[#19764b] flex items-center justify-center font-bold">
+        <div className="card bg-[var(--portal-surface)] border border-[var(--portal-line)] rounded-3xl p-5 shadow-xs space-y-3">
+          <div className="w-10 h-10 rounded-xl bg-[var(--portal-success-soft)] text-[var(--portal-success-strong)] flex items-center justify-center font-bold">
             <MessageSquare className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[#15171b]">
+            <h3 className="text-sm font-bold text-[var(--portal-ink)]">
               WhatsApp Media Desk
             </h3>
-            <p className="text-[11px] text-[#7c818b] mt-0.5">
+            <p className="text-[11px] text-[var(--portal-muted)] mt-0.5">
               Direct chat with our operations lead for quick slot confirmations.
             </p>
           </div>
@@ -81,49 +81,49 @@ export default function HelpAndSupportPage() {
             href="https://wa.me/2348000000000"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-sm bg-[#16845b] hover:bg-[#126b4a] text-white border-none rounded-xl text-xs font-bold w-full"
+            className="btn btn-sm bg-[var(--portal-success)] hover:bg-[var(--portal-success-strong)] text-white border-none rounded-xl text-xs font-bold w-full"
           >
             Chat on WhatsApp
           </a>
         </div>
 
         {/* Priority Phone */}
-        <div className="card bg-white border border-[#e8e9ed] rounded-3xl p-5 shadow-xs space-y-3">
-          <div className="w-10 h-10 rounded-xl bg-[#fff4d9] text-[#986d16] flex items-center justify-center font-bold">
+        <div className="card bg-[var(--portal-surface)] border border-[var(--portal-line)] rounded-3xl p-5 shadow-xs space-y-3">
+          <div className="w-10 h-10 rounded-xl bg-[var(--portal-gold-soft-2)] text-[var(--portal-gold-ink)] flex items-center justify-center font-bold">
             <Phone className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[#15171b]">
+            <h3 className="text-sm font-bold text-[var(--portal-ink)]">
               Direct Phone Line
             </h3>
-            <p className="text-[11px] text-[#7c818b] mt-0.5">
+            <p className="text-[11px] text-[var(--portal-muted)] mt-0.5">
               Monday to Saturday, 8:00 AM – 7:00 PM WAT.
             </p>
           </div>
           <a
             href="tel:+2348000000000"
-            className="btn btn-sm bg-[#101113] hover:bg-black text-white border-none rounded-xl text-xs font-bold w-full"
+            className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl text-xs font-bold w-full"
           >
             Call Support Desk
           </a>
         </div>
 
         {/* Email Enquiries */}
-        <div className="card bg-white border border-[#e8e9ed] rounded-3xl p-5 shadow-xs space-y-3">
-          <div className="w-10 h-10 rounded-xl bg-[#f0f0f2] text-[#666c77] flex items-center justify-center font-bold">
+        <div className="card bg-[var(--portal-surface)] border border-[var(--portal-line)] rounded-3xl p-5 shadow-xs space-y-3">
+          <div className="w-10 h-10 rounded-xl bg-[var(--portal-line-soft)] text-[var(--portal-muted)] flex items-center justify-center font-bold">
             <Mail className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[#15171b]">
+            <h3 className="text-sm font-bold text-[var(--portal-ink)]">
               Media Email Desk
             </h3>
-            <p className="text-[11px] text-[#7c818b] mt-0.5">
+            <p className="text-[11px] text-[var(--portal-muted)] mt-0.5">
               Send heavy media files or RFPs to media@advers.ng.
             </p>
           </div>
           <a
             href="mailto:media@advers.ng"
-            className="btn btn-sm btn-ghost border-[#e8e9ed] rounded-xl text-xs font-bold w-full"
+            className="btn btn-sm btn-ghost border-[var(--portal-line)] rounded-xl text-xs font-bold w-full"
           >
             media@advers.ng
           </a>
@@ -133,20 +133,20 @@ export default function HelpAndSupportPage() {
       {/* Ticket & FAQ Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Submit Ticket */}
-        <div className="card bg-white border border-[#e8e9ed] rounded-3xl p-6 shadow-xs space-y-4">
+        <div className="card bg-[var(--portal-surface)] border border-[var(--portal-line)] rounded-3xl p-6 shadow-xs space-y-4">
           <div className="flex items-center gap-2">
-            <Headphones className="w-5 h-5 text-[#80601f]" />
-            <h3 className="text-base font-bold text-[#15171b]">
+            <Headphones className="w-5 h-5 text-[var(--portal-gold-ink)]" />
+            <h3 className="text-base font-bold text-[var(--portal-ink)]">
               Submit a Media Request
             </h3>
           </div>
-          <p className="text-xs text-[#7c818b]">
+          <p className="text-xs text-[var(--portal-muted)]">
             Have a question about an active campaign flight, billing, or custom media packages?
           </p>
 
           <form onSubmit={handleTicketSubmit} className="space-y-3">
             <div className="space-y-1">
-              <label className="text-xs font-bold text-[#15171b]">
+              <label className="text-xs font-bold text-[var(--portal-ink)]">
                 Subject
               </label>
               <input
@@ -160,7 +160,7 @@ export default function HelpAndSupportPage() {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs font-bold text-[#15171b]">
+              <label className="text-xs font-bold text-[var(--portal-ink)]">
                 Message Details
               </label>
               <textarea
@@ -175,7 +175,7 @@ export default function HelpAndSupportPage() {
 
             <button
               type="submit"
-              className="btn btn-sm bg-[#101113] hover:bg-black text-white border-none rounded-xl text-xs font-bold w-full flex items-center justify-center gap-1.5"
+              className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl text-xs font-bold w-full flex items-center justify-center gap-1.5"
             >
               <Send className="w-3.5 h-3.5" />
               <span>Send Request to Media Desk</span>
@@ -184,21 +184,21 @@ export default function HelpAndSupportPage() {
         </div>
 
         {/* FAQs */}
-        <div className="card bg-white border border-[#e8e9ed] rounded-3xl p-6 shadow-xs space-y-3">
-          <div className="flex items-center gap-2 pb-1 border-b border-[#f0f0f2]">
-            <HelpCircle className="w-5 h-5 text-[#80601f]" />
-            <h3 className="text-base font-bold text-[#15171b]">
+        <div className="card bg-[var(--portal-surface)] border border-[var(--portal-line)] rounded-3xl p-6 shadow-xs space-y-3">
+          <div className="flex items-center gap-2 pb-1 border-b border-[var(--portal-line-soft)]">
+            <HelpCircle className="w-5 h-5 text-[var(--portal-gold-ink)]" />
+            <h3 className="text-base font-bold text-[var(--portal-ink)]">
               Frequently Asked Questions
             </h3>
           </div>
 
           <div className="space-y-3 overflow-y-auto max-h-[380px] pr-1">
             {faqs.map((faq, i) => (
-              <div key={i} className="p-3.5 bg-[#f8f9fa] rounded-2xl space-y-1">
-                <div className="text-xs font-bold text-[#15171b]">
+              <div key={i} className="p-3.5 bg-[var(--portal-soft)] rounded-2xl space-y-1">
+                <div className="text-xs font-bold text-[var(--portal-ink)]">
                   {faq.q}
                 </div>
-                <p className="text-[11px] text-[#7c818b] leading-relaxed">
+                <p className="text-[11px] text-[var(--portal-muted)] leading-relaxed">
                   {faq.a}
                 </p>
               </div>

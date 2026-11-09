@@ -1,0 +1,3 @@
+- @doc/ADVERS_Product_and_Engineering_Build_Specification.md  here is the PRODUCT & ENGINEERING BUILD SPECIFICATION for this project , i want you to go through it and alos go through the application to know what was done and what needs to be done properlly 
+- First  ill need an implimentation plan stating what need to be done properlly 
+- secondly,  the project is using daizy UI SKILL, follow the already use design pattern of the application for any other adjustment 

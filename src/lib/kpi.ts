@@ -1,219 +1,255 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
+import { parseDateRange } from "@/lib/date-range";
 import {
-  AdminKPICardsData,
-  AdminDashboardChartsData,
-  NeedsAttentionItem,
   ActivityLogDTO,
+  AdminDashboardChartsData,
+  AdminKPICardsData,
+  NeedsAttentionItem,
   UserDTO,
 } from "@/lib/types/dto";
 
-export function parseDateRange(range: string = "30d"): { startDate: Date; endDate: Date } {
-  const now = new Date();
-  const endDate = now;
+export { parseDateRange };
 
-  if (range === "7d") {
-    return { startDate: new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000), endDate };
-  }
-  if (range === "90d") {
-    return { startDate: new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000), endDate };
-  }
-  if (range === "this_month") {
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    return { startDate: startOfMonth, endDate };
-  }
-  // Default 30d
-  return { startDate: new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000), endDate };
-}
-
-export async function getAdminKPICards(range: string = "30d"): Promise<AdminKPICardsData> {
+export async function getAdminKPICards(
+  range: string = "30d"
+): Promise<AdminKPICardsData> {
   const { startDate } = parseDateRange(range);
   const now = new Date();
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
   const thirtyDaysAhead = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
 
-  // Month ranges for revenue comparison
   const startOfCurrentMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-  const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+  const endOfLastMonth = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    0,
+    23,
+    59,
+    59,
+    999
+  );
 
   const [
     totalSignups,
     signupsThisWeek,
     unverifiedSignups,
     newLeads,
-    newInboxItems,
+    newInboxCount,
+    overdueInboxCount,
     quotesAwaiting,
     activeEngagements,
     waitingOnClientCount,
     paymentsThisMonth,
     paymentsLastMonth,
     outstandingInvoices,
+    overdueInvoiceCount,
     renewalsDue,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
-    prisma.user.count({ where: { status: "UNVERIFIED" as any } }),
+    prisma.user.count({ where: { status: "UNVERIFIED" } }),
     prisma.lead.count({ where: { createdAt: { gte: startDate } } }),
-    prisma.feedback.findMany({ where: { status: "NEW" as any } }),
-    (prisma as any).quote?.count
-      ? (prisma as any).quote.count({ where: { status: { in: ["SENT", "VIEWED"] } } })
-      : Promise.resolve(0),
+    prisma.feedback.count({ where: { status: "NEW" } }),
+    prisma.feedback.count({
+      where: { status: "NEW", createdAt: { lte: twentyFourHoursAgo } },
+    }),
+    prisma.quote.count({ where: { status: { in: ["SENT", "VIEWED"] } } }),
     prisma.engagement.count({
-      where: { status: { in: ["ONBOARDING_IN_PROGRESS", "IN_PRODUCTION", "ACTIVE"] as any } },
+      where: {
+        status: {
+          in: ["ONBOARDING_IN_PROGRESS", "IN_PRODUCTION", "ACTIVE"],
+        },
+      },
     }),
     prisma.engagement.count({
       where: {
-        status: { in: ["ONBOARDING_IN_PROGRESS", "IN_PRODUCTION", "ACTIVE"] as any },
+        status: {
+          in: ["ONBOARDING_IN_PROGRESS", "IN_PRODUCTION", "ACTIVE"],
+        },
         waitingOnClient: true,
       },
     }),
     prisma.payment.aggregate({
       _sum: { amount: true },
-      where: { status: "SUCCESS" as any, createdAt: { gte: startOfCurrentMonth } },
+      where: { status: "SUCCESS", createdAt: { gte: startOfCurrentMonth } },
     }),
     prisma.payment.aggregate({
       _sum: { amount: true },
-      where: { status: "SUCCESS" as any, createdAt: { gte: startOfLastMonth, lte: endOfLastMonth } },
+      where: {
+        status: "SUCCESS",
+        createdAt: { gte: startOfLastMonth, lte: endOfLastMonth },
+      },
     }),
-    (prisma as any).invoice?.findMany
-      ? (prisma as any).invoice.findMany({
-          where: { status: { in: ["PENDING", "OVERDUE"] } },
-        })
-      : Promise.resolve([]),
-    (prisma as any).renewal?.count
-      ? (prisma as any).renewal.count({
-          where: {
-            status: "UPCOMING",
-            renewalDate: { gte: now, lte: thirtyDaysAhead },
-          },
-        })
-      : Promise.resolve(0),
+    prisma.invoice.aggregate({
+      _sum: { amount: true },
+      where: { status: { in: ["PENDING", "OVERDUE"] } },
+    }),
+    prisma.invoice.count({ where: { status: "OVERDUE" } }),
+    prisma.subscription.count({
+      where: {
+        status: { in: ["ACTIVE", "RENEWAL_DUE", "GRACE_PERIOD"] },
+        renewalDate: { gte: now, lte: thirtyDaysAhead },
+      },
+    }),
   ]);
 
-  const currentRev = paymentsThisMonth?._sum?.amount || 0;
-  const lastRev = paymentsLastMonth?._sum?.amount || 0;
+  const currentRev = paymentsThisMonth._sum.amount || 0;
+  const lastRev = paymentsLastMonth._sum.amount || 0;
   const revDiffPercent =
-    lastRev > 0 ? Math.round(((currentRev - lastRev) / lastRev) * 100) : currentRev > 0 ? 100 : 0;
-
-  const invoiceList: Array<{ id: string; amount: number; status: string }> = Array.isArray(outstandingInvoices)
-    ? outstandingInvoices
-    : [];
-  const totalOutstandingAmount = invoiceList.reduce((acc: number, inv: { amount?: number }) => acc + (inv.amount || 0), 0);
-  const overdueInvoiceCount = invoiceList.filter((inv: { status?: string }) => inv.status === "OVERDUE").length;
-
-  const inboxList: Array<{ id: string; createdAt: Date }> = Array.isArray(newInboxItems)
-    ? newInboxItems
-    : [];
-  const hasOverdue24hInbox = inboxList.some((item: { createdAt: Date }) => new Date(item.createdAt) < twentyFourHoursAgo);
+    lastRev > 0
+      ? Math.round(((currentRev - lastRev) / lastRev) * 100)
+      : currentRev > 0
+        ? 100
+        : 0;
 
   return {
     totalSignups: { value: totalSignups, changeThisWeek: signupsThisWeek },
     unverifiedSignups,
     newLeads30d: newLeads,
-    unreadInbox: { total: inboxList.length, hasOverdue24h: hasOverdue24hInbox },
+    unreadInbox: {
+      total: newInboxCount,
+      hasOverdue24h: overdueInboxCount > 0,
+    },
     quotesAwaitingResponse: quotesAwaiting,
-    activeProjects: { total: activeEngagements, waitingOnClientCount },
-    revenueThisMonth: { amount: currentRev, changeVsLastMonthPercent: revDiffPercent },
-    outstandingInvoices: { amount: totalOutstandingAmount, overdueCount: overdueInvoiceCount },
+    activeProjects: {
+      total: activeEngagements,
+      waitingOnClientCount,
+    },
+    revenueThisMonth: {
+      amount: currentRev,
+      changeVsLastMonthPercent: revDiffPercent,
+    },
+    outstandingInvoices: {
+      amount: outstandingInvoices._sum.amount || 0,
+      overdueCount: overdueInvoiceCount,
+    },
     renewalsDue30d: renewalsDue,
-    billboardOccupancyPercent: "N/A - Coming Soon",
+    billboardOccupancyPercent: "N/A",
   };
 }
 
-export async function getAdminDashboardCharts(range: string = "30d"): Promise<AdminDashboardChartsData> {
+export async function getAdminDashboardCharts(
+  range: string = "30d"
+): Promise<AdminDashboardChartsData> {
   const { startDate } = parseDateRange(range);
+
   const users = await prisma.user.findMany({
     where: { createdAt: { gte: startDate } },
     select: { createdAt: true },
   });
 
-  // Group signups per day
   const signupsMap: Record<string, number> = {};
-  for (let d = new Date(startDate); d <= new Date(); d.setDate(d.getDate() + 1)) {
-    const key = d.toISOString().split("T")[0];
+  const cursor = new Date(startDate);
+  while (cursor <= new Date()) {
+    const key = cursor.toISOString().split("T")[0];
     signupsMap[key] = 0;
+    cursor.setDate(cursor.getDate() + 1);
   }
 
-  users.forEach((u: { createdAt: Date }) => {
-    const key = new Date(u.createdAt).toISOString().split("T")[0];
-    if (signupsMap[key] !== undefined) {
-      signupsMap[key]++;
-    }
+  users.forEach((user) => {
+    const key = new Date(user.createdAt).toISOString().split("T")[0];
+    if (signupsMap[key] !== undefined) signupsMap[key]++;
   });
 
   const signupsPerDay = Object.entries(signupsMap).map(([date, signups]) => ({
-    date: date.substring(5), // MM-DD
+    date: date.substring(5),
     signups,
   }));
 
-  // Revenue per month split by service type
-  const invoices: Array<{ amount: number; serviceType: string; paidAt: Date | null; createdAt: Date }> =
-    (prisma as any).invoice?.findMany
-      ? await (prisma as any).invoice.findMany({
-          where: { status: "PAID" },
-          select: { amount: true, serviceType: true, paidAt: true, createdAt: true },
-        })
-      : [];
+  const now = new Date();
+  const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+  const paidInvoices = await prisma.invoice.findMany({
+    where: {
+      status: "PAID",
+      OR: [
+        { paidAt: { gte: sixMonthsAgo } },
+        { paidAt: null, createdAt: { gte: sixMonthsAgo } },
+      ],
+    },
+    select: { amount: true, serviceType: true, paidAt: true, createdAt: true },
+  });
 
-  const revenueMonthlyMap: Record<string, { digital: number; ecosystem: number; billboard: number }> = {
-    "Jan 2026": { digital: 150000, ecosystem: 400000, billboard: 0 },
-    "Feb 2026": { digital: 250000, ecosystem: 650000, billboard: 0 },
-    "Mar 2026": { digital: 320000, ecosystem: 850000, billboard: 250000 },
-    "Apr 2026": { digital: 175000, ecosystem: 450000, billboard: 0 },
-  };
+  const revenueMonthlyMap: Record<
+    string,
+    { digital: number; ecosystem: number; billboard: number; subscription: number }
+  > = {};
 
-  invoices.forEach((inv: { amount: number; serviceType: string; paidAt: Date | null; createdAt: Date }) => {
-    const dt = inv.paidAt || inv.createdAt;
-    const monthKey = dt.toLocaleString("en-US", { month: "short", year: "numeric" });
-    if (!revenueMonthlyMap[monthKey]) {
-      revenueMonthlyMap[monthKey] = { digital: 0, ecosystem: 0, billboard: 0 };
+  for (let index = 0; index < 6; index++) {
+    const monthDate = new Date(now.getFullYear(), now.getMonth() - 5 + index, 1);
+    const key = monthDate.toLocaleString("en-US", {
+      month: "short",
+      year: "numeric",
+    });
+    revenueMonthlyMap[key] = {
+      digital: 0,
+      ecosystem: 0,
+      billboard: 0,
+      subscription: 0,
+    };
+  }
+
+  paidInvoices.forEach((invoice) => {
+    const date = invoice.paidAt || invoice.createdAt;
+    const key = date.toLocaleString("en-US", {
+      month: "short",
+      year: "numeric",
+    });
+    if (!revenueMonthlyMap[key]) {
+      revenueMonthlyMap[key] = {
+        digital: 0,
+        ecosystem: 0,
+        billboard: 0,
+        subscription: 0,
+      };
     }
-    if (inv.serviceType === "ECOSYSTEM") {
-      revenueMonthlyMap[monthKey].ecosystem += inv.amount;
-    } else if (inv.serviceType === "BILLBOARD") {
-      revenueMonthlyMap[monthKey].billboard += inv.amount;
+    if (invoice.serviceType === "SUBSCRIPTION") {
+      revenueMonthlyMap[key].subscription += invoice.amount;
+    } else if (invoice.serviceType === "ECOSYSTEM") {
+      revenueMonthlyMap[key].ecosystem += invoice.amount;
+    } else if (invoice.serviceType === "BILLBOARD") {
+      revenueMonthlyMap[key].billboard += invoice.amount;
     } else {
-      revenueMonthlyMap[monthKey].digital += inv.amount;
+      revenueMonthlyMap[key].digital += invoice.amount;
     }
   });
 
-  const revenuePerMonth = Object.entries(revenueMonthlyMap).map(([month, data]) => ({
-    month,
-    ...data,
-  }));
+  const revenuePerMonth = Object.entries(revenueMonthlyMap).map(
+    ([month, data]) => ({ month, ...data })
+  );
 
-  // Conversion Funnel
-  const [totalLeadsCount, quotesCount, acceptedQuotesCount, paidInvoicesCount, activeProjectsCount] =
-    await Promise.all([
-      prisma.lead.count(),
-      (prisma as any).quote?.count ? (prisma as any).quote.count() : Promise.resolve(0),
-      (prisma as any).quote?.count
-        ? (prisma as any).quote.count({ where: { status: "ACCEPTED" } })
-        : Promise.resolve(0),
-      (prisma as any).invoice?.count
-        ? (prisma as any).invoice.count({ where: { status: "PAID" } })
-        : Promise.resolve(0),
-      prisma.engagement.count({
-        where: { status: { in: ["LAUNCHED", "ACTIVE", "COMPLETED"] as any } },
-      }),
-    ]);
+  const [
+    totalLeadsCount,
+    quotesCount,
+    acceptedQuotesCount,
+    paidInvoicesCount,
+    activeProjectsCount,
+  ] = await Promise.all([
+    prisma.lead.count(),
+    prisma.quote.count(),
+    prisma.quote.count({ where: { status: "ACCEPTED" } }),
+    prisma.invoice.count({ where: { status: "PAID" } }),
+    prisma.engagement.count({
+      where: { status: { in: ["LAUNCHED", "ACTIVE", "COMPLETED"] } },
+    }),
+  ]);
 
   const funnelRaw = [
-    { step: "Leads", count: Math.max(totalLeadsCount, 12) },
-    { step: "Quotes", count: Math.max(quotesCount, 8) },
-    { step: "Accepted", count: Math.max(acceptedQuotesCount, 5) },
-    { step: "Paid", count: Math.max(paidInvoicesCount, 4) },
-    { step: "Launched", count: Math.max(activeProjectsCount, 3) },
+    { step: "Leads", count: totalLeadsCount },
+    { step: "Quotes", count: quotesCount },
+    { step: "Accepted", count: acceptedQuotesCount },
+    { step: "Paid", count: paidInvoicesCount },
+    { step: "Launched", count: activeProjectsCount },
   ];
 
-  const conversionFunnel = funnelRaw.map((item, idx) => {
-    const prevCount = idx === 0 ? item.count : funnelRaw[idx - 1].count;
-    const conversionRate = prevCount > 0 ? Math.round((item.count / prevCount) * 100) : 100;
+  const conversionFunnel = funnelRaw.map((item, index) => {
+    const previous = index === 0 ? item.count : funnelRaw[index - 1].count;
     return {
       step: item.step,
       count: item.count,
-      conversionRate,
+      conversionRate: previous > 0 ? Math.round((item.count / previous) * 100) : 0,
     };
   });
 
@@ -231,93 +267,95 @@ export async function getNeedsAttentionItems(): Promise<NeedsAttentionItem[]> {
   const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
   const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
 
-  const [inboxOverdue, projectsWaiting, overdueInvoices, unopenedQuotes, stuckOnboarding] =
-    await Promise.all([
-      prisma.feedback.findMany({
-        where: { status: "NEW" as any, createdAt: { lte: twentyFourHoursAgo } },
-        take: 5,
-      }),
-      prisma.engagement.findMany({
-        where: { waitingOnClient: true, updatedAt: { lte: fiveDaysAgo } },
-        include: { client: true },
-        take: 5,
-      }),
-      (prisma as any).invoice?.findMany
-        ? (prisma as any).invoice.findMany({
-            where: { status: "OVERDUE" },
-            include: { client: true },
-            take: 5,
-          })
-        : Promise.resolve([]),
-      (prisma as any).quote?.findMany
-        ? (prisma as any).quote.findMany({
-            where: { status: "SENT", openedAt: null, createdAt: { lte: threeDaysAgo } },
-            take: 5,
-          })
-        : Promise.resolve([]),
-      prisma.engagement.findMany({
-        where: { onboardingProgress: { lt: 50 }, createdAt: { lte: sevenDaysAgo } },
-        include: { client: true },
-        take: 5,
-      }),
-    ]);
+  const [
+    inboxOverdue,
+    projectsWaiting,
+    overdueInvoices,
+    unopenedQuotes,
+    stuckOnboarding,
+  ] = await Promise.all([
+    prisma.feedback.findMany({
+      where: { status: "NEW", createdAt: { lte: twentyFourHoursAgo } },
+      orderBy: { createdAt: "asc" },
+      take: 5,
+    }),
+    prisma.engagement.findMany({
+      where: { waitingOnClient: true, updatedAt: { lte: fiveDaysAgo } },
+      include: { client: true },
+      take: 5,
+    }),
+    prisma.invoice.findMany({
+      where: { status: "OVERDUE" },
+      include: { client: true },
+      take: 5,
+    }),
+    prisma.quote.findMany({
+      where: { status: "SENT", openedAt: null, createdAt: { lte: threeDaysAgo } },
+      take: 5,
+    }),
+    prisma.engagement.findMany({
+      where: { onboardingProgress: { lt: 50 }, createdAt: { lte: sevenDaysAgo } },
+      include: { client: true },
+      take: 5,
+    }),
+  ]);
 
   const items: NeedsAttentionItem[] = [];
 
-  (inboxOverdue as any[]).forEach((item: any) => {
+  inboxOverdue.forEach((item) => {
     items.push({
       id: `att-inbox-${item.id}`,
       category: "INBOX",
       title: `Unanswered enquiry: ${item.name}`,
-      subtitle: `${item.company || item.email} — Package: ${item.packageInterest || "General"}`,
+      subtitle: `${item.company || item.email} — ${item.packageInterest || "General enquiry"}`,
       link: `/admin/inbox?highlight=${item.id}`,
       severity: "high",
       timeText: "Unanswered > 24h",
     });
   });
 
-  (projectsWaiting as any[]).forEach((item: any) => {
+  projectsWaiting.forEach((item) => {
     items.push({
       id: `att-project-${item.id}`,
       category: "PROJECT",
-      title: `Stalled Client Input: ${item.client?.name || "Client"}`,
+      title: `Stalled client input: ${item.client?.name || "Client"}`,
       subtitle: `Engagement #${item.id.slice(-6)} waiting on client input for 5+ days`,
-      link: `/admin/projects?id=${item.id}`,
+      link: `/admin/users?clientId=${item.clientId}`,
       severity: "high",
       timeText: "Waiting > 5 days",
     });
   });
 
-  (overdueInvoices as any[]).forEach((item: any) => {
+  overdueInvoices.forEach((item) => {
     items.push({
       id: `att-inv-${item.id}`,
       category: "INVOICE",
-      title: `Overdue Invoice: ${item.invoiceNumber || item.id}`,
-      subtitle: `${item.client?.name || "Client"} — ₦${(item.amount || 0).toLocaleString("en-NG")}`,
-      link: `/admin/invoices?id=${item.id}`,
+      title: `Overdue invoice: ${item.invoiceNumber}`,
+      subtitle: `${item.client?.name || "Client"} — ₦${item.amount.toLocaleString("en-NG")}`,
+      link: `/admin/finance`,
       severity: "high",
-      timeText: "Payment Overdue",
+      timeText: "Payment overdue",
     });
   });
 
-  (unopenedQuotes as any[]).forEach((item: any) => {
+  unopenedQuotes.forEach((item) => {
     items.push({
       id: `att-quote-${item.id}`,
       category: "QUOTE",
-      title: `Unopened Quote: ${item.quoteNumber || item.id}`,
-      subtitle: `${item.title || "Proposal"} — ₦${(item.amount || 0).toLocaleString("en-NG")}`,
-      link: `/admin/leads?quote=${item.id}`,
+      title: `Unopened quote: ${item.quoteNumber}`,
+      subtitle: `${item.title} — ₦${item.amount.toLocaleString("en-NG")}`,
+      link: `/admin/users`,
       severity: "medium",
       timeText: "Unopened > 3 days",
     });
   });
 
-  (stuckOnboarding as any[]).forEach((item: any) => {
+  stuckOnboarding.forEach((item) => {
     items.push({
       id: `att-onboard-${item.id}`,
       category: "ONBOARDING",
-      title: `Stuck Onboarding (<50%): ${item.client?.name || "Client"}`,
-      subtitle: `Progress: ${item.onboardingProgress}% — Started over 7 days ago`,
+      title: `Stuck onboarding (<50%): ${item.client?.name || "Client"}`,
+      subtitle: `Progress: ${item.onboardingProgress}% — started over 7 days ago`,
       link: `/admin/users?clientId=${item.clientId}`,
       severity: "medium",
       timeText: "Stuck < 50%",
@@ -327,19 +365,19 @@ export async function getNeedsAttentionItems(): Promise<NeedsAttentionItem[]> {
   return items;
 }
 
-export async function getRecentActivityLogs(limit: number = 10): Promise<ActivityLogDTO[]> {
-  const logs: any[] = (prisma as any).activityLog?.findMany
-    ? await (prisma as any).activityLog.findMany({
-        orderBy: { createdAt: "desc" },
-        take: limit,
-        include: {
-          user: { select: { name: true } },
-          client: { select: { name: true } },
-        },
-      })
-    : [];
+export async function getRecentActivityLogs(
+  limit: number = 10
+): Promise<ActivityLogDTO[]> {
+  const logs = await prisma.activityLog.findMany({
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    include: {
+      user: { select: { name: true } },
+      client: { select: { name: true } },
+    },
+  });
 
-  return logs.map((log: any) => ({
+  return logs.map((log) => ({
     id: log.id,
     userId: log.userId,
     userName: log.user?.name,
@@ -348,7 +386,7 @@ export async function getRecentActivityLogs(limit: number = 10): Promise<Activit
     action: log.action,
     description: log.description,
     metadata: log.metadata,
-    createdAt: log.createdAt instanceof Date ? log.createdAt.toISOString() : String(log.createdAt),
+    createdAt: log.createdAt.toISOString(),
   }));
 }
 
@@ -364,7 +402,7 @@ export async function getUsersList(query?: {
   const limit = query?.limit || 10;
   const skip = (page - 1) * limit;
 
-  const whereClause: any = {};
+  const whereClause: Prisma.UserWhereInput = {};
 
   if (query?.search) {
     whereClause.OR = [
@@ -373,18 +411,13 @@ export async function getUsersList(query?: {
       { client: { name: { contains: query.search } } },
     ];
   }
-
   if (query?.role && query.role !== "ALL") {
-    whereClause.role = query.role;
+    whereClause.role = query.role as Prisma.UserWhereInput["role"];
   }
-
   if (query?.status && query.status !== "ALL") {
-    whereClause.status = query.status;
+    whereClause.status = query.status as Prisma.UserWhereInput["status"];
   }
-
-  if (query?.source && query.source !== "ALL") {
-    whereClause.source = query.source;
-  }
+  if (query?.source && query.source !== "ALL") whereClause.source = query.source;
 
   const [users, totalCount] = await Promise.all([
     prisma.user.findMany({
@@ -394,9 +427,7 @@ export async function getUsersList(query?: {
           select: {
             name: true,
             engagements: {
-              select: {
-                package: { select: { name: true } },
-              },
+              select: { package: { select: { name: true } } },
               take: 1,
             },
           },
@@ -409,24 +440,28 @@ export async function getUsersList(query?: {
     prisma.user.count({ where: whereClause }),
   ]);
 
-  const mappedUsers: UserDTO[] = (users as any[]).map((u: any) => ({
-    id: u.id,
-    email: u.email,
-    name: u.name,
-    phone: u.phone,
-    role: u.role as any,
-    orgRole: u.orgRole as any,
-    status: (u.status || "UNVERIFIED") as any,
-    source: u.source || "ORGANIC",
-    utmSource: u.utmSource || null,
-    utmCampaign: u.utmCampaign || null,
-    company: u.client?.name || null,
-    packageName: u.client?.engagements?.[0]?.package?.name || null,
-    emailVerifiedAt: u.emailVerifiedAt ? new Date(u.emailVerifiedAt).toISOString() : null,
-    profileCompleteAt: u.profileCompleteAt ? new Date(u.profileCompleteAt).toISOString() : null,
-    lastLoginAt: u.lastLoginAt ? new Date(u.lastLoginAt).toISOString() : null,
-    clientId: u.clientId,
-    createdAt: u.createdAt instanceof Date ? u.createdAt.toISOString() : String(u.createdAt),
+  const mappedUsers: UserDTO[] = users.map((user) => ({
+    id: user.id,
+    email: user.email,
+    name: user.name,
+    phone: user.phone,
+    role: user.role,
+    orgRole: user.orgRole,
+    status: user.status,
+    source: user.source || "ORGANIC",
+    utmSource: user.utmSource || null,
+    utmCampaign: user.utmCampaign || null,
+    company: user.client?.name || null,
+    packageName: user.client?.engagements?.[0]?.package?.name || null,
+    emailVerifiedAt: user.emailVerifiedAt
+      ? user.emailVerifiedAt.toISOString()
+      : null,
+    profileCompleteAt: user.profileCompleteAt
+      ? user.profileCompleteAt.toISOString()
+      : null,
+    lastLoginAt: user.lastLoginAt ? user.lastLoginAt.toISOString() : null,
+    clientId: user.clientId,
+    createdAt: user.createdAt.toISOString(),
   }));
 
   return { users: mappedUsers, totalCount };

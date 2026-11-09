@@ -1,45 +1,25 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useActionState, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Mail, Lock, User, Phone, ArrowRight, AlertCircle, Loader2 } from "lucide-react";
-import { SignupSchema } from "@/lib/validations/auth";
+import {
+  Mail,
+  Lock,
+  User,
+  Phone,
+  ArrowRight,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
+import { signupAction } from "@/server/actions/auth";
 
 export default function SignupPage() {
-  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [terms, setTerms] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    const validation = SignupSchema.safeParse({
-      name,
-      email,
-      phone,
-      password,
-      terms,
-    });
-
-    if (!validation.success) {
-      setError(validation.error.issues[0].message);
-      return;
-    }
-
-    setLoading(true);
-
-    setTimeout(() => {
-      setLoading(false);
-      router.push("/portal/welcome");
-    }, 1200);
-  };
+  const [state, formAction, isPending] = useActionState(signupAction, undefined);
 
   return (
     <div className="space-y-6">
@@ -53,22 +33,27 @@ export default function SignupPage() {
         </p>
       </div>
 
-      {error && (
+      {state?.error && (
         <div className="alert alert-error text-xs py-3 rounded-2xl">
           <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{error}</span>
+          <span>{state.error}</span>
         </div>
       )}
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form action={formAction} className="space-y-4">
         <div>
-          <label className="text-xs font-bold uppercase tracking-wider text-base-content/70 block mb-1.5">
+          <label
+            htmlFor="signup-name"
+            className="text-xs font-bold uppercase tracking-wider text-base-content/70 block mb-1.5"
+          >
             Full Name
           </label>
           <div className="relative">
             <input
+              id="signup-name"
               type="text"
+              name="name"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -80,12 +65,17 @@ export default function SignupPage() {
         </div>
 
         <div>
-          <label className="text-xs font-bold uppercase tracking-wider text-base-content/70 block mb-1.5">
+          <label
+            htmlFor="signup-email"
+            className="text-xs font-bold uppercase tracking-wider text-base-content/70 block mb-1.5"
+          >
             Email Address
           </label>
           <div className="relative">
             <input
+              id="signup-email"
               type="email"
+              name="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -97,12 +87,17 @@ export default function SignupPage() {
         </div>
 
         <div>
-          <label className="text-xs font-bold uppercase tracking-wider text-base-content/70 block mb-1.5">
+          <label
+            htmlFor="signup-phone"
+            className="text-xs font-bold uppercase tracking-wider text-base-content/70 block mb-1.5"
+          >
             WhatsApp Phone Number
           </label>
           <div className="relative">
             <input
+              id="signup-phone"
               type="tel"
+              name="phone"
               required
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
@@ -114,12 +109,17 @@ export default function SignupPage() {
         </div>
 
         <div>
-          <label className="text-xs font-bold uppercase tracking-wider text-base-content/70 block mb-1.5">
+          <label
+            htmlFor="signup-password"
+            className="text-xs font-bold uppercase tracking-wider text-base-content/70 block mb-1.5"
+          >
             Choose Password
           </label>
           <div className="relative">
             <input
+              id="signup-password"
               type="password"
+              name="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -134,6 +134,7 @@ export default function SignupPage() {
           <input
             type="checkbox"
             id="terms"
+            name="terms"
             checked={terms}
             onChange={(e) => setTerms(e.target.checked)}
             className="checkbox checkbox-primary checkbox-sm mt-0.5"
@@ -146,10 +147,10 @@ export default function SignupPage() {
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={isPending}
           className="btn bg-[#4f46e5] hover:bg-[#3525cd] text-white w-full rounded-xl font-bold py-3.5 text-base shadow-md border-none flex items-center justify-center gap-2 mt-2"
         >
-          {loading ? (
+          {isPending ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
               <span>Creating Account...</span>

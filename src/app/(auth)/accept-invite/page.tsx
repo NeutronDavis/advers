@@ -1,28 +1,31 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Sparkles, CheckCircle2, Lock, Phone, User, ArrowRight, Loader2 } from "lucide-react";
+import React, { Suspense, useActionState, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import {
+  Sparkles,
+  CheckCircle2,
+  Lock,
+  Phone,
+  User,
+  ArrowRight,
+  Loader2,
+  AlertCircle,
+} from "lucide-react";
+import { acceptInviteAction } from "@/server/actions/auth";
 
 function AcceptInviteForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token") || "demo-token";
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    setTimeout(() => {
-      setLoading(false);
-      router.push("/portal/welcome");
-    }, 1200);
-  };
+  const [terms, setTerms] = useState(false);
+  const [state, formAction, isPending] = useActionState(
+    acceptInviteAction,
+    undefined
+  );
 
   return (
     <div className="space-y-5">
@@ -45,14 +48,28 @@ function AcceptInviteForm() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-3.5">
+      {state?.error && (
+        <div className="alert alert-error text-xs py-3 rounded-2xl">
+          <AlertCircle className="w-4 h-4 shrink-0" />
+          <span>{state.error}</span>
+        </div>
+      )}
+
+      <form action={formAction} className="space-y-3.5">
+        <input type="hidden" name="token" value={token} />
+
         <div>
-          <label className="text-xs font-bold uppercase tracking-wider text-base-content/70 block mb-1">
+          <label
+            htmlFor="invite-name"
+            className="text-xs font-bold uppercase tracking-wider text-base-content/70 block mb-1"
+          >
             Your Full Name
           </label>
           <div className="relative">
             <input
+              id="invite-name"
               type="text"
+              name="name"
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -64,12 +81,17 @@ function AcceptInviteForm() {
         </div>
 
         <div>
-          <label className="text-xs font-bold uppercase tracking-wider text-base-content/70 block mb-1">
+          <label
+            htmlFor="invite-phone"
+            className="text-xs font-bold uppercase tracking-wider text-base-content/70 block mb-1"
+          >
             WhatsApp Phone Number
           </label>
           <div className="relative">
             <input
+              id="invite-phone"
               type="tel"
+              name="phone"
               required
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
@@ -81,12 +103,17 @@ function AcceptInviteForm() {
         </div>
 
         <div>
-          <label className="text-xs font-bold uppercase tracking-wider text-base-content/70 block mb-1">
+          <label
+            htmlFor="invite-password"
+            className="text-xs font-bold uppercase tracking-wider text-base-content/70 block mb-1"
+          >
             Choose Password
           </label>
           <div className="relative">
             <input
+              id="invite-password"
               type="password"
+              name="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -97,12 +124,30 @@ function AcceptInviteForm() {
           </div>
         </div>
 
+        <div className="flex items-start gap-2.5 pt-1">
+          <input
+            type="checkbox"
+            id="invite-terms"
+            name="terms"
+            checked={terms}
+            onChange={(e) => setTerms(e.target.checked)}
+            className="checkbox checkbox-primary checkbox-sm mt-0.5"
+          />
+          <label
+            htmlFor="invite-terms"
+            className="text-xs text-base-content/80 cursor-pointer font-medium leading-relaxed"
+          >
+            I agree to the <span className="font-bold text-primary">Terms of Service</span> and{" "}
+            <span className="font-bold text-primary">Privacy Policy</span>.
+          </label>
+        </div>
+
         <button
           type="submit"
-          disabled={loading}
+          disabled={isPending}
           className="btn bg-[#4f46e5] hover:bg-[#3525cd] text-white w-full rounded-xl font-bold py-3 text-base shadow-md border-none flex items-center justify-center gap-2 mt-2"
         >
-          {loading ? (
+          {isPending ? (
             <>
               <Loader2 className="w-5 h-5 animate-spin" />
               <span>Activating Account...</span>
@@ -121,7 +166,13 @@ function AcceptInviteForm() {
 
 export default function AcceptInvitePage() {
   return (
-    <Suspense fallback={<div className="text-center py-8 text-xs text-base-content/60">Loading invite details...</div>}>
+    <Suspense
+      fallback={
+        <div className="text-center py-8 text-xs text-base-content/60">
+          Loading invite details...
+        </div>
+      }
+    >
       <AcceptInviteForm />
     </Suspense>
   );

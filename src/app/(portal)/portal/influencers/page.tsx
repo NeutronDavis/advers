@@ -78,22 +78,22 @@ export default function InfluencerHubPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#e8e9ed]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[var(--portal-line)]">
         <div>
-          <div className="text-[10px] font-black uppercase tracking-widest text-[#9a752b]">
+          <div className="text-[10px] font-black uppercase tracking-widest text-[var(--portal-gold-ink-strong)]">
             Creator Marketplace
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#15171b] tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[var(--portal-ink)] tracking-tight">
             Influencer Hub
           </h1>
-          <p className="text-xs sm:text-sm text-[#7c818b] mt-0.5">
+          <p className="text-xs sm:text-sm text-[var(--portal-muted)] mt-0.5">
             Partner with vetted Nigerian digital creators for authentic product endorsements.
           </p>
         </div>
 
         <button
           onClick={() => openCreateModal("Influencer marketplace")}
-          className="btn bg-[#101113] hover:bg-black text-white border-none rounded-xl px-5 text-xs font-bold shadow-md flex items-center gap-2 self-start sm:self-auto"
+          className="btn bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl px-5 text-xs font-bold shadow-md flex items-center gap-2 self-start sm:self-auto"
         >
           <span>Book creator campaign</span>
           <ArrowRight className="w-4 h-4" />
@@ -114,8 +114,8 @@ export default function InfluencerHubPage() {
             onClick={() => setSelectedNiche(niche.id)}
             className={`btn btn-xs sm:btn-sm rounded-xl text-xs font-bold transition-all ${
               selectedNiche === niche.id
-                ? "bg-[#101113] text-white shadow-xs"
-                : "bg-white text-[#7c818b] border-[#e8e9ed] hover:bg-base-200"
+                ? "bg-[var(--portal-obsidian)] text-white shadow-xs"
+                : "bg-[var(--portal-surface)] text-[var(--portal-muted)] border-[var(--portal-line)] hover:bg-base-200"
             }`}
           >
             {niche.label}
@@ -128,7 +128,7 @@ export default function InfluencerHubPage() {
         {filtered.map((creator) => (
           <div
             key={creator.id}
-            className="card bg-white border border-[#e8e9ed] hover:border-[#d6b65f] rounded-3xl p-6 shadow-xs transition-all space-y-4 flex flex-col justify-between"
+            className="card bg-[var(--portal-surface)] border border-[var(--portal-line)] hover:border-[var(--portal-gold)] rounded-3xl p-6 shadow-xs transition-all space-y-4 flex flex-col justify-between"
           >
             <div className="space-y-3">
               <div className="flex items-start justify-between gap-3">
@@ -140,55 +140,55 @@ export default function InfluencerHubPage() {
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <h2 className="text-base font-black text-[#15171b]">
+                      <h2 className="text-base font-black text-[var(--portal-ink)]">
                         {creator.name}
                       </h2>
                       <CheckCircle2 className="w-4 h-4 text-primary fill-primary/10" />
                     </div>
-                    <div className="text-[11px] text-[#7c818b] font-medium">
+                    <div className="text-[11px] text-[var(--portal-muted)] font-medium">
                       {creator.handle} · {creator.platform}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1 bg-[#fff4d9] px-2.5 py-1 rounded-xl text-[#986d16] text-xs font-bold">
-                  <Star className="w-3.5 h-3.5 fill-[#e8b64b]" />
+                <div className="flex items-center gap-1 bg-[var(--portal-gold-soft-2)] px-2.5 py-1 rounded-xl text-[var(--portal-gold-ink)] text-xs font-bold">
+                  <Star className="w-3.5 h-3.5 fill-[var(--portal-gold)]" />
                   <span>{creator.rating}</span>
                 </div>
               </div>
 
-              <p className="text-xs text-[#4d5159] leading-relaxed">
+              <p className="text-xs text-[var(--portal-body)] leading-relaxed">
                 {creator.description}
               </p>
 
-              <div className="grid grid-cols-2 gap-2 p-3 bg-[#f8f9fa] rounded-2xl text-[11px]">
+              <div className="grid grid-cols-2 gap-2 p-3 bg-[var(--portal-soft)] rounded-2xl text-[11px]">
                 <div>
-                  <div className="text-[10px] text-[#7c818b] font-bold uppercase">
+                  <div className="text-[10px] text-[var(--portal-muted)] font-bold uppercase">
                     Rate Card
                   </div>
-                  <div className="text-xs font-black text-[#15171b] mt-0.5">
+                  <div className="text-xs font-black text-[var(--portal-ink)] mt-0.5">
                     {creator.rate}
                   </div>
                 </div>
                 <div>
-                  <div className="text-[10px] text-[#7c818b] font-bold uppercase">
+                  <div className="text-[10px] text-[var(--portal-muted)] font-bold uppercase">
                     Verified Deliveries
                   </div>
-                  <div className="text-xs font-black text-[#16845b] mt-0.5">
+                  <div className="text-xs font-black text-[var(--portal-success)] mt-0.5">
                     {creator.completedAds} live campaigns
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="pt-3 border-t border-[#f0f0f2] flex items-center justify-between">
-              <span className="text-[11px] text-[#7c818b]">
+            <div className="pt-3 border-t border-[var(--portal-line-soft)] flex items-center justify-between">
+              <span className="text-[11px] text-[var(--portal-muted)]">
                 Managed by Advers Talent Desk
               </span>
               <button
                 type="button"
                 onClick={() => openCreateModal(`Influencer: ${creator.name}`)}
-                className="btn btn-sm bg-[#101113] hover:bg-black text-white border-none rounded-xl text-xs font-bold px-4"
+                className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl text-xs font-bold px-4"
               >
                 Hire creator
               </button>

@@ -1,13 +1,16 @@
 import React from "react";
 import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/lib/auth";
 import ProjectsGrid, { DynamicProjectItem } from "./ProjectsGrid";
 
 export const dynamic = "force-dynamic";
 
 export default async function ClientProjectsPage() {
-  // Query active client user & engagements from Prisma DB
-  const clientUser = await prisma.user.findFirst({
-    where: { role: "CLIENT" },
+  const session = await requireUser();
+
+  // Query the signed-in client's engagements from Prisma DB
+  const clientUser = await prisma.user.findUnique({
+    where: { id: session.id },
     include: {
       client: {
         include: {

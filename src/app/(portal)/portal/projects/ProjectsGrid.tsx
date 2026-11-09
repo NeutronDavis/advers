@@ -69,7 +69,7 @@ export default function ProjectsGrid({
 
         <Link
           href="/visibility-journey"
-          className="btn bg-[#4f46e5] hover:bg-[#3525cd] text-white text-xs font-bold rounded-xl border-none shadow-md gap-2 shrink-0"
+          className="btn bg-[var(--portal-obsidian)] hover:bg-black text-white text-xs font-bold rounded-xl border-none shadow-md gap-2 shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Package</span>

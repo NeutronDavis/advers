@@ -374,7 +374,7 @@ export default async function AdminUsersPage({
           <div className="flex items-center gap-1">
             {currentPage > 1 && (
               <Link
-                href={`/admin/users?page=${currentPage - 1}&search=${search}&role=${role}&status=${status}`}
+                href={`/admin/users?page=${currentPage - 1}&search=${search}&role=${role}&status=${status}&source=${source}`}
                 className="btn btn-xs btn-outline border-base-300 rounded-lg gap-1"
               >
                 <ChevronLeft className="w-3 h-3" />
@@ -383,7 +383,7 @@ export default async function AdminUsersPage({
             )}
             {currentPage < totalPages && (
               <Link
-                href={`/admin/users?page=${currentPage + 1}&search=${search}&role=${role}&status=${search}`}
+                href={`/admin/users?page=${currentPage + 1}&search=${search}&role=${role}&status=${status}&source=${source}`}
                 className="btn btn-xs btn-outline border-base-300 rounded-lg gap-1"
               >
                 <span>Next</span>

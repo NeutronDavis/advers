@@ -1,58 +1,50 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useActionState, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { LogIn, Mail, Lock, ArrowRight, AlertCircle, Loader2, ShieldCheck, UserCheck, Sparkles } from "lucide-react";
-import { LoginSchema } from "@/lib/validations/auth";
+import {
+  LogIn,
+  Mail,
+  Lock,
+  ArrowRight,
+  AlertCircle,
+  Loader2,
+  ShieldCheck,
+  UserCheck,
+  Sparkles,
+} from "lucide-react";
+import { loginAction, loginWithCredentials } from "@/server/actions/auth";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [demoError, setDemoError] = useState<string | null>(null);
+  const [isDemoPending, startDemoTransition] = useTransition();
+  const [state, formAction, isPending] = useActionState(loginAction, undefined);
 
-  const handleDemoLogin = (userEmail: string, role: "admin" | "active-client" | "new-client") => {
+  const handleDemoLogin = (
+    userEmail: string,
+    role: "admin" | "active-client" | "new-client"
+  ) => {
+    setDemoError(null);
     setEmail(userEmail);
     setPassword("password123");
-    setLoading(true);
 
-    setTimeout(() => {
-      setLoading(false);
-      if (role === "admin") {
-        router.push("/admin");
-      } else if (role === "active-client") {
-        router.push("/portal/dashboard");
-      } else {
-        router.push("/portal/welcome");
+    startDemoTransition(async () => {
+      const result = await loginWithCredentials(userEmail, "password123");
+      if (!result.success) {
+        setDemoError(result.error);
+        return;
       }
-    }, 800);
+      router.push(result.redirectTo);
+      router.refresh();
+    });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    const validation = LoginSchema.safeParse({ email, password });
-    if (!validation.success) {
-      setError(validation.error.issues[0].message);
-      return;
-    }
-
-    setLoading(true);
-
-    setTimeout(() => {
-      setLoading(false);
-      if (email.includes("admin")) {
-        router.push("/admin");
-      } else if (email === "client@advers.ng") {
-        router.push("/portal/dashboard");
-      } else {
-        router.push("/portal/welcome");
-      }
-    }, 1000);
-  };
+  const loading = isPending || isDemoPending;
+  const error = state?.error || demoError;
 
   return (
     <div className="space-y-6">
@@ -76,8 +68,9 @@ export default function LoginPage() {
         <div className="grid grid-cols-1 gap-2">
           <button
             type="button"
+            disabled={loading}
             onClick={() => handleDemoLogin("admin@advers.ng", "admin")}
-            className="flex items-center justify-between p-3 rounded-xl bg-base-100 border border-base-200 hover:border-primary/50 transition-all text-xs font-bold text-base-content group"
+            className="flex items-center justify-between p-3 rounded-xl bg-base-100 border border-base-200 hover:border-primary/50 transition-all text-xs font-bold text-base-content group disabled:opacity-60"
           >
             <span className="flex items-center gap-2">
               <ShieldCheck className="w-4 h-4 text-indigo-600" />
@@ -88,8 +81,9 @@ export default function LoginPage() {
 
           <button
             type="button"
+            disabled={loading}
             onClick={() => handleDemoLogin("client@advers.ng", "active-client")}
-            className="flex items-center justify-between p-3 rounded-xl bg-base-100 border border-base-200 hover:border-primary/50 transition-all text-xs font-bold text-base-content group"
+            className="flex items-center justify-between p-3 rounded-xl bg-base-100 border border-base-200 hover:border-primary/50 transition-all text-xs font-bold text-base-content group disabled:opacity-60"
           >
             <span className="flex items-center gap-2">
               <UserCheck className="w-4 h-4 text-emerald-600" />
@@ -100,8 +94,9 @@ export default function LoginPage() {
 
           <button
             type="button"
+            disabled={loading}
             onClick={() => handleDemoLogin("newclient@advers.ng", "new-client")}
-            className="flex items-center justify-between p-3 rounded-xl bg-base-100 border border-base-200 hover:border-primary/50 transition-all text-xs font-bold text-base-content group"
+            className="flex items-center justify-between p-3 rounded-xl bg-base-100 border border-base-200 hover:border-primary/50 transition-all text-xs font-bold text-base-content group disabled:opacity-60"
           >
             <span className="flex items-center gap-2">
               <LogIn className="w-4 h-4 text-primary" />
@@ -127,14 +122,19 @@ export default function LoginPage() {
       )}
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form action={formAction} className="space-y-4">
         <div>
-          <label className="text-xs font-bold uppercase tracking-wider text-base-content/70 block mb-1.5">
+          <label
+            htmlFor="login-email"
+            className="text-xs font-bold uppercase tracking-wider text-base-content/70 block mb-1.5"
+          >
             Email Address
           </label>
           <div className="relative">
             <input
+              id="login-email"
               type="email"
+              name="email"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -147,7 +147,10 @@ export default function LoginPage() {
 
         <div>
           <div className="flex justify-between items-center mb-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-base-content/70">
+            <label
+              htmlFor="login-password"
+              className="text-xs font-bold uppercase tracking-wider text-base-content/70"
+            >
               Password
             </label>
             <a href="#" className="text-xs text-primary font-semibold hover:underline">
@@ -156,7 +159,9 @@ export default function LoginPage() {
           </div>
           <div className="relative">
             <input
+              id="login-password"
               type="password"
+              name="password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}

@@ -81,6 +81,81 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+/* Portal (Obsidian & Gold) design tokens.
+   Scoped to the advertiser portal so the marketing site and admin console keep
+   using the daisyUI semantic palette. */
+:root {
+  --portal-bg: #f5f6f8;
+  --portal-surface: #ffffff;
+  --portal-surface-muted: #fafafb;
+  --portal-soft: #f8f9fa;
+  --portal-ink: #15171b;
+  --portal-body: #4d5159;
+  --portal-muted: #7c818b;
+  --portal-icon: #858993;
+  --portal-line: #e8e9ed;
+  --portal-line-soft: #f0f0f2;
+  --portal-obsidian: #101113;
+  --portal-obsidian-2: #1c1d20;
+  --portal-obsidian-3: #26272b;
+  --portal-obsidian-line: #303136;
+  --portal-obsidian-muted: #a6a8af;
+  --portal-obsidian-muted-2: #b8bac0;
+  --portal-obsidian-muted-3: #747780;
+  --portal-gold: #e8b64b;
+  --portal-gold-hover: #d6a53b;
+  --portal-gold-ink: #80601f;
+  --portal-gold-ink-strong: #9a752b;
+  --portal-gold-soft: #fbf4df;
+  --portal-gold-soft-2: #fff4d9;
+  --portal-gold-soft-3: #f8f1df;
+  --portal-gold-soft-4: #f5f2ea;
+  --portal-gold-ring: #fbf3dd;
+  --portal-gold-border: #f1e2b5;
+  --portal-success: #16845b;
+  --portal-success-strong: #19764b;
+  --portal-success-soft: #e4f6ec;
+  --portal-warning-soft: #fff1d2;
+  --portal-avatar-bg: #f4dfb1;
+  --portal-avatar-ink: #644514;
+}
+
+[data-theme="dark"] {
+  --portal-bg: #0b0f19;
+  --portal-surface: #131b2e;
+  --portal-surface-muted: #0f172a;
+  --portal-soft: #1e293b;
+  --portal-ink: #f8fafc;
+  --portal-body: #cbd5e1;
+  --portal-muted: #94a3b8;
+  --portal-icon: #64748b;
+  --portal-line: #1e293b;
+  --portal-line-soft: #1e293b;
+  --portal-obsidian: #0b0f19;
+  --portal-obsidian-2: #131b2e;
+  --portal-obsidian-3: #1e293b;
+  --portal-obsidian-line: #334155;
+  --portal-obsidian-muted: #94a3b8;
+  --portal-obsidian-muted-2: #cbd5e1;
+  --portal-obsidian-muted-3: #64748b;
+  --portal-gold: #e8b64b;
+  --portal-gold-hover: #d6a53b;
+  --portal-gold-ink: #f7d98a;
+  --portal-gold-ink-strong: #f7d98a;
+  --portal-gold-soft: rgba(232, 182, 75, 0.12);
+  --portal-gold-soft-2: rgba(232, 182, 75, 0.16);
+  --portal-gold-soft-3: rgba(232, 182, 75, 0.1);
+  --portal-gold-soft-4: rgba(232, 182, 75, 0.08);
+  --portal-gold-ring: rgba(232, 182, 75, 0.15);
+  --portal-gold-border: rgba(232, 182, 75, 0.25);
+  --portal-success: #4ade80;
+  --portal-success-strong: #4ade80;
+  --portal-success-soft: rgba(74, 222, 128, 0.14);
+  --portal-warning-soft: rgba(251, 146, 60, 0.16);
+  --portal-avatar-bg: rgba(232, 182, 75, 0.2);
+  --portal-avatar-ink: #f7d98a;
+}
+
 html {
   scroll-behavior: smooth;
 }

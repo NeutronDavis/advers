@@ -304,7 +304,7 @@ export default function OnboardingWizardPage() {
             type="button"
             onClick={handleNext}
             disabled={saving}
-            className="btn bg-[#4f46e5] hover:bg-[#3525cd] text-white text-xs font-bold rounded-xl gap-1.5 shadow-md border-none px-6"
+            className="btn bg-[var(--portal-obsidian)] hover:bg-black text-white text-xs font-bold rounded-xl gap-1.5 shadow-md border-none px-6"
           >
             {saving ? (
               <span>Saving...</span>

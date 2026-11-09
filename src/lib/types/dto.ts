@@ -180,7 +180,13 @@ export interface AdminKPICardsData {
 
 export interface AdminDashboardChartsData {
   signupsPerDay: { date: string; signups: number }[];
-  revenuePerMonth: { month: string; digital: number; ecosystem: number; billboard: number }[];
+  revenuePerMonth: {
+    month: string;
+    digital: number;
+    ecosystem: number;
+    billboard: number;
+    subscription: number;
+  }[];
   conversionFunnel: { step: string; count: number; conversionRate: number }[];
 }
 
