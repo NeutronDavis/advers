@@ -13,6 +13,7 @@ This document contains test credentials and quick-access routes to test the **Ad
 | ✨ **New Client** | `newclient@advers.ng` | `password123` | `/portal/billing` | New client onboarding flow (Step 1 choose plan -> Step 2 business profile). |
 | 👥 **Team Member** | `team@advers.ng` | `password123` | `/portal/dashboard` | Business Pro team member under Adebayo Holdings (MEMBER role). |
 | 🧑‍🔧 **Booster** | `booster@advers.ng` | `password123` | `/booster` | Verified creative Booster workspace, marketplace, applications and proof submission. |
+| 🕵️ **Booster (pending verification)** | `booster.intel@advers.ng` | `password123` | `/booster/verification` | Amaka Nwosu has a pending verification request with documents and a reviewer note. |
 | 🎙️ **Booster (earnings)** | `booster.voice@advers.ng` | `password123` | `/booster/earnings` | Approved earning, pending withdrawal request and rating/dispute demo data. |
 | 🤝 **Booster (sales)** | `booster.sales@advers.ng` | `password123` | `/booster/applications` | Pending earning and the seeded dispute flow. |
 | 👥 **Booster (team manager)** | `booster.field@advers.ng` | `password123` | `/booster/team` | Manager of the seeded Port Harcourt Launch Crew team. |

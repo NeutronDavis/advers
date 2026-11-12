@@ -17,16 +17,33 @@ async function getStaffSession() {
   return session;
 }
 
+const optionalUrl = z
+  .string()
+  .trim()
+  .max(4096, "URL is too long. Use a URL under 4,096 characters.")
+  .refine(
+    (value) =>
+      value.length === 0 || /^(https?:\/\/|\/|mailto:|tel:)/i.test(value),
+    "Enter a valid http(s) URL, relative path, mailto: or tel: link."
+  )
+  .optional();
+
 const PostSchema = z.object({
-  title: z.string().min(2, "Post title is required."),
+  title: z
+    .string()
+    .min(2, "Post title is required.")
+    .max(180, "Post title must be 180 characters or fewer."),
   body: z.string().min(10, "Post body is required."),
-  imageUrl: z.string().optional(),
-  ctaLabel: z.string().optional(),
-  ctaUrl: z.string().optional(),
-  sponsorName: z.string().min(2, "Sponsor name is required."),
-  sponsorLogoUrl: z.string().optional(),
-  category: z.string().optional(),
-  placement: z.string().default("DASHBOARD"),
+  imageUrl: optionalUrl,
+  ctaLabel: z.string().max(80, "CTA label must be 80 characters or fewer.").optional(),
+  ctaUrl: optionalUrl,
+  sponsorName: z
+    .string()
+    .min(2, "Sponsor name is required.")
+    .max(180, "Sponsor name must be 180 characters or fewer."),
+  sponsorLogoUrl: optionalUrl,
+  category: z.string().max(80, "Category must be 80 characters or fewer.").optional(),
+  placement: z.string().max(50).default("DASHBOARD"),
   startsAt: z.string().optional(),
   endsAt: z.string().optional(),
   targetAudience: z.string().optional(),

@@ -1260,11 +1260,11 @@ model AdversPost {
   id                 String          @id @default(cuid())
   title              String
   body               String          @db.Text
-  imageUrl           String?
+  imageUrl           String?         @db.Text
   ctaLabel           String?
-  ctaUrl             String?
+  ctaUrl             String?         @db.Text
   sponsorName        String
-  sponsorLogoUrl     String?
+  sponsorLogoUrl     String?         @db.Text
   category           String?
   placement          String          @default("DASHBOARD")
   status             AdversPostStatus @default(DRAFT)

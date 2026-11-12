@@ -135,7 +135,8 @@ export default function AdminPostsClient({
             ADVERS Posts
           </h1>
           <p className="text-xs sm:text-sm text-base-content/70 mt-0.5">
-            Create sponsored posts shown inside the advertiser portal.
+            Published posts rotate through the dashboard sponsor carousel. Add
+            an action button text and link for each advertisement.
           </p>
         </div>
         <button
@@ -179,6 +180,7 @@ export default function AdminPostsClient({
               <input
                 type="text"
                 required
+                maxLength={180}
                 value={form.title}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, title: event.target.value }))
@@ -191,6 +193,7 @@ export default function AdminPostsClient({
               <input
                 type="text"
                 required
+                maxLength={180}
                 value={form.sponsorName}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, sponsorName: event.target.value }))
@@ -218,6 +221,7 @@ export default function AdminPostsClient({
               <label className="text-xs font-bold">Image URL</label>
               <input
                 type="url"
+                maxLength={4096}
                 value={form.imageUrl}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, imageUrl: event.target.value }))
@@ -229,6 +233,7 @@ export default function AdminPostsClient({
               <label className="text-xs font-bold">Sponsor logo URL</label>
               <input
                 type="url"
+                maxLength={4096}
                 value={form.sponsorLogoUrl}
                 onChange={(event) =>
                   setForm((current) => ({
@@ -243,26 +248,36 @@ export default function AdminPostsClient({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
-              <label className="text-xs font-bold">CTA label</label>
+              <label className="text-xs font-bold">Action button text</label>
               <input
                 type="text"
+                maxLength={80}
                 value={form.ctaLabel}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, ctaLabel: event.target.value }))
                 }
+                placeholder="Learn more, Get started, Book now"
                 className="input input-bordered w-full text-sm rounded-xl bg-base-200/50"
               />
+              <p className="text-[10px] text-base-content/50">
+                Shown on the dashboard carousel. Leave blank to use “Learn more”.
+              </p>
             </div>
             <div className="space-y-1">
-              <label className="text-xs font-bold">CTA URL</label>
+              <label className="text-xs font-bold">Action button link</label>
               <input
                 type="text"
+                maxLength={4096}
                 value={form.ctaUrl}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, ctaUrl: event.target.value }))
                 }
+                placeholder="https://... or /portal/explore"
                 className="input input-bordered w-full text-sm rounded-xl bg-base-200/50"
               />
+              <p className="text-[10px] text-base-content/50">
+                The action button only appears when a link is provided.
+              </p>
             </div>
           </div>
 
@@ -271,6 +286,7 @@ export default function AdminPostsClient({
               <label className="text-xs font-bold">Category</label>
               <input
                 type="text"
+                maxLength={80}
                 value={form.category}
                 onChange={(event) =>
                   setForm((current) => ({ ...current, category: event.target.value }))

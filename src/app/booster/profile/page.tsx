@@ -16,6 +16,7 @@ import {
   UserCircle,
 } from "lucide-react";
 import { requireUser } from "@/lib/auth";
+import { BOOSTER_CATEGORY_LABELS } from "@/lib/booster-status";
 import { formatDate } from "@/lib/format";
 import { getBoosterProfileForUser } from "@/server/data/booster";
 
@@ -204,10 +205,11 @@ export default async function BoosterProfilePage() {
                     key={category}
                     className="badge badge-sm bg-primary/10 border-none text-primary font-bold"
                   >
-                    {category
-                      .replaceAll("_", " ")
-                      .toLowerCase()
-                      .replace(/\b\w/g, (letter) => letter.toUpperCase())}
+                    {BOOSTER_CATEGORY_LABELS[category] ||
+                      category
+                        .replaceAll("_", " ")
+                        .toLowerCase()
+                        .replace(/\b\w/g, (letter) => letter.toUpperCase())}
                   </span>
                 ))
               ) : (

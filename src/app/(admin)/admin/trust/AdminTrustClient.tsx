@@ -27,6 +27,12 @@ export default function AdminTrustClient({ data }: { data: AdminTrustData }) {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [tab, setTab] = useState<Tab>("VERIFICATIONS");
+  const [verificationLevels, setVerificationLevels] = useState<
+    Record<string, string>
+  >({});
+  const [verificationNotes, setVerificationNotes] = useState<
+    Record<string, string>
+  >({});
 
   const run = (action: () => Promise<ActionResult>, message: string) => {
     setError(null);
@@ -112,68 +118,131 @@ export default function AdminTrustClient({ data }: { data: AdminTrustData }) {
             </div>
           ) : (
             <div className="space-y-3">
-              {data.verifications.map((profile) => (
-                <div
-                  key={profile.id}
-                  className="p-4 rounded-2xl border border-base-200 space-y-3"
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-black">{profile.displayName}</h3>
-                        <span className="badge badge-xs badge-warning badge-soft font-bold">
-                          {profile.verificationStatus}
-                        </span>
-                        {profile.fraudRisk !== "LOW" && (
-                          <span className="badge badge-xs badge-error badge-soft font-bold">
-                            Fraud: {profile.fraudRisk}
+              {data.verifications.map((profile) => {
+                const level =
+                  verificationLevels[profile.id] ??
+                  profile.verificationLevel ??
+                  "Standard";
+                const notes = verificationNotes[profile.id] ?? "";
+
+                return (
+                  <div
+                    key={profile.id}
+                    className="p-4 rounded-2xl border border-base-200 space-y-3"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-sm font-black">
+                            {profile.displayName}
+                          </h3>
+                          <span className="badge badge-xs badge-warning badge-soft font-bold">
+                            {profile.verificationStatus}
                           </span>
-                        )}
-                      </div>
-                      <div className="text-[11px] text-base-content/60">
-                        {profile.businessName || "Individual Booster"} · requested{" "}
-                        {profile.verificationLevel || "Standard"} · submitted{" "}
-                        {formatDate(profile.submittedAt || profile.createdAt)}
+                          {profile.fraudRisk !== "LOW" && (
+                            <span className="badge badge-xs badge-error badge-soft font-bold">
+                              Fraud: {profile.fraudRisk}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[11px] text-base-content/60">
+                          {profile.businessName || "Individual Booster"} · requested{" "}
+                          {profile.verificationLevel || "Standard"} · submitted{" "}
+                          {formatDate(profile.submittedAt || profile.createdAt)}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+
+                    {profile.submittedNote && (
+                      <div className="p-2.5 rounded-xl bg-primary/5 border border-primary/15 text-[11px] text-base-content/70">
+                        <span className="font-bold">Booster note: </span>
+                        {profile.submittedNote}
+                      </div>
+                    )}
+
+                    {profile.notes && (
+                      <div className="p-2.5 rounded-xl bg-base-200/50 text-[11px] text-base-content/70">
+                        {profile.notes}
+                      </div>
+                    )}
+
+                    <div className="flex flex-wrap gap-2">
+                      {profile.documents.length === 0 ? (
+                        <span className="text-[11px] text-base-content/50">
+                          No documents supplied.
+                        </span>
+                      ) : (
+                        profile.documents.map((document, index) => (
+                          <a
+                            key={`${document}-${index}`}
+                            href={document}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="badge badge-sm bg-base-200 border-none font-medium hover:bg-base-300"
+                          >
+                            Document {index + 1}
+                          </a>
+                        ))
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-base-200">
+                      <label className="space-y-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-base-content/50">
+                          Approved level
+                        </span>
+                        <select
+                          value={level}
+                          onChange={(event) =>
+                            setVerificationLevels((current) => ({
+                              ...current,
+                              [profile.id]: event.target.value,
+                            }))
+                          }
+                          className="select select-bordered select-sm w-full rounded-lg text-xs"
+                        >
+                          {["Standard", "Verified", "Business"].map((item) => (
+                            <option key={item} value={item}>
+                              {item}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                      <label className="space-y-1">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-base-content/50">
+                          Decision note
+                        </span>
+                        <input
+                          type="text"
+                          value={notes}
+                          onChange={(event) =>
+                            setVerificationNotes((current) => ({
+                              ...current,
+                              [profile.id]: event.target.value,
+                            }))
+                          }
+                          placeholder="Approval context or rejection reason"
+                          className="input input-bordered input-sm w-full rounded-lg text-xs"
+                        />
+                      </label>
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-end gap-2">
                       <button
                         type="button"
                         onClick={() => {
-                          const level = window.prompt(
-                            "Verification level to grant (e.g. Standard, Verified, Business):",
-                            profile.verificationLevel || "Verified"
-                          );
-                          if (!level) return;
-                          run(
-                            () =>
-                              reviewBoosterVerificationAction({
-                                boosterId: profile.id,
-                                decision: "VERIFIED",
-                                level,
-                              }),
-                            `${profile.displayName} verified.`
-                          );
-                        }}
-                        disabled={isPending}
-                        className="btn btn-xs btn-primary rounded-lg font-bold gap-1"
-                      >
-                        <BadgeCheck className="w-3.5 h-3.5" />
-                        Verify
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const notes = window.prompt(
-                            "Reason for rejecting this verification:"
-                          );
-                          if (!notes) return;
+                          if (!notes.trim()) {
+                            setError(
+                              "Add a decision note before rejecting this verification."
+                            );
+                            return;
+                          }
                           run(
                             () =>
                               reviewBoosterVerificationAction({
                                 boosterId: profile.id,
                                 decision: "REJECTED",
-                                notes,
+                                notes: notes.trim(),
                               }),
                             `${profile.displayName} verification rejected.`
                           );
@@ -184,43 +253,30 @@ export default function AdminTrustClient({ data }: { data: AdminTrustData }) {
                         <XCircle className="w-3.5 h-3.5" />
                         Reject
                       </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          run(
+                            () =>
+                              reviewBoosterVerificationAction({
+                                boosterId: profile.id,
+                                decision: "VERIFIED",
+                                level,
+                                notes: notes.trim() || undefined,
+                              }),
+                            `${profile.displayName} verified.`
+                          )
+                        }
+                        disabled={isPending}
+                        className="btn btn-xs btn-primary rounded-lg font-bold gap-1"
+                      >
+                        <BadgeCheck className="w-3.5 h-3.5" />
+                        Verify
+                      </button>
                     </div>
                   </div>
-
-                  {profile.submittedNote && (
-                    <div className="p-2.5 rounded-xl bg-primary/5 border border-primary/15 text-[11px] text-base-content/70">
-                      <span className="font-bold">Booster note: </span>
-                      {profile.submittedNote}
-                    </div>
-                  )}
-
-                  {profile.notes && (
-                    <div className="p-2.5 rounded-xl bg-base-200/50 text-[11px] text-base-content/70">
-                      {profile.notes}
-                    </div>
-                  )}
-
-                  <div className="flex flex-wrap gap-2">
-                    {profile.documents.length === 0 ? (
-                      <span className="text-[11px] text-base-content/50">
-                        No documents supplied.
-                      </span>
-                    ) : (
-                      profile.documents.map((document) => (
-                        <a
-                          key={document}
-                          href={document}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="badge badge-sm bg-base-200 border-none font-medium hover:bg-base-300"
-                        >
-                          Verification document
-                        </a>
-                      ))
-                    )}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
