@@ -12,6 +12,7 @@ const channelMap: Record<string, ChannelType> = {
   "Podcast advertising": ChannelType.PODCAST,
   AdBoosters: ChannelType.ADBOOSTERS,
   "Influencer marketplace": ChannelType.INFLUENCER,
+  "Influencer Hub": ChannelType.INFLUENCER,
 };
 
 function resolveChannel(value: string): ChannelType {
@@ -48,7 +49,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const { name, channel, location, budget, duration, goal } = body;
+    const { name, channel, location, budget, duration, goal, mediaSlotId } = body;
 
     if (!name || !channel || !location || !budget) {
       return NextResponse.json(
@@ -67,6 +68,7 @@ export async function POST(req: Request) {
         targetLocation: location,
         budget: Number(budget),
         duration: duration || "1 week",
+        mediaSlotId: mediaSlotId || null,
         userId: session.id,
         clientId: session.clientId,
       },

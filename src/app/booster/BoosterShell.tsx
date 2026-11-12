@@ -15,6 +15,7 @@ import {
   LogOut,
   Sparkles,
   SlidersHorizontal,
+  ShieldCheck,
   X,
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
@@ -51,6 +52,7 @@ export default function BoosterShell({
     { name: "My team", href: "/booster/team", icon: Users },
     { name: "Earnings", href: "/booster/earnings", icon: Wallet },
     { name: "My profile", href: "/booster/profile", icon: UserCircle },
+    { name: "Verification", href: "/booster/verification", icon: ShieldCheck },
     {
       name: "Notifications",
       href: "/booster/notifications",

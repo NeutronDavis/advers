@@ -28,6 +28,7 @@ export const CHANNEL_ICONS: Record<string, string> = {
   Newspapers: "▤",
   "Podcast advertising": "🎙",
   AdBoosters: "✦",
+  "Influencer Hub": "◎",
   "Influencer marketplace": "◎",
 };
 
@@ -39,7 +40,7 @@ export const CHANNEL_LABELS: Record<string, string> = {
   NEWSPAPER: "Newspapers",
   PODCAST: "Podcast advertising",
   ADBOOSTERS: "AdBoosters",
-  INFLUENCER: "Influencer marketplace",
+  INFLUENCER: "Influencer Hub",
 };
 
 export function channelIcon(channelLabel: string): string {

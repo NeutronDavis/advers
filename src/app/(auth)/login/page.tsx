@@ -26,7 +26,7 @@ export default function LoginPage() {
 
   const handleDemoLogin = (
     userEmail: string,
-    role: "admin" | "active-client" | "new-client"
+    role: "admin" | "active-client" | "new-client" | "booster"
   ) => {
     setDemoError(null);
     setEmail(userEmail);
@@ -103,6 +103,19 @@ export default function LoginPage() {
               <span>New Client Onboarding Flow</span>
             </span>
             <span className="text-[11px] text-base-content/50 font-normal">newclient@advers.ng</span>
+          </button>
+
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => handleDemoLogin("booster@advers.ng", "booster")}
+            className="flex items-center justify-between p-3 rounded-xl bg-base-100 border border-base-200 hover:border-primary/50 transition-all text-xs font-bold text-base-content group disabled:opacity-60"
+          >
+            <span className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-amber-600" />
+              <span>Booster Workspace</span>
+            </span>
+            <span className="text-[11px] text-base-content/50 font-normal">booster@advers.ng</span>
           </button>
         </div>
       </div>

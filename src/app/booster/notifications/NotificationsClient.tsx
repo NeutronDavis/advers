@@ -35,7 +35,7 @@ export default function NotificationsClient({
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-base-200">
         <div>
           <div className="text-[10px] font-black uppercase tracking-widest text-primary">

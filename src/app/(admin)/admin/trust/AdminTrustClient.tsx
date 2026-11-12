@@ -133,7 +133,7 @@ export default function AdminTrustClient({ data }: { data: AdminTrustData }) {
                       <div className="text-[11px] text-base-content/60">
                         {profile.businessName || "Individual Booster"} · requested{" "}
                         {profile.verificationLevel || "Standard"} · submitted{" "}
-                        {formatDate(profile.createdAt)}
+                        {formatDate(profile.submittedAt || profile.createdAt)}
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
@@ -186,6 +186,13 @@ export default function AdminTrustClient({ data }: { data: AdminTrustData }) {
                       </button>
                     </div>
                   </div>
+
+                  {profile.submittedNote && (
+                    <div className="p-2.5 rounded-xl bg-primary/5 border border-primary/15 text-[11px] text-base-content/70">
+                      <span className="font-bold">Booster note: </span>
+                      {profile.submittedNote}
+                    </div>
+                  )}
 
                   {profile.notes && (
                     <div className="p-2.5 rounded-xl bg-base-200/50 text-[11px] text-base-content/70">

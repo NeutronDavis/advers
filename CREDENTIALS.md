@@ -46,6 +46,10 @@ Navigate to **`/login`** in your browser. At the top of the login form, you will
 - **Business Profiles**: `/portal/business-profiles`
 - **Team & Access**: `/portal/team`
 - **Campaign Detail / Quote / Payment**: `/portal/campaigns/[id]`
+- **Client Notifications**: `/portal/notifications`
+- **Channel Category**: `/portal/channels/[slug]`
+- **Partner Detail & Time Slots**: `/portal/channels/[slug]/[partnerId]`
+- **Influencer Profile**: `/portal/influencers/[id]`
 - **Advertiser Booster Jobs**: `/portal/booster-jobs`
 - **Consolidated Reports**: `/portal/reports`
 - **Client Projects & Bookings**: `/portal/projects`
@@ -60,6 +64,8 @@ Navigate to **`/login`** in your browser. At the top of the login form, you will
 - **Staff Backoffice Cockpit**: `/admin`
 - **Staff Subscriptions**: `/admin/subscriptions`
 - **Staff Booster Jobs**: `/admin/boosters/jobs`
+- **Staff Influencer Hub**: `/admin/influencers`
+- **Staff ADVERS Posts**: `/admin/posts`
 - **Staff Finance & Ledger**: `/admin/finance`
 - **Staff Trust & Disputes**: `/admin/trust`
 - **Staff Backoffice Inbox**: `/admin/inbox`
@@ -116,6 +122,18 @@ Navigate to **`/login`** in your browser. At the top of the login form, you will
 - **Admin team assignment:** `/admin/boosters/jobs` includes a Booster team selector when creating a job.
 - **Consolidated reports:** `client@advers.ng` / `password123` → `/portal/reports`. Business Pro can switch between all profiles and individual branches.
 - **Notification preferences:** `client@advers.ng` → `/portal/settings`. In-app, email, SMS and WhatsApp toggles are saved per user.
+
+---
+
+## 📺 Inside-page UI/UX demo
+
+- **Channel categories:** log in as `client@advers.ng` / `password123`. On the Overview, click **FM radio**, **Television**, **Newspapers** or **Digital billboards**. The category page lists all partnering stations/screens/newspapers.
+- **Partner availability:** select a partner (e.g. Cool FM) to see its time slots. Choose a slot and click **Book this time** to open the campaign wizard with the partner and slot attached.
+- **Influencer Hub:** open `/portal/influencers`, select a creator, and send a collaboration request.
+- **ADVERS Posts:** the Overview hero is now the sponsored **ADVERS POSTS** widget. Admin management is at `/admin/posts`.
+- **Admin Influencer Hub:** `/admin/influencers` for creator verification and collaboration requests.
+- **Client notifications:** the bell in the client app opens `/portal/notifications` (not the Booster notification page).
+- **Booster demo login:** `/login` now includes a **Booster Workspace** button for `booster@advers.ng`.
 
 ---
 

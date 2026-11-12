@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   AlertCircle,
-  BadgeCheck,
+  ArrowLeft,
   CheckCircle2,
   Save,
   ShieldCheck,
@@ -15,7 +16,7 @@ import { BOOSTER_CATEGORY_LABELS } from "@/lib/booster-status";
 import { upsertBoosterProfileAction } from "@/server/actions/booster";
 import type { BoosterProfileData } from "@/server/data/booster";
 
-export default function BoosterProfileClient({
+export default function BoosterProfileForm({
   userName,
   profile,
 }: {
@@ -48,12 +49,6 @@ export default function BoosterProfileClient({
   );
   const [availableHours, setAvailableHours] = useState(profile?.availableHours || "");
   const [paymentInfo, setPaymentInfo] = useState("");
-  const [verificationDocuments, setVerificationDocuments] = useState(
-    profile?.verificationDocuments.join("\n") || ""
-  );
-  const [verificationLevel, setVerificationLevel] = useState(
-    profile?.verificationLevel || ""
-  );
 
   const toggleCategory = (category: string) => {
     setCategories((current) =>
@@ -82,8 +77,6 @@ export default function BoosterProfileClient({
         rates,
         availableHours,
         paymentInfo,
-        verificationDocuments,
-        verificationLevel,
       });
 
       if (!result.success) {
@@ -92,19 +85,27 @@ export default function BoosterProfileClient({
       }
 
       setSaved(true);
+      router.push("/booster/profile");
       router.refresh();
     });
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-base-200">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 pb-2 border-b border-base-200">
         <div>
+          <Link
+            href="/booster/profile"
+            className="inline-flex items-center gap-1.5 text-[11px] font-bold text-base-content/60 hover:text-base-content mb-2"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            Back to profile
+          </Link>
           <div className="text-[10px] font-black uppercase tracking-widest text-primary">
             Booster profile
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-            {profile ? "Your Booster profile" : "Create your Booster profile"}
+            {profile ? "Edit your Booster profile" : "Create your Booster profile"}
           </h1>
           <p className="text-xs sm:text-sm text-base-content/70 mt-0.5">
             Show advertisers what you can do, where you work and how you price
@@ -112,8 +113,7 @@ export default function BoosterProfileClient({
           </p>
         </div>
         {profile && (
-          <span className="badge badge-lg badge-success badge-soft font-bold self-start sm:self-auto">
-            <BadgeCheck className="w-4 h-4 mr-1" />
+          <span className="badge badge-lg badge-ghost border border-base-300 font-bold self-start sm:self-auto">
             {profile.verificationLabel}
           </span>
         )}
@@ -335,48 +335,16 @@ export default function BoosterProfileClient({
           </p>
         </div>
 
-        <div className="space-y-1 pt-3 border-t border-base-200">
-          <label htmlFor="booster-verification-docs" className="text-xs font-bold flex items-center gap-1.5">
-            <BadgeCheck className="w-3.5 h-3.5 text-primary" />
-            Verification documents (one URL per line)
-          </label>
-          <textarea
-            id="booster-verification-docs"
-            rows={3}
-            value={verificationDocuments}
-            onChange={(event) => setVerificationDocuments(event.target.value)}
-            placeholder={"https://.../ID-card.pdf\nhttps://.../business-registration.pdf\nhttps://.../portfolio.pdf"}
-            className="textarea textarea-bordered w-full text-xs rounded-xl bg-base-200/50"
-          />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-            <div className="space-y-1">
-              <label htmlFor="booster-verification-level" className="text-xs font-bold">
-                Requested verification level
-              </label>
-              <input
-                id="booster-verification-level"
-                type="text"
-                value={verificationLevel}
-                onChange={(event) => setVerificationLevel(event.target.value)}
-                placeholder="e.g. Standard, Verified, Business"
-                className="input input-bordered w-full text-sm rounded-xl bg-base-200/50"
-              />
-            </div>
-            <div className="flex items-end">
-              <div className="p-3 rounded-xl bg-primary/5 border border-primary/20 text-[11px] text-base-content/70 w-full">
-                Current status:{" "}
-                <span className="font-bold">
-                  {profile?.verificationLabel || "Unverified"}
-                </span>
-                {profile?.fraudRisk && profile.fraudRisk !== "LOW"
-                  ? ` · Fraud risk: ${profile.fraudRisk}`
-                  : ""}
-              </div>
-            </div>
-          </div>
-          <p className="text-[10px] text-base-content/50">
-            Documents are only visible to authorised Advers reviewers. Submitting
-            documents moves your profile into the verification queue.
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-base-200">
+          <p className="text-[11px] text-base-content/60">
+            Identity, business and portfolio documents are handled on the{" "}
+            <Link
+              href="/booster/verification"
+              className="font-bold text-primary hover:underline"
+            >
+              verification page
+            </Link>
+            .
           </p>
         </div>
 

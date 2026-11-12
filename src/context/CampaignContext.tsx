@@ -30,6 +30,7 @@ export interface CampaignCreateInput {
   goal: string;
   businessProfileId?: string;
   inventoryId?: string;
+  mediaSlotId?: string;
   productService?: string;
   targetAudience?: string;
   startDate?: string;
@@ -50,7 +51,12 @@ interface CampaignContextType {
   isModalOpen: boolean;
   selectedChannel: string;
   selectedInventoryId: string | null;
-  openCreateModal: (channel?: string, inventoryId?: string) => void;
+  selectedMediaSlotId: string | null;
+  openCreateModal: (
+    channel?: string,
+    inventoryId?: string,
+    mediaSlotId?: string
+  ) => void;
   closeCreateModal: () => void;
   toastMessage: string | null;
   showToast: (msg: string) => void;
@@ -71,6 +77,7 @@ export function CampaignProvider({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedChannel, setSelectedChannel] = useState("");
   const [selectedInventoryId, setSelectedInventoryId] = useState<string | null>(null);
+  const [selectedMediaSlotId, setSelectedMediaSlotId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -84,16 +91,21 @@ export function CampaignProvider({
     }, 3200);
   }, []);
 
-  const openCreateModal = useCallback((channel?: string, inventoryId?: string) => {
-    setSelectedChannel(channel || "");
-    setSelectedInventoryId(inventoryId || null);
-    setIsModalOpen(true);
-  }, []);
+  const openCreateModal = useCallback(
+    (channel?: string, inventoryId?: string, mediaSlotId?: string) => {
+      setSelectedChannel(channel || "");
+      setSelectedInventoryId(inventoryId || null);
+      setSelectedMediaSlotId(mediaSlotId || null);
+      setIsModalOpen(true);
+    },
+    []
+  );
 
   const closeCreateModal = useCallback(() => {
     setIsModalOpen(false);
     setSelectedChannel("");
     setSelectedInventoryId(null);
+    setSelectedMediaSlotId(null);
   }, []);
 
   const addCampaign = useCallback(
@@ -140,6 +152,7 @@ export function CampaignProvider({
         isModalOpen,
         selectedChannel,
         selectedInventoryId,
+        selectedMediaSlotId,
         openCreateModal,
         closeCreateModal,
         toastMessage,

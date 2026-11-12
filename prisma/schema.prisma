@@ -268,6 +268,13 @@ enum BoosterTeamStatus {
   ARCHIVED
 }
 
+enum AdversPostStatus {
+  DRAFT
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
 model User {
   id                 String        @id @default(cuid())
   email              String        @unique
@@ -303,6 +310,8 @@ model User {
   disputesReviewed   Dispute[] @relation("DisputeReviewer")
   notifications      Notification[]
   notificationPreference NotificationPreference?
+  influencerProfile  InfluencerProfile?
+  adversPostsCreated AdversPost[] @relation("AdversPostCreator")
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
 
@@ -328,6 +337,7 @@ model Client {
   subscriptions Subscription[]
   businessProfiles BusinessProfile[]
   boosterJobs BoosterJob[]
+  influencerRequests InfluencerRequest[]
   activityLogs ActivityLog[]
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
@@ -631,6 +641,8 @@ model Campaign {
   businessProfile    BusinessProfile?    @relation(fields: [businessProfileId], references: [id], onDelete: SetNull)
   inventoryId        String?
   inventory          MediaInventory?     @relation(fields: [inventoryId], references: [id], onDelete: SetNull)
+  mediaSlotId        String?
+  mediaSlot          MediaSlot?          @relation(fields: [mediaSlotId], references: [id], onDelete: SetNull)
   proofs             ProofOfPerformance[]
   boosterLinks       BoosterLink[]
   settlements        MediaSettlement[]
@@ -638,6 +650,7 @@ model Campaign {
   invoices           Invoice[]
   statusEvents       CampaignStatusEvent[]
   boosterJobs        BoosterJob[]
+  influencerRequests InfluencerRequest[]
   disputes           Dispute[]
   ledgerEntries      LedgerEntry[]
   createdAt          DateTime            @default(now())
@@ -646,6 +659,7 @@ model Campaign {
   @@index([userId])
   @@index([clientId])
   @@index([businessProfileId])
+  @@index([mediaSlotId])
   @@index([status])
   @@index([channel])
   @@index([createdAt])
@@ -668,12 +682,36 @@ model MediaInventory {
   vendorContact   String?
   status          String       @default("OPERATIONAL")
   campaigns       Campaign[]
+  slots           MediaSlot[]
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
 
   @@index([channel])
   @@index([city])
   @@index([status])
+}
+
+model MediaSlot {
+  id          String         @id @default(cuid())
+  inventoryId String
+  inventory   MediaInventory @relation(fields: [inventoryId], references: [id], onDelete: Cascade)
+  label       String
+  startTime   String?
+  endTime     String?
+  daysOfWeek  String?
+  date        DateTime?
+  rate        Int
+  unitType    String
+  capacity    Int            @default(1)
+  booked      Int            @default(0)
+  status      String         @default("AVAILABLE")
+  campaigns   Campaign[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([inventoryId])
+  @@index([status])
+  @@index([date])
 }
 
 model ProofOfPerformance {
@@ -882,7 +920,10 @@ model BoosterProfile {
   verificationStatus BoosterVerificationStatus @default(UNVERIFIED)
   verificationDocumentsJson String?          @db.Text
   verificationNotes  String?                 @db.Text
+  verificationSubmittedNote String?          @db.Text
   verificationLevel  String?
+  verificationSubmittedAt DateTime?
+  verificationReviewedAt  DateTime?
   verifiedAt         DateTime?
   verifiedById       String?
   verifiedBy         User?                   @relation("BoosterVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
@@ -1168,5 +1209,76 @@ model NotificationPreference {
   whatsapp  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model InfluencerProfile {
+  id             String              @id @default(cuid())
+  userId         String?             @unique
+  user           User?               @relation(fields: [userId], references: [id], onDelete: SetNull)
+  displayName    String
+  handle         String
+  niche          String
+  platform       String
+  followers      Int                 @default(0)
+  engagementRate Float?
+  rateCard       Int?
+  bio            String?             @db.Text
+  avatarUrl      String?
+  audienceJson   String?             @db.Text
+  verified       Boolean             @default(false)
+  status         String              @default("ACTIVE")
+  requests       InfluencerRequest[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  @@index([niche])
+  @@index([verified])
+  @@index([status])
+}
+
+model InfluencerRequest {
+  id           String            @id @default(cuid())
+  influencerId String
+  influencer   InfluencerProfile @relation(fields: [influencerId], references: [id], onDelete: Cascade)
+  clientId     String
+  client       Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  campaignId   String?
+  campaign     Campaign?         @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  brief        String            @db.Text
+  budget       Int
+  status       String            @default("REQUESTED")
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  respondedAt  DateTime?
+
+  @@index([influencerId])
+  @@index([clientId])
+  @@index([status])
+}
+
+model AdversPost {
+  id                 String          @id @default(cuid())
+  title              String
+  body               String          @db.Text
+  imageUrl           String?
+  ctaLabel           String?
+  ctaUrl             String?
+  sponsorName        String
+  sponsorLogoUrl     String?
+  category           String?
+  placement          String          @default("DASHBOARD")
+  status             AdversPostStatus @default(DRAFT)
+  startsAt           DateTime?
+  endsAt             DateTime?
+  targetAudienceJson String?         @db.Text
+  createdById        String
+  createdBy          User            @relation("AdversPostCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  @@index([status])
+  @@index([placement])
+  @@index([startsAt])
+  @@index([endsAt])
 }
 

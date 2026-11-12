@@ -63,12 +63,20 @@ export function landingPathForRole(
  * is sent to billing before onboarding or the dashboard.
  */
 export async function landingPathForAuthenticatedUser(user: {
+  id: string;
   role: AuthSessionUser["role"];
   clientId: string | null;
   profileCompleteAt: Date | null;
 }): Promise<string> {
   if (user.role === "ADMIN" || user.role === "STAFF") return "/admin";
-  if (!user.clientId) return "/portal/billing";
+
+  if (!user.clientId) {
+    const boosterProfile = await prisma.boosterProfile.findUnique({
+      where: { userId: user.id },
+      select: { id: true },
+    });
+    return boosterProfile ? "/booster" : "/portal/billing";
+  }
 
   const subscription = await prisma.subscription.findFirst({
     where: {

@@ -247,8 +247,9 @@ export async function reviewBoosterVerificationAction(input: {
         verificationStatus: input.decision,
         verificationLevel: input.level?.trim() || profile.verificationLevel,
         verificationNotes: input.notes?.trim() || null,
-        verifiedAt: new Date(),
-        verifiedById: session.id,
+        verificationReviewedAt: new Date(),
+        verifiedAt: input.decision === "VERIFIED" ? new Date() : null,
+        verifiedById: input.decision === "VERIFIED" ? session.id : null,
       },
     });
     await tx.auditLog.create({
@@ -274,11 +275,12 @@ export async function reviewBoosterVerificationAction(input: {
       (input.decision === "VERIFIED"
         ? "Your Booster profile is now verified."
         : "Please update your verification documents and try again."),
-    link: "/booster/profile",
+    link: "/booster/verification",
   });
 
   revalidatePath("/admin/trust");
   revalidatePath("/booster/profile");
+  revalidatePath("/booster/verification");
   revalidatePath("/booster/dashboard");
   return { success: true, id: profile.id };
 }

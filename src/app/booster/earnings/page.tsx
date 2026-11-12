@@ -12,7 +12,7 @@ export default async function BoosterEarningsPage() {
 
   if (!data) {
     return (
-      <div className="max-w-3xl mx-auto card bg-base-100 border border-base-200 rounded-3xl p-10 text-center space-y-3">
+      <div className="card bg-base-100 border border-base-200 rounded-3xl p-10 text-center space-y-3">
         <h1 className="text-xl font-extrabold">Booster earnings</h1>
         <p className="text-xs text-base-content/60">
           Create your Booster profile to start earning from marketplace jobs.

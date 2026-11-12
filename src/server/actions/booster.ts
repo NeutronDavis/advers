@@ -41,9 +41,15 @@ const ProfileSchema = z.object({
   rates: z.string().optional(),
   availableHours: z.string().optional(),
   paymentInfo: z.string().optional(),
-  verificationDocuments: z.string().optional(),
-  verificationLevel: z.string().optional(),
 });
+
+const VerificationSchema = z.object({
+  documents: z.string().min(1, "Add at least one verification document."),
+  level: z.string().optional(),
+  note: z.string().optional(),
+});
+
+export type SubmitBoosterVerificationInput = z.input<typeof VerificationSchema>;
 
 export type UpsertBoosterProfileInput = z.input<typeof ProfileSchema>;
 
@@ -79,12 +85,6 @@ export async function upsertBoosterProfileAction(
     })
     .filter((item) => item.label && item.amount);
 
-  const verificationDocuments = parseLines(parsed.data.verificationDocuments);
-  const existingProfile = await prisma.boosterProfile.findUnique({
-    where: { userId: session.id },
-    select: { verificationStatus: true },
-  });
-
   const profile = await prisma.boosterProfile.upsert({
     where: { userId: session.id },
     update: {
@@ -102,16 +102,6 @@ export async function upsertBoosterProfileAction(
       paymentInfoJson: parsed.data.paymentInfo
         ? JSON.stringify({ details: parsed.data.paymentInfo.trim() })
         : undefined,
-      verificationDocumentsJson:
-        verificationDocuments.length > 0
-          ? JSON.stringify(verificationDocuments)
-          : undefined,
-      verificationLevel: parsed.data.verificationLevel?.trim() || undefined,
-      verificationStatus:
-        verificationDocuments.length > 0 &&
-        existingProfile?.verificationStatus !== "VERIFIED"
-          ? "PENDING"
-          : undefined,
     },
     create: {
       userId: session.id,
@@ -129,13 +119,6 @@ export async function upsertBoosterProfileAction(
       paymentInfoJson: parsed.data.paymentInfo
         ? JSON.stringify({ details: parsed.data.paymentInfo.trim() })
         : null,
-      verificationStatus:
-        verificationDocuments.length > 0 ? "PENDING" : "UNVERIFIED",
-      verificationDocumentsJson:
-        verificationDocuments.length > 0
-          ? JSON.stringify(verificationDocuments)
-          : null,
-      verificationLevel: parsed.data.verificationLevel?.trim() || null,
       status: "ACTIVE",
     },
   });
@@ -149,21 +132,100 @@ export async function upsertBoosterProfileAction(
     },
   });
 
-  if (
-    verificationDocuments.length > 0 &&
-    existingProfile?.verificationStatus !== "VERIFIED"
-  ) {
-    await notifyAdmins({
-      event: "BOOSTER_VERIFICATION_SUBMITTED",
-      title: "Booster verification submitted",
-      body: `${profile.displayName} submitted verification documents.`,
-      link: "/admin/trust",
-    });
-  }
-
   revalidatePath("/booster/profile");
+  revalidatePath("/booster/profile/edit");
   revalidatePath("/booster/dashboard");
   revalidatePath("/portal/dashboard");
+  return { success: true, id: profile.id };
+}
+
+export async function submitBoosterVerificationAction(
+  input: SubmitBoosterVerificationInput
+): Promise<BoosterActionResult> {
+  const session = await getSession();
+  if (!session) return { success: false, error: "Please sign in." };
+
+  const parsed = VerificationSchema.safeParse(input);
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0].message };
+  }
+
+  const profile = await prisma.boosterProfile.findUnique({
+    where: { userId: session.id },
+  });
+  if (!profile) {
+    return {
+      success: false,
+      error: "Create your Booster profile before submitting verification.",
+    };
+  }
+  if (profile.verificationStatus === "VERIFIED") {
+    return { success: false, error: "Your Booster profile is already verified." };
+  }
+  if (profile.verificationStatus === "PENDING") {
+    return {
+      success: false,
+      error: "Your verification is already under review. Please wait for a decision.",
+    };
+  }
+
+  const documents = parseLines(parsed.data.documents);
+  if (documents.length === 0) {
+    return { success: false, error: "Add at least one verification document." };
+  }
+  const invalidDocument = documents.find(
+    (document) => !/^https?:\/\//i.test(document)
+  );
+  if (invalidDocument) {
+    return {
+      success: false,
+      error: "Verification document links must start with http:// or https://.",
+    };
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.boosterProfile.update({
+      where: { id: profile.id },
+      data: {
+        verificationStatus: "PENDING",
+        verificationDocumentsJson: JSON.stringify(documents),
+        verificationLevel:
+          parsed.data.level?.trim() || profile.verificationLevel || "Standard",
+        verificationSubmittedNote: parsed.data.note?.trim() || null,
+        verificationSubmittedAt: new Date(),
+        verificationReviewedAt: null,
+        verificationNotes: null,
+        verifiedAt: null,
+        verifiedById: null,
+      },
+    });
+
+    await tx.activityLog.create({
+      data: {
+        userId: session.id,
+        action: "BOOSTER_VERIFICATION_SUBMITTED",
+        description: `${session.name} submitted Booster verification documents.`,
+        metadata: JSON.stringify({
+          boosterId: profile.id,
+          documents: documents.length,
+        }),
+      },
+    });
+  });
+
+  await notifyAdmins({
+    event: "BOOSTER_VERIFICATION_SUBMITTED",
+    title: "Booster verification submitted",
+    body: `${profile.displayName} submitted ${documents.length} verification document${
+      documents.length === 1 ? "" : "s"
+    }.`,
+    link: "/admin/trust",
+  });
+
+  revalidatePath("/booster/profile");
+  revalidatePath("/booster/verification");
+  revalidatePath("/booster/dashboard");
+  revalidatePath("/admin/trust");
   return { success: true, id: profile.id };
 }
 
@@ -486,7 +548,9 @@ export async function markNotificationReadAction(
   });
 
   revalidatePath("/booster/dashboard");
+  revalidatePath("/booster/notifications");
   revalidatePath("/portal/dashboard");
+  revalidatePath("/portal/notifications");
   return { success: true, id: notificationId };
 }
 
@@ -500,6 +564,8 @@ export async function markAllNotificationsReadAction(): Promise<BoosterActionRes
   });
 
   revalidatePath("/booster/dashboard");
+  revalidatePath("/booster/notifications");
   revalidatePath("/portal/dashboard");
+  revalidatePath("/portal/notifications");
   return { success: true };
 }

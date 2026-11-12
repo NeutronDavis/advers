@@ -27,6 +27,7 @@ const CreateCampaignSchema = z.object({
   goal: z.string().min(1, "Choose a campaign objective."),
   businessProfileId: z.string().optional(),
   inventoryId: z.string().optional(),
+  mediaSlotId: z.string().optional(),
   productService: z.string().optional(),
   targetAudience: z.string().optional(),
   startDate: OptionalDate,
@@ -59,6 +60,7 @@ const CHANNEL_MAP: Record<string, ChannelType> = {
   "Podcast advertising": ChannelType.PODCAST,
   AdBoosters: ChannelType.ADBOOSTERS,
   "Influencer marketplace": ChannelType.INFLUENCER,
+  "Influencer Hub": ChannelType.INFLUENCER,
 };
 
 function resolveChannel(value: string): ChannelType {
@@ -123,6 +125,33 @@ export async function createCampaignAction(
     inventoryId = inventory.id;
   }
 
+  let mediaSlotId: string | null = null;
+  if (parsed.data.mediaSlotId) {
+    const slot = await prisma.mediaSlot.findUnique({
+      where: { id: parsed.data.mediaSlotId },
+      include: { inventory: { select: { id: true, status: true } } },
+    });
+    if (
+      !slot ||
+      slot.inventory.status !== "OPERATIONAL" ||
+      !["AVAILABLE", "LIMITED"].includes(slot.status) ||
+      slot.booked >= slot.capacity
+    ) {
+      return {
+        success: false,
+        error: "That time slot is no longer available. Choose another time.",
+      };
+    }
+    if (inventoryId && slot.inventoryId !== inventoryId) {
+      return {
+        success: false,
+        error: "The selected time slot does not belong to the selected partner.",
+      };
+    }
+    mediaSlotId = slot.id;
+    inventoryId = slot.inventoryId;
+  }
+
   const campaign = await prisma.$transaction(async (tx) => {
     const created = await tx.campaign.create({
       data: {
@@ -148,6 +177,7 @@ export async function createCampaignAction(
         notes: parsed.data.notes?.trim() || null,
         businessProfileId,
         inventoryId,
+        mediaSlotId,
         userId: session.id,
         clientId: session.clientId,
       },
@@ -191,6 +221,7 @@ const SaveDraftSchema = z.object({
   goal: z.string().optional(),
   businessProfileId: z.string().optional(),
   inventoryId: z.string().optional(),
+  mediaSlotId: z.string().optional(),
   productService: z.string().optional(),
   targetAudience: z.string().optional(),
   startDate: OptionalDate,
@@ -250,6 +281,18 @@ export async function saveCampaignDraftAction(
     if (inventory) inventoryId = inventory.id;
   }
 
+  let mediaSlotId: string | null = null;
+  if (parsed.data.mediaSlotId) {
+    const slot = await prisma.mediaSlot.findUnique({
+      where: { id: parsed.data.mediaSlotId },
+      select: { id: true, inventoryId: true },
+    });
+    if (slot && (!inventoryId || slot.inventoryId === inventoryId)) {
+      mediaSlotId = slot.id;
+      inventoryId = slot.inventoryId;
+    }
+  }
+
   const campaign = await prisma.$transaction(async (tx) => {
     const created = await tx.campaign.create({
       data: {
@@ -277,6 +320,7 @@ export async function saveCampaignDraftAction(
         notes: parsed.data.notes?.trim() || null,
         businessProfileId,
         inventoryId,
+        mediaSlotId,
         userId: session.id,
         clientId: session.clientId,
       },

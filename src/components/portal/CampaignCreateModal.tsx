@@ -41,6 +41,7 @@ export default function CampaignCreateModal() {
     isModalOpen,
     selectedChannel,
     selectedInventoryId,
+    selectedMediaSlotId,
     businessProfiles,
     closeCreateModal,
     addCampaign,
@@ -61,7 +62,7 @@ export default function CampaignCreateModal() {
     setForm(() => {
       const next = { ...EMPTY_FORM };
       if (selectedChannel?.startsWith("Influencer:")) {
-        next.channel = "Influencer marketplace";
+        next.channel = "Influencer Hub";
         next.notes = `Requested creator: ${selectedChannel.replace("Influencer: ", "")}`;
       } else if (selectedChannel) {
         next.channel = selectedChannel;
@@ -120,6 +121,7 @@ export default function CampaignCreateModal() {
       goal: form.goal,
       businessProfileId: form.businessProfileId || undefined,
       inventoryId: selectedInventoryId || undefined,
+      mediaSlotId: selectedMediaSlotId || undefined,
       productService: form.productService || undefined,
       targetAudience: form.targetAudience || undefined,
       startDate: form.startDate || undefined,
@@ -158,6 +160,7 @@ export default function CampaignCreateModal() {
       goal: form.goal,
       businessProfileId: form.businessProfileId || undefined,
       inventoryId: selectedInventoryId || undefined,
+      mediaSlotId: selectedMediaSlotId || undefined,
       productService: form.productService || undefined,
       targetAudience: form.targetAudience || undefined,
       startDate: form.startDate || undefined,
@@ -231,6 +234,16 @@ export default function CampaignCreateModal() {
           </div>
         )}
 
+        {selectedMediaSlotId && (
+          <div className="p-3 rounded-2xl bg-[var(--portal-soft)] border border-[var(--portal-line)] text-[11px] text-[var(--portal-body)] flex items-start gap-2">
+            <CalendarDays className="w-4 h-4 text-[var(--portal-gold-ink)] shrink-0" />
+            <span>
+              Your selected time slot is attached. The media partner will confirm
+              the booking during review.
+            </span>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Step 1: Basics */}
           {step === 1 && (
@@ -270,7 +283,7 @@ export default function CampaignCreateModal() {
                     <option value="Newspapers">Newspapers &amp; Press</option>
                     <option value="Podcast advertising">Podcast advertising</option>
                     <option value="AdBoosters">AdBoosters network</option>
-                    <option value="Influencer marketplace">Influencer marketplace</option>
+                    <option value="Influencer Hub">Influencer Hub</option>
                   </select>
                 </div>
 

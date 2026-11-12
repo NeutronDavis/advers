@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { useCampaign } from "@/context/CampaignContext";
 import {
   Compass,
@@ -19,6 +20,7 @@ import {
   Building2,
 } from "lucide-react";
 import { formatNaira } from "@/lib/format";
+import { getChannelByLabel } from "@/lib/channels";
 
 export interface ExploreInventoryItem {
   id: string;
@@ -47,7 +49,7 @@ export default function ExploreClient({
 
   const channelCards = [
     {
-      id: "dooh", bookChannel: "Digital billboards",
+      id: "dooh", bookChannel: "Digital billboards", slug: "digital-billboards",
       title: "Digital Billboards (DOOH)",
       category: "OUTDOOR",
       icon: "▣",
@@ -60,7 +62,7 @@ export default function ExploreClient({
       featuredCorridor: "Lekki Toll Plaza & Victoria Island Ahmadu Bello Way",
     },
     {
-      id: "ooh", bookChannel: "Static billboards",
+      id: "ooh", bookChannel: "Static billboards", slug: "static-billboards",
       title: "Static Billboards (OOH)",
       category: "OUTDOOR",
       icon: "▧",
@@ -73,7 +75,7 @@ export default function ExploreClient({
       featuredCorridor: "Third Mainland Bridge Toll Outbound",
     },
     {
-      id: "radio", bookChannel: "FM radio",
+      id: "radio", bookChannel: "FM radio", slug: "fm-radio",
       title: "FM Radio Advertising",
       category: "BROADCAST",
       icon: "♫",
@@ -86,7 +88,7 @@ export default function ExploreClient({
       featuredCorridor: "Cool FM, Nigeria Info & Wazobia FM Networks",
     },
     {
-      id: "tv", bookChannel: "Television",
+      id: "tv", bookChannel: "Television", slug: "television",
       title: "Television Advertising",
       category: "BROADCAST",
       icon: "▣",
@@ -99,7 +101,7 @@ export default function ExploreClient({
       featuredCorridor: "Channels TV, Silverbird, TVC News & Arise TV",
     },
     {
-      id: "print", bookChannel: "Newspapers",
+      id: "print", bookChannel: "Newspapers", slug: "newspapers",
       title: "Newspaper & Print Advertising",
       category: "PRINT",
       icon: "▤",
@@ -112,7 +114,7 @@ export default function ExploreClient({
       featuredCorridor: "The Punch, BusinessDay, ThisDay & The Guardian",
     },
     {
-      id: "podcasts", bookChannel: "Podcast advertising",
+      id: "podcasts", bookChannel: "Podcast advertising", slug: "podcasts",
       title: "Podcast Sponsorships",
       category: "DIGITAL",
       icon: "🎙",
@@ -125,7 +127,7 @@ export default function ExploreClient({
       featuredCorridor: "Top Business, Pop Culture & Tech Creator Shows",
     },
     {
-      id: "adboosters", bookChannel: "AdBoosters",
+      id: "adboosters", bookChannel: "AdBoosters", slug: "adboosters",
       title: "AdBoosters Referral Network",
       category: "CROWD",
       icon: "✦",
@@ -138,8 +140,8 @@ export default function ExploreClient({
       featuredCorridor: "Active nationwide crowd promoter pool",
     },
     {
-      id: "influencers", bookChannel: "Influencer marketplace",
-      title: "Influencer Marketplace",
+      id: "influencers", bookChannel: "Influencer Hub", slug: "influencers",
+      title: "Influencer Hub",
       category: "DIGITAL",
       icon: "◎",
       locations: ["TikTok, Instagram, YouTube, X"],
@@ -293,13 +295,12 @@ export default function ExploreClient({
               <span className="text-[11px] text-[var(--portal-muted)]">
                 Verified Advers Media Partner Slot
               </span>
-              <button
-                type="button"
-                onClick={() => openCreateModal(channel.bookChannel)}
+              <Link
+                href={`/portal/channels/${channel.slug}`}
                 className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl text-xs font-bold px-4"
               >
-                Book channel
-              </button>
+                View partners
+              </Link>
             </div>
           </div>
         ))}
@@ -420,13 +421,14 @@ export default function ExploreClient({
                   <span className="text-[10px] text-[var(--portal-muted)]">
                     Availability confirmed on review
                   </span>
-                  <button
-                    type="button"
-                    onClick={() => openCreateModal(item.channel, item.id)}
+                  <Link
+                    href={`/portal/channels/${
+                      getChannelByLabel(item.channel)?.slug || "digital-billboards"
+                    }/${item.id}`}
                     className="btn btn-sm bg-[var(--portal-gold)] hover:bg-[var(--portal-gold-hover)] text-[var(--portal-obsidian)] border-none rounded-xl text-xs font-bold px-4"
                   >
-                    Book this slot
-                  </button>
+                    View availability
+                  </Link>
                 </div>
               </div>
             ))}

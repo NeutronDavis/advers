@@ -98,7 +98,7 @@ export default function JobDetailClient({
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="space-y-6">
       <Link
         href="/booster/jobs"
         className="inline-flex items-center gap-1.5 text-xs font-bold text-base-content/60 hover:text-base-content"

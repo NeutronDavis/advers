@@ -18,6 +18,7 @@ import {
   CreditCard,
   Briefcase,
   ShieldAlert,
+  Megaphone,
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { logoutAction } from "@/server/actions/auth";
@@ -65,6 +66,11 @@ export default function AdminShell({
       icon: CreditCard,
     },
     {
+      name: "ADVERS Posts",
+      href: "/admin/posts",
+      icon: Megaphone,
+    },
+    {
       name: "Campaign Moderation",
       href: "/admin/moderation",
       icon: ShieldCheck,
@@ -72,6 +78,7 @@ export default function AdminShell({
     },
     { name: "Media Inventory", href: "/admin/inventory", icon: Tv },
     { name: "Booster Jobs", href: "/admin/boosters/jobs", icon: Briefcase },
+    { name: "Influencer Hub", href: "/admin/influencers", icon: Users },
     { name: "Trust & Disputes", href: "/admin/trust", icon: ShieldAlert },
     { name: "Proof of Performance", href: "/admin/pop", icon: FileCheck },
     { name: "AdBoosters Network", href: "/admin/adboosters", icon: Sparkles },
@@ -90,7 +97,7 @@ export default function AdminShell({
   const roleLabel = user.role === "ADMIN" ? "Administrator" : "Staff member";
 
   return (
-    <div className="min-h-screen bg-base-100 text-base-content flex flex-col lg:flex-row transition-colors duration-300">
+    <div className="min-h-screen lg:h-screen lg:overflow-hidden bg-base-100 text-base-content flex flex-col lg:flex-row transition-colors duration-300">
       {/* Mobile Top Header Bar */}
       <div className="lg:hidden flex items-center justify-between p-4 bg-base-100/90 border-b border-base-200 sticky top-0 z-40 backdrop-blur-md">
         <Link href="/admin" className="flex items-center gap-2.5">
@@ -113,7 +120,7 @@ export default function AdminShell({
 
       {/* Sidebar Navigation (Desktop & Mobile Drawer) */}
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 bg-base-200/95 border-r border-base-200 flex flex-col justify-between transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 bg-base-200/95 border-r border-base-200 flex flex-col justify-between transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto lg:h-screen ${
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -225,7 +232,7 @@ export default function AdminShell({
       </aside>
 
       {/* Main Backoffice Area */}
-      <div className="flex-1 flex flex-col min-w-0 pb-20 lg:pb-0">
+      <div className="flex-1 flex flex-col min-w-0 pb-20 lg:pb-0 lg:h-screen lg:overflow-y-auto">
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1440px] w-full mx-auto">
           {children}
         </main>

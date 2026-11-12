@@ -38,13 +38,15 @@ function initials(name: string): string {
 
 export default function PortalShell({
   user,
+  unreadNotifications = 0,
   children,
 }: {
   user: AuthSessionUser;
+  unreadNotifications?: number;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const { openCreateModal, toastMessage, showToast } = useCampaign();
+  const { openCreateModal, toastMessage } = useCampaign();
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
   const workspaceNav = [
@@ -53,12 +55,13 @@ export default function PortalShell({
     { label: "Reports", href: "/portal/reports", icon: BarChart3 },
     { label: "Explore advertising", href: "/portal/explore", icon: Compass },
     { label: "AdBoosters", href: "/portal/adboosters", icon: Sparkles },
-    { label: "Influencer hub", href: "/portal/influencers", icon: Users },
+    { label: "Influencer Hub", href: "/portal/influencers", icon: Users },
     { label: "Booster jobs", href: "/portal/booster-jobs", icon: Briefcase },
     { label: "Business profiles", href: "/portal/business-profiles", icon: Building2 },
   ];
 
   const manageNav = [
+    { label: "Notifications", href: "/portal/notifications", icon: Bell },
     { label: "Billing & plan", href: "/portal/billing", icon: CreditCard },
     { label: "Team & access", href: "/portal/team", icon: UserCog },
     { label: "Wallet & payments", href: "/portal/wallet", icon: Wallet },
@@ -167,24 +170,8 @@ export default function PortalShell({
           </div>
         </div>
 
-        {/* Sidebar Bottom Growth Callout */}
+        {/* Sidebar Footer */}
         <div className="pt-4 space-y-3">
-          <div className="bg-[var(--portal-obsidian-2)] border border-[var(--portal-obsidian-line)] rounded-2xl p-4 text-white space-y-2">
-            <div className="text-xs font-bold leading-snug">
-              Ready to grow your brand?
-            </div>
-            <p className="text-[11px] text-[var(--portal-obsidian-muted)] leading-relaxed">
-              Turn your next big idea into a campaign people can discover.
-            </p>
-            <button
-              type="button"
-              onClick={() => openCreateModal()}
-              className="btn w-full bg-[var(--portal-gold)] hover:bg-[var(--portal-gold-hover)] text-[var(--portal-obsidian)] border-none font-extrabold text-xs rounded-xl shadow-md py-2.5 h-auto min-h-0"
-            >
-              ＋ Create a campaign
-            </button>
-          </div>
-
           <form action={logoutAction}>
             <button
               type="submit"
@@ -219,11 +206,18 @@ export default function PortalShell({
           {/* User Profile & Actions */}
           <div className="flex items-center gap-3.5">
             <Link
-              href="/booster/notifications"
+              href="/portal/notifications"
               className="btn btn-ghost btn-circle btn-sm text-[var(--portal-body)] bg-[var(--portal-soft)] border border-[var(--portal-line)]"
               aria-label="Notifications"
             >
-              <Bell className="w-4 h-4" />
+              <span className="indicator">
+                <Bell className="w-4 h-4" />
+                {unreadNotifications > 0 && (
+                  <span className="badge badge-xs bg-[var(--portal-gold)] text-[var(--portal-obsidian)] border-none indicator-item font-bold">
+                    {unreadNotifications}
+                  </span>
+                )}
+              </span>
             </Link>
 
             <div className="flex items-center gap-3 pl-2 border-l border-[var(--portal-line)]">
@@ -261,6 +255,20 @@ export default function PortalShell({
           </Link>
 
           <div className="flex items-center gap-2">
+            <Link
+              href="/portal/notifications"
+              className="btn btn-ghost btn-circle btn-sm bg-[var(--portal-soft)] text-[var(--portal-body)]"
+              aria-label="Notifications"
+            >
+              <span className="indicator">
+                <Bell className="w-4 h-4" />
+                {unreadNotifications > 0 && (
+                  <span className="badge badge-xs bg-[var(--portal-gold)] text-[var(--portal-obsidian)] border-none indicator-item font-bold">
+                    {unreadNotifications}
+                  </span>
+                )}
+              </span>
+            </Link>
             <button
               onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
               className="btn btn-ghost btn-circle btn-sm bg-[var(--portal-soft)] text-[var(--portal-body)]"

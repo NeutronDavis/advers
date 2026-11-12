@@ -25,14 +25,14 @@ export default function ThemeToggle() {
   if (!mounted) {
     return (
       <div className="w-10 h-10 rounded-full flex items-center justify-center opacity-60">
-        <Moon className="w-5 h-5 text-base-content" />
+        <Moon className="w-5 h-5 text-[var(--portal-gold)]" />
       </div>
     );
   }
 
   return (
     <label
-      className="swap swap-rotate btn btn-ghost btn-circle text-base-content hover:bg-base-200 transition-colors"
+      className="swap swap-rotate btn btn-ghost btn-circle text-[var(--portal-gold)] hover:bg-[var(--portal-gold-soft)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--portal-gold)] transition-colors"
       title={`Switch to ${theme === "light" ? "Dark" : "Light"} mode`}
       aria-label="Toggle theme"
     >
@@ -45,10 +45,10 @@ export default function ThemeToggle() {
       />
 
       {/* Sun icon (shown when theme is dark) */}
-      <Sun className="swap-on w-5 h-5 text-amber-400" />
+      <Sun className="swap-on w-5 h-5 text-[var(--portal-gold)]" />
 
       {/* Moon icon (shown when theme is light) */}
-      <Moon className="swap-off w-5 h-5 text-primary" />
+      <Moon className="swap-off w-5 h-5 text-[var(--portal-gold)]" />
     </label>
   );
 }

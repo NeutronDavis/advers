@@ -327,6 +327,9 @@ export interface AdminTrustData {
     verificationLevel: string | null;
     documents: string[];
     notes: string | null;
+    submittedNote: string | null;
+    submittedAt: string | null;
+    reviewedAt: string | null;
     fraudRisk: string;
     createdAt: string;
   }[];
@@ -346,7 +349,7 @@ export async function getAdminTrustData(): Promise<AdminTrustData> {
   const [profiles, ratings, disputes] = await Promise.all([
     prisma.boosterProfile.findMany({
       where: { verificationStatus: "PENDING" },
-      orderBy: { updatedAt: "desc" },
+      orderBy: [{ verificationSubmittedAt: "desc" }, { updatedAt: "desc" }],
       take: 50,
     }),
     prisma.rating.findMany({
@@ -391,6 +394,9 @@ export async function getAdminTrustData(): Promise<AdminTrustData> {
         verificationLevel: profile.verificationLevel,
         documents,
         notes: profile.verificationNotes,
+        submittedNote: profile.verificationSubmittedNote,
+        submittedAt: profile.verificationSubmittedAt?.toISOString() || null,
+        reviewedAt: profile.verificationReviewedAt?.toISOString() || null,
         fraudRisk: profile.fraudRisk,
         createdAt: profile.createdAt.toISOString(),
       };

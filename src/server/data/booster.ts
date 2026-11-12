@@ -51,11 +51,17 @@ export interface BoosterProfileData {
   verificationLabel: string;
   verificationDocuments: string[];
   verificationLevel: string | null;
+  verificationSubmittedAt: string | null;
+  verificationSubmittedNote: string | null;
+  verificationNotes: string | null;
+  verificationReviewedAt: string | null;
+  verifiedAt: string | null;
   fraudRisk: string;
   status: string;
   ratingAvg: number;
   ratingCount: number;
   completedJobs: number;
+  createdAt: string;
 }
 
 export interface BoosterJobCard {
@@ -200,11 +206,17 @@ export async function getBoosterProfileForUser(
       profile.verificationStatus,
     verificationDocuments: parseStringArray(profile.verificationDocumentsJson),
     verificationLevel: profile.verificationLevel,
+    verificationSubmittedAt: profile.verificationSubmittedAt?.toISOString() || null,
+    verificationSubmittedNote: profile.verificationSubmittedNote,
+    verificationNotes: profile.verificationNotes,
+    verificationReviewedAt: profile.verificationReviewedAt?.toISOString() || null,
+    verifiedAt: profile.verifiedAt?.toISOString() || null,
     fraudRisk: profile.fraudRisk,
     status: profile.status,
     ratingAvg: profile.ratingAvg,
     ratingCount: profile.ratingCount,
     completedJobs: profile.completedJobs,
+    createdAt: profile.createdAt.toISOString(),
   };
 }
 
