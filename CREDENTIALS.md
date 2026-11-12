@@ -102,7 +102,8 @@ Navigate to **`/login`** in your browser. At the top of the login form, you will
 
 - **Booster earnings:** log in as `booster.voice@advers.ng` / `password123` and open `/booster/earnings`. Grace Etim has an approved ₦70,000 earning and a pending ₦30,000 withdrawal request.
 - **Admin finance:** log in as `admin@advers.ng` / `password123` and open `/admin/finance`. Review the unified ledger, Booster earnings and withdrawal requests. Marking the withdrawal paid moves approved earnings to paid.
-- **Verification:** `/admin/trust` shows Amaka Nwosu's pending verification documents. Approve or reject with a note.
+- **Verification submission:** log in as `booster@advers.ng` and open `/booster/verification` to submit document links, choose a requested level and add a reviewer note. The profile view at `/booster/profile` shows the current status, documents and reviewer decision.
+- **Verification review:** `/admin/trust` shows Amaka Nwosu's pending verification request with her submitted note and documents. Approve with a level or reject with a reason; the Booster is notified and can resubmit after rejection.
 - **Ratings:** `/admin/trust` shows a pending 5-star rating for Grace Etim. Approving it updates her public rating.
 - **Disputes:** `/admin/finance` and `/admin/trust` show the open dispute for the Port Harcourt launch. Resolve or close it with a resolution note.
 - **Advertiser trust actions:** open `/portal/booster-jobs` as `client@advers.ng`. Approved/paid Booster jobs show **Rate Booster** and **Raise dispute** actions.
