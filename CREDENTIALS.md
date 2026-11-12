@@ -26,6 +26,7 @@ Navigate to **`/login`** in your browser. At the top of the login form, you will
 1. Click **Admin / Staff Backoffice** to log in instantly as Admin.
 2. Click **Active Client Dashboard** to test the active client portal view.
 3. Click **New Client Onboarding** to test the step-by-step onboarding wizard.
+4. Click **Booster Workspace** to test the Booster marketplace, profile and verification flow.
 
 ---
 
@@ -60,6 +61,8 @@ Navigate to **`/login`** in your browser. At the top of the login form, you will
 - **Booster Teams**: `/booster/team`
 - **Booster Earnings & Withdrawals**: `/booster/earnings`
 - **Booster Profile**: `/booster/profile`
+- **Booster Profile Edit**: `/booster/profile/edit`
+- **Booster Verification**: `/booster/verification`
 - **Booster Notifications**: `/booster/notifications`
 - **Staff Backoffice Cockpit**: `/admin`
 - **Staff Subscriptions**: `/admin/subscriptions`
