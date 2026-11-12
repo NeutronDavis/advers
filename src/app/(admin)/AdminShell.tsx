@@ -207,12 +207,6 @@ export default function AdminShell({
 
         {/* Sidebar Footer */}
         <div className="p-5 border-t border-base-300/50 space-y-3">
-          <div className="flex items-center justify-between text-xs text-base-content/60">
-            <span>Client View</span>
-            <Link href="/portal/dashboard" className="text-primary font-bold hover:underline">
-              Open Portal →
-            </Link>
-          </div>
 
           <form action={logoutAction}>
             <button
