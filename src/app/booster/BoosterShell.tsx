@@ -214,13 +214,6 @@ export default function BoosterShell({
         </div>
 
         <div className="p-5 border-t border-base-300/50 space-y-3">
-          <Link
-            href="/portal/dashboard"
-            className="flex items-center gap-2 text-xs font-bold text-base-content/60 hover:text-base-content"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Advertiser portal
-          </Link>
           <form action={logoutAction}>
             <button
               type="submit"
