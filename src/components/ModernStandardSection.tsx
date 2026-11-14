@@ -69,69 +69,6 @@ export default function ModernStandardSection() {
         </div>
 
       </div>
-
-      {/* Second Row: Comparison Cards (The Fragmented Trap vs The Advers Standard) */}
-      <div className="mt-12 sm:mt-16 grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
-        
-        {/* The Fragmented Way Card */}
-        <div className="rounded-3xl p-6 sm:p-8 bg-base-200/60 border border-base-300 shadow-sm space-y-5">
-          <div className="flex items-center gap-2.5 text-error font-extrabold text-base">
-            <XCircle className="w-5 h-5 shrink-0" />
-            <span>The Fragmented Trap</span>
-          </div>
-          <p className="text-xs sm:text-sm text-base-content/70 leading-relaxed font-medium">
-            Juggling 5 different uncoordinated contractors with zero accountability:
-          </p>
-          <ul className="space-y-3 text-xs sm:text-sm text-base-content/80">
-            <li className="flex items-start gap-2.5">
-              <span className="text-error font-bold text-base leading-none">✕</span>
-              <span>Logo designer works in isolation and ignores your commercial website goals</span>
-            </li>
-            <li className="flex items-start gap-2.5">
-              <span className="text-error font-bold text-base leading-none">✕</span>
-              <span>Slow, generic website with broken contact forms and zero Google search ranking</span>
-            </li>
-            <li className="flex items-start gap-2.5">
-              <span className="text-error font-bold text-base leading-none">✕</span>
-              <span>Weeks of missed deadlines, finger-pointing, and surprise extra charges</span>
-            </li>
-            <li className="flex items-start gap-2.5">
-              <span className="text-error font-bold text-base leading-none">✕</span>
-              <span>Billboards locked behind gatekeepers and expensive long-term retainers</span>
-            </li>
-          </ul>
-        </div>
-
-        {/* The Advers Way Card */}
-        <div className="rounded-3xl p-6 sm:p-8 bg-base-100 border-2 border-primary shadow-3d space-y-5 relative overflow-hidden ring-4 ring-primary/10">
-          <div className="flex items-center gap-2.5 text-primary font-extrabold text-base">
-            <CheckCircle2 className="w-5 h-5 shrink-0" />
-            <span>The Advers Standard</span>
-          </div>
-          <p className="text-xs sm:text-sm text-base-content/80 leading-relaxed font-medium">
-            One turnkey growth partner for complete physical &amp; digital market authority:
-          </p>
-          <ul className="space-y-3 text-xs sm:text-sm text-base-content">
-            <li className="flex items-start gap-2.5">
-              <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <span><strong>Unified brand identity:</strong> Consistent visuals across decks, web, and outdoor</span>
-            </li>
-            <li className="flex items-start gap-2.5">
-              <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <span><strong>High-converting custom website:</strong> Mobile-first, fast-loading with local SEO</span>
-            </li>
-            <li className="flex items-start gap-2.5">
-              <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <span><strong>Predictable delivery:</strong> Launched end-to-end in 10 to 14 days, not months</span>
-            </li>
-            <li className="flex items-start gap-2.5">
-              <CheckCircle2 className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-              <span><strong>Direct LED billboard reach:</strong> Prime Nigerian cities with verified broadcast proof</span>
-            </li>
-          </ul>
-        </div>
-
-      </div>
     </section>
   );
 }
