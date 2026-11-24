@@ -141,7 +141,7 @@ export default function InfluencerDetailClient({
         <div className="space-y-6">
           <form
             onSubmit={submit}
-            className="card bg-[var(--portal-obsidian)] text-white rounded-3xl p-5 sm:p-6 shadow-xl space-y-4 sticky top-24"
+            className="card bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] rounded-3xl p-5 sm:p-6 shadow-xl space-y-4 sticky top-24"
           >
             <div>
               <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--portal-gold)]">
@@ -178,7 +178,7 @@ export default function InfluencerDetailClient({
                 value={brief}
                 onChange={(event) => setBrief(event.target.value)}
                 placeholder="Campaign goal, deliverables, timeline and key messages."
-                className="textarea textarea-bordered w-full text-xs rounded-xl bg-[var(--portal-obsidian-2)] border-[var(--portal-obsidian-line)] text-white"
+                className="textarea textarea-bordered w-full text-xs rounded-xl bg-[var(--portal-obsidian-2)] border-[var(--portal-obsidian-line)] text-[var(--color-neutral-content)]"
               />
             </div>
 
@@ -193,7 +193,7 @@ export default function InfluencerDetailClient({
                 required
                 value={budget}
                 onChange={(event) => setBudget(event.target.value)}
-                className="input input-bordered w-full text-xs rounded-xl bg-[var(--portal-obsidian-2)] border-[var(--portal-obsidian-line)] text-white"
+                className="input input-bordered w-full text-xs rounded-xl bg-[var(--portal-obsidian-2)] border-[var(--portal-obsidian-line)] text-[var(--color-neutral-content)]"
               />
             </div>
 
@@ -205,7 +205,7 @@ export default function InfluencerDetailClient({
                 id="influencer-campaign"
                 value={campaignId}
                 onChange={(event) => setCampaignId(event.target.value)}
-                className="select select-bordered w-full text-xs rounded-xl bg-[var(--portal-obsidian-2)] border-[var(--portal-obsidian-line)] text-white"
+                className="select select-bordered w-full text-xs rounded-xl bg-[var(--portal-obsidian-2)] border-[var(--portal-obsidian-line)] text-[var(--color-neutral-content)]"
               >
                 <option value="">Standalone request</option>
                 {campaigns.map((campaign) => (

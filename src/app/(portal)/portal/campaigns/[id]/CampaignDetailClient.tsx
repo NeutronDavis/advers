@@ -420,7 +420,7 @@ export default function CampaignDetailClient({
                       )
                     }
                     disabled={isPending}
-                    className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl text-xs font-bold gap-1.5"
+                    className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] border-none rounded-xl text-xs font-bold gap-1.5"
                   >
                     {isPending ? (
                       <span className="loading loading-spinner loading-xs" />

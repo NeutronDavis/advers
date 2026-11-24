@@ -81,7 +81,7 @@ export default function HelpAndSupportPage() {
             href="https://wa.me/2348000000000"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-sm bg-[var(--portal-success)] hover:bg-[var(--portal-success-strong)] text-white border-none rounded-xl text-xs font-bold w-full"
+            className="btn btn-sm bg-[var(--portal-success)] hover:bg-[var(--portal-success-strong)] text-[var(--color-neutral-content)] border-none rounded-xl text-xs font-bold w-full"
           >
             Chat on WhatsApp
           </a>
@@ -102,7 +102,7 @@ export default function HelpAndSupportPage() {
           </div>
           <a
             href="tel:+2348000000000"
-            className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl text-xs font-bold w-full"
+            className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] border-none rounded-xl text-xs font-bold w-full"
           >
             Call Support Desk
           </a>
@@ -175,7 +175,7 @@ export default function HelpAndSupportPage() {
 
             <button
               type="submit"
-              className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl text-xs font-bold w-full flex items-center justify-center gap-1.5"
+              className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] border-none rounded-xl text-xs font-bold w-full flex items-center justify-center gap-1.5"
             >
               <Send className="w-3.5 h-3.5" />
               <span>Send Request to Media Desk</span>

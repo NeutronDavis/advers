@@ -192,12 +192,12 @@ export default async function AdminUsersPage({
                 <span
                   className={`badge text-[10px] font-extrabold ${
                     user.status === "ACTIVE"
-                      ? "badge-success text-white"
+                      ? "badge-success text-[var(--color-neutral-content)]"
                       : user.status === "PROSPECT"
-                      ? "badge-info text-white"
+                      ? "badge-info text-[var(--color-neutral-content)]"
                       : user.status === "UNVERIFIED"
                       ? "badge-warning"
-                      : "badge-error text-white"
+                      : "badge-error text-[var(--color-neutral-content)]"
                   }`}
                 >
                   {user.status}
@@ -311,12 +311,12 @@ export default async function AdminUsersPage({
                       <span
                         className={`badge text-[10px] font-extrabold ${
                           user.status === "ACTIVE"
-                            ? "badge-success text-white"
+                            ? "badge-success text-[var(--color-neutral-content)]"
                             : user.status === "PROSPECT"
-                            ? "badge-info text-white"
+                            ? "badge-info text-[var(--color-neutral-content)]"
                             : user.status === "UNVERIFIED"
                             ? "badge-warning"
-                            : "badge-error text-white"
+                            : "badge-error text-[var(--color-neutral-content)]"
                         }`}
                       >
                         {user.status}

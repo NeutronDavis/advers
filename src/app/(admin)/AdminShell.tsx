@@ -193,7 +193,7 @@ export default function AdminShell({
                   {item.badge && (
                     <span
                       className={`badge badge-xs font-bold ${
-                        active ? "bg-white text-primary" : "badge-warning badge-soft"
+                        active ? "bg-[var(--color-base-100)] text-[var(--color-primary)]" : "badge-warning badge-soft"
                       }`}
                     >
                       {item.badge}

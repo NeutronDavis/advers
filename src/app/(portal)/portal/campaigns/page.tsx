@@ -51,7 +51,7 @@ export default function MyCampaignsPage() {
 
         <button
           onClick={() => openCreateModal()}
-          className="btn bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl px-5 text-xs font-bold shadow-md flex items-center gap-2 self-start sm:self-auto"
+          className="btn bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] border-none rounded-xl px-5 text-xs font-bold shadow-md flex items-center gap-2 self-start sm:self-auto"
         >
           <Plus className="w-4 h-4" />
           <span>Launch new campaign</span>
@@ -73,7 +73,7 @@ export default function MyCampaignsPage() {
               onClick={() => setFilterStatus(tab.id)}
               className={`btn btn-xs sm:btn-sm rounded-xl text-xs font-bold transition-all ${
                 filterStatus === tab.id
-                  ? "bg-[var(--portal-obsidian)] text-white shadow-xs"
+                  ? "bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] shadow-xs"
                   : "bg-[var(--portal-surface)] text-[var(--portal-muted)] border-[var(--portal-line)] hover:bg-base-200"
               }`}
             >

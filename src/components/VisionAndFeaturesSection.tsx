@@ -14,15 +14,15 @@ export default function VisionAndFeaturesSection() {
             alt="Lagos Billboard Landscape Vision"
             className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0b0f19]/90 via-[#0b0f19]/40 to-transparent flex items-end p-6 sm:p-10">
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-neutral)]/90 via-[var(--color-neutral)]/40 to-transparent flex items-end p-6 sm:p-10">
             <div>
               <div className="badge badge-primary text-xs font-bold uppercase tracking-wider mb-2">
                 Our Vision
               </div>
-              <h3 className="text-white text-2xl sm:text-3xl font-extrabold mb-2 sm:mb-3">
+              <h3 className="text-[var(--color-neutral-content)] text-2xl sm:text-3xl font-extrabold mb-2 sm:mb-3">
                 Making Ambitious Brands Impossible to Overlook
               </h3>
-              <p className="text-white/85 text-sm sm:text-base max-w-lg font-normal leading-relaxed">
+              <p className="text-[var(--color-neutral-content)]/85 text-sm sm:text-base max-w-lg font-normal leading-relaxed">
                 Empowering Nigerian businesses with the complete visibility engine they need to establish market authority — from brand identity and high-speed web presence to prime digital billboard reach.
               </p>
             </div>
@@ -44,11 +44,11 @@ export default function VisionAndFeaturesSection() {
 
           {/* Bottom Card: Unified Visibility ROI */}
           <div className="bg-primary text-primary-content p-6 sm:p-8 rounded-3xl flex-1 shadow-xl hover:shadow-2xl transition-all">
-            <LineChart className="w-8 h-8 sm:w-10 sm:h-10 text-white mb-3 sm:mb-4" />
-            <h3 className="text-xl sm:text-2xl font-bold text-white mb-1 sm:mb-2">
+            <LineChart className="w-8 h-8 sm:w-10 sm:h-10 text-[var(--color-neutral-content)] mb-3 sm:mb-4" />
+            <h3 className="text-xl sm:text-2xl font-bold text-[var(--color-neutral-content)] mb-1 sm:mb-2">
               Measurable Commercial ROI
             </h3>
-            <p className="text-white/85 text-xs sm:text-sm leading-relaxed">
+            <p className="text-[var(--color-neutral-content)]/85 text-xs sm:text-sm leading-relaxed">
               We connect local Google search intent, conversion web funnels, and real-world high-traffic billboard impressions into predictable customer acquisition.
             </p>
           </div>

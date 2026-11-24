@@ -1,8 +1,9 @@
 import bcrypt from "bcryptjs";
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/session";
+import { landingPathForContext } from "@/lib/session-context";
 import { prisma } from "@/lib/prisma";
-import type { AuthSessionUser } from "@/lib/types/dto";
+import type { AuthSessionUser, SessionContext } from "@/lib/types/dto";
 
 export async function hashPassword(password: string): Promise<string> {
   return await bcrypt.hash(password, 10);
@@ -48,6 +49,44 @@ export async function requireClient(): Promise<AuthSessionUser> {
   const session = await getSession();
   if (!session) redirect("/login");
   return session;
+}
+
+/**
+ * Authorizes the active experience for a route or server action.
+ *
+ * This is the deny-by-default guard described in ADR-0004. Prefer it over
+ * checking `role` directly for any route that belongs to one experience.
+ */
+export async function requireContext(
+  context: SessionContext
+): Promise<AuthSessionUser> {
+  const session = await getSession();
+  if (!session) redirect("/login");
+
+  if (context === "ADMIN") {
+    if (session.role !== "ADMIN" && session.role !== "STAFF") {
+      redirect(landingPathForContext(session.context));
+    }
+    return session;
+  }
+
+  if (session.context !== context) {
+    redirect(landingPathForContext(session.context));
+  }
+
+  if (context === "BOOSTER" && !session.boosterProfileId) {
+    redirect("/booster/profile/edit");
+  }
+
+  if (context === "USER" && !session.clientId) {
+    redirect("/portal/billing");
+  }
+
+  return session;
+}
+
+export async function requireBooster(): Promise<AuthSessionUser> {
+  return requireContext("BOOSTER");
 }
 
 export function landingPathForRole(

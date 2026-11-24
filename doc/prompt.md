@@ -10,3 +10,5 @@
 
 - at the admin app, the /admin page and every other page for the admin is scrolling along side with the side nav, make the side nav to be fixed then the page can scroll without taking the side bar along
 - 
+
+- go through the ADVERS_Technical_Development_Brief.docx file and give me your thought 

@@ -83,12 +83,12 @@ export default async function AdminUserDetailPage({
               <span
                 className={`badge text-xs font-bold ${
                   user.status === "ACTIVE"
-                    ? "badge-success text-white"
+                    ? "badge-success text-[var(--color-neutral-content)]"
                     : user.status === "PROSPECT"
-                    ? "badge-info text-white"
+                    ? "badge-info text-[var(--color-neutral-content)]"
                     : user.status === "UNVERIFIED"
                     ? "badge-warning"
-                    : "badge-error text-white"
+                    : "badge-error text-[var(--color-neutral-content)]"
                 }`}
               >
                 {user.status}
@@ -103,7 +103,7 @@ export default async function AdminUserDetailPage({
           {/* Read-only Impersonation Link */}
           <Link
             href={`/portal/dashboard?impersonate=${user.id}`}
-            className="btn bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl h-10 px-3.5 border-none shadow-sm gap-1.5"
+            className="btn bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-[var(--color-primary-content)] text-xs font-bold rounded-xl h-10 px-3.5 border-none shadow-sm gap-1.5"
           >
             <Eye className="w-4 h-4" />
             <span>View as Client</span>
@@ -238,7 +238,7 @@ export default async function AdminUserDetailPage({
           {/* Invoices Section */}
           <div className="bg-base-100 p-6 rounded-3xl border border-base-200 shadow-3d space-y-4">
             <h3 className="text-base font-extrabold text-base-content flex items-center gap-2">
-              <Receipt className="w-5 h-5 text-emerald-500" />
+              <Receipt className="w-5 h-5 text-[var(--color-success)]" />
               <span>Billing &amp; Invoices</span>
             </h3>
 
@@ -262,9 +262,9 @@ export default async function AdminUserDetailPage({
                       <span
                         className={`badge text-[10px] font-bold ${
                           inv.status === "PAID"
-                            ? "badge-success text-white"
+                            ? "badge-success text-[var(--color-neutral-content)]"
                             : inv.status === "OVERDUE"
-                            ? "badge-error text-white"
+                            ? "badge-error text-[var(--color-neutral-content)]"
                             : "badge-warning"
                         }`}
                       >

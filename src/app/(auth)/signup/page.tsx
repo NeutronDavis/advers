@@ -148,7 +148,7 @@ export default function SignupPage() {
         <button
           type="submit"
           disabled={isPending}
-          className="btn bg-[#4f46e5] hover:bg-[#3525cd] text-white w-full rounded-xl font-bold py-3.5 text-base shadow-md border-none flex items-center justify-center gap-2 mt-2"
+          className="btn bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-[var(--color-primary-content)] w-full rounded-xl font-bold py-3.5 text-base shadow-md border-none flex items-center justify-center gap-2 mt-2"
         >
           {isPending ? (
             <>

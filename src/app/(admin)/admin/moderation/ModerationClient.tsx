@@ -232,7 +232,7 @@ export default function ModerationClient({
             {tab.label}
             <span
               className={`badge badge-xs ${
-                activeTab === tab.key ? "bg-white text-primary" : "badge-ghost"
+                activeTab === tab.key ? "bg-[var(--color-base-100)] text-[var(--color-primary)]" : "badge-ghost"
               }`}
             >
               {counts[tab.key]}

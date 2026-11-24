@@ -87,11 +87,11 @@ export default function WalletAndBillingPage() {
       {/* Balance Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Available Balance */}
-        <div className="card bg-[var(--portal-obsidian)] text-white rounded-3xl p-6 shadow-xl space-y-2">
+        <div className="card bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] rounded-3xl p-6 shadow-xl space-y-2">
           <div className="text-[10px] text-[var(--portal-gold-ink)] font-bold uppercase tracking-wider">
             Available Media Balance
           </div>
-          <div className="text-3xl sm:text-4xl font-black tracking-tight text-white">
+          <div className="text-3xl sm:text-4xl font-black tracking-tight text-[var(--color-neutral-content)]">
             ₦{balance.toLocaleString("en-NG")}
           </div>
           <p className="text-[11px] text-[var(--portal-obsidian-muted-2)] pt-1">
@@ -236,7 +236,7 @@ export default function WalletAndBillingPage() {
                 </button>
                 <button
                   type="submit"
-                  className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-white rounded-xl text-xs font-bold px-4"
+                  className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] rounded-xl text-xs font-bold px-4"
                 >
                   Confirm & Credit Wallet
                 </button>

@@ -169,9 +169,9 @@ export default function InboxClient({
                           item.status === "NEW"
                             ? "badge-warning"
                             : item.status === "IN_REVIEW"
-                            ? "badge-info text-white"
+                            ? "badge-info text-[var(--color-neutral-content)]"
                             : item.status === "QUALIFIED"
-                            ? "badge-success text-white"
+                            ? "badge-success text-[var(--color-neutral-content)]"
                             : "badge-ghost"
                         }`}
                       >
@@ -233,9 +233,9 @@ export default function InboxClient({
                         selectedInquiry.status === "NEW"
                           ? "badge-warning"
                           : selectedInquiry.status === "IN_REVIEW"
-                          ? "badge-info text-white"
+                          ? "badge-info text-[var(--color-neutral-content)]"
                           : selectedInquiry.status === "QUALIFIED"
-                          ? "badge-success text-white"
+                          ? "badge-success text-[var(--color-neutral-content)]"
                           : "badge-ghost"
                       }`}
                     >
@@ -275,7 +275,7 @@ export default function InboxClient({
                 {selectedInquiry.packageInterest && (
                   <div className="p-3.5 bg-primary/10 rounded-2xl border border-primary/20 flex items-center justify-between text-xs font-bold text-primary mb-4">
                     <span className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-amber-500" />
+                      <Sparkles className="w-4 h-4 text-[var(--color-warning)]" />
                       <span>Package Interest: {selectedInquiry.packageInterest}</span>
                     </span>
                   </div>
@@ -317,7 +317,7 @@ export default function InboxClient({
                 <div className="flex items-center gap-2 w-full sm:w-auto">
                   <Link
                     href={`/accept-invite?token=${selectedInquiry.id}`}
-                    className="btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl h-10 px-4 border-none shadow-md gap-2 w-full sm:w-auto flex items-center justify-center"
+                    className="btn bg-[var(--color-success)] hover:bg-[var(--color-success-strong)] text-[var(--color-success-content)] text-xs font-bold rounded-xl h-10 px-4 border-none shadow-md gap-2 w-full sm:w-auto flex items-center justify-center"
                   >
                     <UserCheck className="w-4 h-4" />
                     <span>Send Account Invite</span>

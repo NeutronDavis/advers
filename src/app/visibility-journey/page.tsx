@@ -148,7 +148,7 @@ export default function VisibilityJourneyPage() {
 
             {/* Stepper bar */}
             <div className="mt-8 sm:mt-12 max-w-4xl mx-auto overflow-x-auto py-2 px-2">
-              <div className="flex items-center justify-between min-w-[620px] p-3.5 sm:p-4 bg-white/90 backdrop-blur-md rounded-2xl border border-slate-200/80 shadow-3d">
+              <div className="flex items-center justify-between min-w-[620px] p-3.5 sm:p-4 bg-[var(--color-base-200)]/90 backdrop-blur-md rounded-2xl border border-[var(--color-base-300)] shadow-3d">
                 {[
                   "Get Visible",
                   "Look Professional",
@@ -158,15 +158,15 @@ export default function VisibilityJourneyPage() {
                 ].map((step, idx) => (
                   <React.Fragment key={idx}>
                     <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#eaedff] text-[#3525cd] text-xs font-bold flex items-center justify-center shrink-0">
+                      <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[var(--color-primary-soft)] text-[var(--color-primary)] text-xs font-bold flex items-center justify-center shrink-0">
                         {idx + 1}
                       </div>
-                      <span className="text-xs font-bold text-[#131b2e] whitespace-nowrap">
+                      <span className="text-xs font-bold text-[var(--color-base-content)] whitespace-nowrap">
                         {step}
                       </span>
                     </div>
                     {idx < 4 && (
-                      <ChevronRight className="w-3.5 h-3.5 text-slate-300 shrink-0" />
+                      <ChevronRight className="w-3.5 h-3.5 text-[var(--color-base-300)] shrink-0" />
                     )}
                   </React.Fragment>
                 ))}

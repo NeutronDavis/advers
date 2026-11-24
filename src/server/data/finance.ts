@@ -1,5 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { approvedRemaining, computeWithdrawable } from "@/lib/finance";
+import {
+  isPaymentNetwork,
+  legacyMoneyDTO,
+  type MoneyDTO,
+  type PaymentNetwork,
+} from "@/lib/money";
+
+function networkOf(value: string | null | undefined): PaymentNetwork | undefined {
+  return value && isPaymentNetwork(value) ? value : undefined;
+}
 
 export interface BoosterEarningView {
   id: string;
@@ -8,6 +18,8 @@ export interface BoosterEarningView {
   jobNumber: string;
   amount: number;
   paidAmount: number;
+  amountMoney: MoneyDTO;
+  paidAmountMoney: MoneyDTO;
   paymentModel: string;
   status: string;
   reference: string;
@@ -19,6 +31,7 @@ export interface BoosterEarningView {
 export interface WithdrawalView {
   id: string;
   amount: number;
+  amountMoney: MoneyDTO;
   status: string;
   method: string;
   reference: string;
@@ -88,6 +101,12 @@ export async function getBoosterFinanceData(
       jobNumber: earning.job.jobNumber,
       amount: earning.amount,
       paidAmount: earning.paidAmount,
+      amountMoney: legacyMoneyDTO(earning.amount, earning.amountMinor, earning.currency),
+      paidAmountMoney: legacyMoneyDTO(
+        earning.paidAmount,
+        earning.paidAmountMinor,
+        earning.currency
+      ),
       paymentModel: earning.paymentModel,
       status: earning.status,
       reference: earning.reference,
@@ -98,6 +117,12 @@ export async function getBoosterFinanceData(
     withdrawals: withdrawals.map((withdrawal) => ({
       id: withdrawal.id,
       amount: withdrawal.amount,
+      amountMoney: legacyMoneyDTO(
+        withdrawal.amount,
+        withdrawal.amountMinor,
+        withdrawal.currency,
+        networkOf(withdrawal.network)
+      ),
       status: withdrawal.status,
       method: withdrawal.method,
       reference: withdrawal.reference,
@@ -123,6 +148,9 @@ export interface AdminLedgerEntryView {
   grossAmount: number;
   feeAmount: number;
   netAmount: number;
+  grossAmountMoney: MoneyDTO;
+  feeAmountMoney: MoneyDTO;
+  netAmountMoney: MoneyDTO;
   currency: string;
   reference: string;
   campaignName: string | null;
@@ -159,6 +187,7 @@ export interface AdminFinanceData {
     boosterName: string;
     jobTitle: string;
     amount: number;
+    amountMoney: MoneyDTO;
     status: string;
     createdAt: string;
   }[];
@@ -252,6 +281,24 @@ export async function getAdminFinanceData(): Promise<AdminFinanceData> {
       grossAmount: entry.grossAmount,
       feeAmount: entry.feeAmount,
       netAmount: entry.netAmount,
+      grossAmountMoney: legacyMoneyDTO(
+        entry.grossAmount,
+        entry.grossAmountMinor,
+        entry.currency,
+        networkOf(entry.network)
+      ),
+      feeAmountMoney: legacyMoneyDTO(
+        entry.feeAmount,
+        entry.feeAmountMinor,
+        entry.currency,
+        networkOf(entry.network)
+      ),
+      netAmountMoney: legacyMoneyDTO(
+        entry.netAmount,
+        entry.netAmountMinor,
+        entry.currency,
+        networkOf(entry.network)
+      ),
       currency: entry.currency,
       reference: entry.reference,
       campaignName: entry.campaign?.name || null,
@@ -264,6 +311,7 @@ export async function getAdminFinanceData(): Promise<AdminFinanceData> {
       boosterName: earning.booster.displayName,
       jobTitle: earning.job.title,
       amount: earning.amount,
+      amountMoney: legacyMoneyDTO(earning.amount, earning.amountMinor, earning.currency),
       status: earning.status,
       createdAt: earning.createdAt.toISOString(),
     })),
@@ -282,6 +330,12 @@ export async function getAdminFinanceData(): Promise<AdminFinanceData> {
         boosterId: withdrawal.boosterId,
         boosterName: withdrawal.booster.displayName,
         amount: withdrawal.amount,
+        amountMoney: legacyMoneyDTO(
+          withdrawal.amount,
+          withdrawal.amountMinor,
+          withdrawal.currency,
+          networkOf(withdrawal.network)
+        ),
         status: withdrawal.status,
         method: withdrawal.method,
         reference: withdrawal.reference,

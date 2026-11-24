@@ -37,7 +37,7 @@ export default function PlanStatusBanner({
         </span>
         <Link
           href="/portal/billing"
-          className="btn btn-xs bg-[var(--portal-obsidian)] text-white border-none rounded-lg font-bold ml-auto gap-1"
+          className="btn btn-xs bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] border-none rounded-lg font-bold ml-auto gap-1"
         >
           <span>Choose plan</span>
           <ArrowRight className="w-3 h-3" />

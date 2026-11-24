@@ -3,6 +3,8 @@
 export type UserRole = "CLIENT" | "STAFF" | "ADMIN";
 export type OrgRole = "OWNER" | "MEMBER";
 export type UserStatus = "UNVERIFIED" | "PROSPECT" | "ACTIVE" | "DEACTIVATED";
+export type SessionContext = "USER" | "BOOSTER" | "ADMIN";
+export type ThemePreference = "LIGHT" | "DARK" | "SYSTEM";
 
 export interface UserDTO {
   id: string;
@@ -37,10 +39,16 @@ export interface AuthSessionUser {
   id: string;
   email: string;
   name: string;
+  username?: string | null;
+  avatarUrl?: string | null;
+  themePreference?: ThemePreference;
   role: UserRole;
   orgRole: OrgRole;
   clientId?: string | null;
   profileComplete: boolean;
+  context: SessionContext;
+  boosterProfileId?: string | null;
+  sessionVersion: number;
 }
 
 export interface PackageDTO {

@@ -9,7 +9,13 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "seed": "npx tsx prisma/seed.ts",
-    "test": "npx tsx --test src/lib/__tests__/*.test.ts"
+    "test": "npx tsx --test src/lib/__tests__/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "backfill:money": "npx tsx scripts/backfill-money.ts",
+    "db:backup": "npx tsx scripts/backup-database.ts",
+    "db:migrate": "prisma migrate deploy",
+    "ledger:smoke": "npx tsx scripts/ledger-smoke.ts",
+    "verify:phase1": "npx tsx scripts/verify-phase1.ts"
   },
   "prisma": {
     "seed": "npx tsx prisma/seed.ts"

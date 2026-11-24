@@ -72,7 +72,7 @@ export default function DashboardClient({
 
         <button
           onClick={() => openCreateModal()}
-          className="btn bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl px-5 py-2.5 h-auto text-xs font-bold shadow-md flex items-center gap-2 self-start sm:self-auto"
+          className="btn bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] border-none rounded-xl px-5 py-2.5 h-auto text-xs font-bold shadow-md flex items-center gap-2 self-start sm:self-auto"
         >
           <span className="text-base leading-none">＋</span>
           <span>Create campaign</span>
@@ -290,7 +290,7 @@ export default function DashboardClient({
               </p>
               <Link
                 href="/portal/adboosters"
-                className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl text-[10px] font-bold w-full"
+                className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] border-none rounded-xl text-[10px] font-bold w-full"
               >
                 Explore AdBoosters →
               </Link>

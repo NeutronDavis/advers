@@ -132,8 +132,8 @@ export default function ContactPage() {
                     disabled={formState !== "idle"}
                     className={`btn w-full sm:w-auto px-8 sm:px-10 py-3.5 rounded-xl font-bold text-base transition-all border-none ${
                       formState === "success"
-                        ? "bg-emerald-600 text-white"
-                        : "bg-[#4f46e5] hover:bg-[#3525cd] text-white shadow-md"
+                        ? "bg-[var(--color-success)] text-[var(--color-neutral-content)]"
+                        : "bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-[var(--color-primary-content)] shadow-md"
                     }`}
                   >
                     {formState === "sending" && (
@@ -145,7 +145,7 @@ export default function ContactPage() {
 
                     {formState === "success" && (
                       <>
-                        <CheckCircle2 className="w-5 h-5 text-white" />
+                        <CheckCircle2 className="w-5 h-5 text-[var(--color-neutral-content)]" />
                         <span>Sent Successfully!</span>
                       </>
                     )}
@@ -193,16 +193,16 @@ export default function ContactPage() {
                 </div>
 
                 {/* Direct Support Card (Solid Primary Card) */}
-                <div className="p-5 sm:p-8 rounded-3xl bg-[#3525cd] text-white shadow-xl space-y-5 sm:space-y-6">
-                  <h3 className="text-xl sm:text-2xl font-extrabold text-white tracking-tight">
+                <div className="p-5 sm:p-8 rounded-3xl bg-[var(--color-neutral)] text-[var(--color-neutral-content)] shadow-xl space-y-5 sm:space-y-6">
+                  <h3 className="text-xl sm:text-2xl font-extrabold text-[var(--color-neutral-content)] tracking-tight">
                     Direct Support
                   </h3>
                   <div className="space-y-4">
                     <a
                       href="mailto:support@advers.ng"
-                      className="flex items-center gap-3.5 sm:gap-4 group text-white/90 hover:text-white"
+                      className="flex items-center gap-3.5 sm:gap-4 group text-[var(--color-neutral-content)]/90 hover:text-[var(--color-neutral-content)]"
                     >
-                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white text-[#3525cd] flex items-center justify-center shrink-0">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[var(--color-primary-content)] text-[var(--color-primary)] flex items-center justify-center shrink-0">
                         <Mail className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
                       <span className="font-semibold text-sm sm:text-base group-hover:underline break-all">
@@ -212,9 +212,9 @@ export default function ContactPage() {
 
                     <a
                       href="tel:+234800ADVERS"
-                      className="flex items-center gap-3.5 sm:gap-4 group text-white/90 hover:text-white"
+                      className="flex items-center gap-3.5 sm:gap-4 group text-[var(--color-neutral-content)]/90 hover:text-[var(--color-neutral-content)]"
                     >
-                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white text-[#3525cd] flex items-center justify-center shrink-0">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[var(--color-primary-content)] text-[var(--color-primary)] flex items-center justify-center shrink-0">
                         <Phone className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
                       <span className="font-semibold text-sm sm:text-base group-hover:underline">

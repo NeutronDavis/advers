@@ -248,7 +248,7 @@ export default function OnboardingWizardPage() {
         {currentStep === 3 && (
           <div className="space-y-4 animate-fadeIn">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-[var(--color-success)]/10 text-[var(--color-success)] flex items-center justify-center shrink-0">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
               <div>
@@ -282,7 +282,7 @@ export default function OnboardingWizardPage() {
               </div>
             </div>
 
-            <div className="p-3.5 bg-emerald-500/10 rounded-2xl border border-emerald-500/20 text-xs text-emerald-800 dark:text-emerald-300 font-medium">
+            <div className="p-3.5 bg-[var(--color-success)]/10 rounded-2xl border border-[var(--color-success)]/20 text-xs text-[var(--color-success)] font-medium">
               ✨ Once submitted, your dedicated Advers manager will review and begin the 3-5 page custom design within 24 hours.
             </div>
           </div>
@@ -304,7 +304,7 @@ export default function OnboardingWizardPage() {
             type="button"
             onClick={handleNext}
             disabled={saving}
-            className="btn bg-[var(--portal-obsidian)] hover:bg-black text-white text-xs font-bold rounded-xl gap-1.5 shadow-md border-none px-6"
+            className="btn bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] text-xs font-bold rounded-xl gap-1.5 shadow-md border-none px-6"
           >
             {saving ? (
               <span>Saving...</span>

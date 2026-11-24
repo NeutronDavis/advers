@@ -61,7 +61,7 @@ export default function LoginPage() {
       {/* Quick 1-Click Demo Accounts */}
       <div className="p-4 bg-base-200/50 rounded-2xl border border-base-200 space-y-2.5">
         <div className="text-[11px] font-bold text-base-content/70 uppercase tracking-wider flex items-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+          <Sparkles className="w-3.5 h-3.5 text-[var(--color-warning)]" />
           <span>Quick Test Credentials</span>
         </div>
 
@@ -73,7 +73,7 @@ export default function LoginPage() {
             className="flex items-center justify-between p-3 rounded-xl bg-base-100 border border-base-200 hover:border-primary/50 transition-all text-xs font-bold text-base-content group disabled:opacity-60"
           >
             <span className="flex items-center gap-2">
-              <ShieldCheck className="w-4 h-4 text-indigo-600" />
+              <ShieldCheck className="w-4 h-4 text-[var(--color-primary)]" />
               <span>Admin / Staff Backoffice</span>
             </span>
             <span className="text-[11px] text-base-content/50 font-normal">admin@advers.ng</span>
@@ -86,7 +86,7 @@ export default function LoginPage() {
             className="flex items-center justify-between p-3 rounded-xl bg-base-100 border border-base-200 hover:border-primary/50 transition-all text-xs font-bold text-base-content group disabled:opacity-60"
           >
             <span className="flex items-center gap-2">
-              <UserCheck className="w-4 h-4 text-emerald-600" />
+              <UserCheck className="w-4 h-4 text-[var(--color-success)]" />
               <span>Active Client Dashboard</span>
             </span>
             <span className="text-[11px] text-base-content/50 font-normal">client@advers.ng</span>
@@ -112,7 +112,7 @@ export default function LoginPage() {
             className="flex items-center justify-between p-3 rounded-xl bg-base-100 border border-base-200 hover:border-primary/50 transition-all text-xs font-bold text-base-content group disabled:opacity-60"
           >
             <span className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-600" />
+              <Sparkles className="w-4 h-4 text-[var(--color-warning)]" />
               <span>Booster Workspace</span>
             </span>
             <span className="text-[11px] text-base-content/50 font-normal">booster@advers.ng</span>
@@ -188,7 +188,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="btn bg-[#4f46e5] hover:bg-[#3525cd] text-white w-full rounded-xl font-bold py-3.5 text-base shadow-md border-none flex items-center justify-center gap-2 mt-2"
+          className="btn bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-[var(--color-primary-content)] w-full rounded-xl font-bold py-3.5 text-base shadow-md border-none flex items-center justify-center gap-2 mt-2"
         >
           {loading ? (
             <>

@@ -160,7 +160,7 @@ export default function BusinessProfilesClient({
             <button
               type="button"
               onClick={openCreate}
-              className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl text-xs font-bold gap-1.5"
+              className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] border-none rounded-xl text-xs font-bold gap-1.5"
             >
               <Plus className="w-4 h-4" />
               <span>Add profile</span>
@@ -178,7 +178,7 @@ export default function BusinessProfilesClient({
           </span>
           <Link
             href="/portal/billing"
-            className="btn btn-xs bg-[var(--portal-obsidian)] text-white border-none rounded-lg font-bold ml-auto"
+            className="btn btn-xs bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] border-none rounded-lg font-bold ml-auto"
           >
             Choose plan
           </Link>
@@ -344,7 +344,7 @@ export default function BusinessProfilesClient({
             <button
               type="submit"
               disabled={isPending}
-              className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl text-xs font-bold px-5"
+              className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] border-none rounded-xl text-xs font-bold px-5"
             >
               {isPending ? (
                 <span className="loading loading-spinner loading-xs" />

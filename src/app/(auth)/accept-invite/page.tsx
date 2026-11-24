@@ -30,7 +30,7 @@ function AcceptInviteForm() {
   return (
     <div className="space-y-5">
       <div className="text-center space-y-1.5">
-        <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center mx-auto shadow-sm">
+        <div className="w-12 h-12 rounded-2xl bg-[var(--color-success)]/10 text-[var(--color-success)] flex items-center justify-center mx-auto shadow-sm">
           <CheckCircle2 className="w-6 h-6" />
         </div>
         <h1 className="text-2xl font-extrabold text-base-content tracking-tight">
@@ -145,7 +145,7 @@ function AcceptInviteForm() {
         <button
           type="submit"
           disabled={isPending}
-          className="btn bg-[#4f46e5] hover:bg-[#3525cd] text-white w-full rounded-xl font-bold py-3 text-base shadow-md border-none flex items-center justify-center gap-2 mt-2"
+          className="btn bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-[var(--color-primary-content)] w-full rounded-xl font-bold py-3 text-base shadow-md border-none flex items-center justify-center gap-2 mt-2"
         >
           {isPending ? (
             <>

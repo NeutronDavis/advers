@@ -87,7 +87,7 @@ export default function SettingsClient({
 
       <div className="bg-[var(--portal-surface)] rounded-3xl p-6 sm:p-8 border border-[var(--portal-line)] shadow-xs space-y-5">
         {state?.success && (
-          <div className="alert alert-success text-xs py-3 rounded-2xl text-white">
+          <div className="alert alert-success text-xs py-3 rounded-2xl text-[var(--color-neutral-content)]">
             <CheckCircle2 className="w-4 h-4" />
             <span>Settings updated successfully!</span>
           </div>
@@ -195,7 +195,7 @@ export default function SettingsClient({
             <button
               type="submit"
               disabled={isPending}
-              className="btn bg-[var(--portal-obsidian)] hover:bg-black text-white text-xs font-bold rounded-xl gap-2 shadow-md border-none px-6"
+              className="btn bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] text-xs font-bold rounded-xl gap-2 shadow-md border-none px-6"
             >
               {isPending ? (
                 <span className="loading loading-spinner loading-xs" />
@@ -231,7 +231,7 @@ export default function SettingsClient({
           </div>
         )}
         {prefsSaved && (
-          <div className="alert alert-success text-xs py-2.5 rounded-2xl text-white">
+          <div className="alert alert-success text-xs py-2.5 rounded-2xl text-[var(--color-neutral-content)]">
             <CheckCircle2 className="w-4 h-4" />
             <span>Notification preferences saved.</span>
           </div>
@@ -301,7 +301,7 @@ export default function SettingsClient({
             type="button"
             onClick={savePreferences}
             disabled={prefsPending}
-            className="btn bg-[var(--portal-obsidian)] hover:bg-black text-white text-xs font-bold rounded-xl gap-2 border-none px-6"
+            className="btn bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] text-xs font-bold rounded-xl gap-2 border-none px-6"
           >
             {prefsPending ? (
               <span className="loading loading-spinner loading-xs" />

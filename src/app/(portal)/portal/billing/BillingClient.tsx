@@ -201,7 +201,7 @@ export default function BillingClient({
 
       {/* Current plan & usage */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <div className="card bg-[var(--portal-obsidian)] text-white rounded-3xl p-6 shadow-xl lg:col-span-1 space-y-4">
+        <div className="card bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] rounded-3xl p-6 shadow-xl lg:col-span-1 space-y-4">
           <div>
             <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--portal-gold)]">
               Current plan
@@ -265,7 +265,7 @@ export default function BillingClient({
               type="button"
               onClick={cancelPlan}
               disabled={isPending}
-              className="btn btn-sm btn-ghost text-[var(--portal-obsidian-muted-2)] hover:text-white border-[var(--portal-obsidian-line)] rounded-xl text-[11px] font-bold w-full"
+              className="btn btn-sm btn-ghost text-[var(--portal-obsidian-muted-2)] hover:text-[var(--color-neutral-content)] border-[var(--portal-obsidian-line)] rounded-xl text-[11px] font-bold w-full"
             >
               Cancel subscription
             </button>
@@ -290,7 +290,7 @@ export default function BillingClient({
                 onClick={() => setBillingPeriod("MONTHLY")}
                 className={`btn btn-xs sm:btn-sm join-item rounded-none first:rounded-l-xl last:rounded-r-xl font-bold ${
                   billingPeriod === "MONTHLY"
-                    ? "bg-[var(--portal-obsidian)] text-white border-[var(--portal-obsidian)]"
+                    ? "bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] border-[var(--portal-obsidian)]"
                     : "bg-[var(--portal-surface)] text-[var(--portal-muted)] border-[var(--portal-line)]"
                 }`}
               >
@@ -301,7 +301,7 @@ export default function BillingClient({
                 onClick={() => setBillingPeriod("ANNUAL")}
                 className={`btn btn-xs sm:btn-sm join-item rounded-none first:rounded-l-xl last:rounded-r-xl font-bold ${
                   billingPeriod === "ANNUAL"
-                    ? "bg-[var(--portal-obsidian)] text-white border-[var(--portal-obsidian)]"
+                    ? "bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] border-[var(--portal-obsidian)]"
                     : "bg-[var(--portal-surface)] text-[var(--portal-muted)] border-[var(--portal-line)]"
                 }`}
               >
@@ -355,7 +355,7 @@ export default function BillingClient({
                           Current
                         </span>
                       ) : isBusinessPro ? (
-                        <span className="badge badge-xs bg-[var(--portal-obsidian)] text-white border-none font-bold">
+                        <span className="badge badge-xs bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] border-none font-bold">
                           Pro
                         </span>
                       ) : null}
@@ -432,7 +432,7 @@ export default function BillingClient({
                         ? "btn-disabled bg-[var(--portal-line-soft)] text-[var(--portal-muted)] border-none"
                         : isBusinessPro
                           ? "bg-[var(--portal-gold)] hover:bg-[var(--portal-gold-hover)] text-[var(--portal-obsidian)] border-none"
-                          : "bg-[var(--portal-obsidian)] hover:bg-black text-white border-none"
+                          : "bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] border-none"
                     }`}
                   >
                     {pendingPlan === plan.key && isPending ? (

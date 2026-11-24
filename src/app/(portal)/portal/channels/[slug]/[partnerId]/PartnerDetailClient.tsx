@@ -304,7 +304,7 @@ export default function PartnerDetailClient({
         </div>
 
         <div className="space-y-6">
-          <div className="card bg-[var(--portal-obsidian)] text-white rounded-3xl p-5 sm:p-6 shadow-xl space-y-4 sticky top-24">
+          <div className="card bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] rounded-3xl p-5 sm:p-6 shadow-xl space-y-4 sticky top-24">
             <div>
               <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--portal-gold)]">
                 Selected time
@@ -347,7 +347,7 @@ export default function PartnerDetailClient({
 
             <Link
               href="/portal/support"
-              className="btn btn-ghost btn-sm w-full text-[var(--portal-obsidian-muted-2)] hover:text-white border-[var(--portal-obsidian-line)] rounded-xl text-[11px] font-bold"
+              className="btn btn-ghost btn-sm w-full text-[var(--portal-obsidian-muted-2)] hover:text-[var(--color-neutral-content)] border-[var(--portal-obsidian-line)] rounded-xl text-[11px] font-bold"
             >
               Ask the media desk
             </Link>

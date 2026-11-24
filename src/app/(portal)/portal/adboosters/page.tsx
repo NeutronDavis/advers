@@ -44,7 +44,7 @@ export default function AdBoostersPage() {
 
         <button
           onClick={() => openCreateModal("AdBoosters")}
-          className="btn bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl px-5 text-xs font-bold shadow-md flex items-center gap-2 self-start sm:self-auto"
+          className="btn bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] border-none rounded-xl px-5 text-xs font-bold shadow-md flex items-center gap-2 self-start sm:self-auto"
         >
           <Sparkles className="w-4 h-4 text-warning" />
           <span>Launch booster campaign</span>
@@ -52,12 +52,12 @@ export default function AdBoostersPage() {
       </div>
 
       {/* Program Highlight Card */}
-      <div className="bg-[var(--portal-obsidian)] text-white rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-xl border border-white/5 space-y-4">
+      <div className="bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-xl border border-[var(--color-neutral-content)]/5 space-y-4">
         <div className="max-w-xl space-y-2">
           <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--portal-gold-ink)]">
             Turn Sharing Into Opportunity
           </div>
-          <h2 className="text-xl sm:text-3xl font-black text-white tracking-tight">
+          <h2 className="text-xl sm:text-3xl font-black text-[var(--color-neutral-content)] tracking-tight">
             Amplify your reach with 2,400+ active Nigerian promoters.
           </h2>
           <p className="text-xs sm:text-sm text-[var(--portal-obsidian-muted-2)] leading-relaxed">
@@ -81,7 +81,7 @@ export default function AdBoostersPage() {
           >
             {copied ? (
               <>
-                <CheckCircle2 className="w-4 h-4 text-emerald-800" />
+                <CheckCircle2 className="w-4 h-4 text-[var(--color-success)]" />
                 <span>Copied!</span>
               </>
             ) : (

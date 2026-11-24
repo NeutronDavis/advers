@@ -2,7 +2,12 @@ import { createHmac, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 import { cache } from "react";
 import { prisma } from "@/lib/prisma";
-import type { AuthSessionUser } from "@/lib/types/dto";
+import { resolveSessionContext } from "@/lib/session-context";
+import type {
+  AuthSessionUser,
+  SessionContext,
+  UserRole,
+} from "@/lib/types/dto";
 import { SESSION_COOKIE, SESSION_MAX_AGE } from "@/lib/session-constants";
 
 export { SESSION_COOKIE, SESSION_MAX_AGE };
@@ -10,6 +15,10 @@ export { SESSION_COOKIE, SESSION_MAX_AGE };
 interface SessionPayload {
   sub: string;
   exp: number;
+  /** Active experience. Optional so pre-existing cookies remain valid. */
+  ctx?: SessionContext;
+  /** Session revocation version. Optional for backwards compatibility. */
+  ver?: number;
 }
 
 function sessionSecret(): string {
@@ -25,10 +34,17 @@ function sign(value: string): string {
   return createHmac("sha256", sessionSecret()).update(value).digest("base64url");
 }
 
-export function createSessionToken(userId: string, maxAge = SESSION_MAX_AGE): string {
+export function createSessionToken(
+  userId: string,
+  maxAge = SESSION_MAX_AGE,
+  ctx?: SessionContext,
+  sessionVersion?: number
+): string {
   const payload: SessionPayload = {
     sub: userId,
     exp: Math.floor(Date.now() / 1000) + maxAge,
+    ...(ctx ? { ctx } : {}),
+    ...(sessionVersion !== undefined ? { ver: sessionVersion } : {}),
   };
   const encoded = Buffer.from(JSON.stringify(payload)).toString("base64url");
   return `${encoded}.${sign(encoded)}`;
@@ -49,15 +65,27 @@ export function verifySessionToken(token: string): SessionPayload | null {
     const payload = JSON.parse(Buffer.from(encoded, "base64url").toString()) as SessionPayload;
     if (!payload.sub || typeof payload.exp !== "number") return null;
     if (payload.exp * 1000 < Date.now()) return null;
+    if (
+      payload.ctx !== undefined &&
+      payload.ctx !== "USER" &&
+      payload.ctx !== "BOOSTER" &&
+      payload.ctx !== "ADMIN"
+    ) {
+      return null;
+    }
     return payload;
   } catch {
     return null;
   }
 }
 
-export async function setSessionCookie(userId: string): Promise<void> {
+export async function setSessionCookie(
+  userId: string,
+  ctx?: SessionContext,
+  sessionVersion?: number
+): Promise<void> {
   const store = await cookies();
-  store.set(SESSION_COOKIE, createSessionToken(userId), {
+  store.set(SESSION_COOKIE, createSessionToken(userId, SESSION_MAX_AGE, ctx, sessionVersion), {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
@@ -74,6 +102,9 @@ export async function clearSessionCookie(): Promise<void> {
 /**
  * Reads and verifies the signed session cookie, then confirms the user still
  * exists and is not deactivated. Cached per request with React `cache`.
+ *
+ * The active context is re-derived from the database on every request; the
+ * cookie claim is only a preference, never an authorization decision.
  */
 export const getSession = cache(async (): Promise<AuthSessionUser | null> => {
   const store = await cookies();
@@ -89,23 +120,49 @@ export const getSession = cache(async (): Promise<AuthSessionUser | null> => {
       id: true,
       email: true,
       name: true,
+      username: true,
+      avatarUrl: true,
+      themePreference: true,
       role: true,
       orgRole: true,
       status: true,
       clientId: true,
       profileCompleteAt: true,
+      sessionVersion: true,
+      boosterProfile: {
+        select: { id: true, status: true },
+      },
     },
   });
 
   if (!user || user.status === "DEACTIVATED") return null;
 
+  // If the token was issued with a version and it no longer matches, the
+  // session has been revoked.
+  if (payload.ver !== undefined && payload.ver !== user.sessionVersion) {
+    return null;
+  }
+
+  const context = resolveSessionContext({
+    role: user.role as UserRole,
+    hasClient: Boolean(user.clientId),
+    boosterStatus: user.boosterProfile?.status ?? null,
+    requested: payload.ctx ?? null,
+  });
+
   return {
     id: user.id,
     email: user.email,
     name: user.name,
+    username: user.username,
+    avatarUrl: user.avatarUrl,
+    themePreference: user.themePreference,
     role: user.role,
     orgRole: user.orgRole,
     clientId: user.clientId,
     profileComplete: !!user.profileCompleteAt,
+    context,
+    boosterProfileId: user.boosterProfile?.id ?? null,
+    sessionVersion: user.sessionVersion,
   };
 });

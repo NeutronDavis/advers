@@ -1,20 +1,33 @@
-export function formatNaira(value: number): string {
-  return new Intl.NumberFormat("en-NG", {
-    style: "currency",
-    currency: "NGN",
-    maximumFractionDigits: 0,
-  }).format(Number.isFinite(value) ? value : 0);
+import {
+  formatMoney,
+  formatMoneyShort,
+  parseMoney,
+  type CurrencyCode,
+  type Money,
+} from "@/lib/money";
+
+/**
+ * Formats a major-unit value in the given currency using the exact money
+ * formatter. Prefer `formatMoney` with a `Money` value for new code.
+ */
+export function formatCurrency(value: number, currency: CurrencyCode): string {
+  const safeValue = Number.isFinite(value) ? value : 0;
+  return formatMoney(parseMoney(safeValue, currency));
 }
 
+/** @deprecated Prefer `formatMoney` with an explicit currency. */
+export function formatNaira(value: number): string {
+  return formatCurrency(value, "NGN");
+}
+
+/** @deprecated Prefer `formatMoneyShort` with an explicit currency. */
 export function formatNairaShort(value: number): string {
-  const amount = Number.isFinite(value) ? value : 0;
-  if (Math.abs(amount) >= 1_000_000) {
-    return `₦${(amount / 1_000_000).toFixed(1)}M`;
-  }
-  if (Math.abs(amount) >= 1_000) {
-    return `₦${(amount / 1_000).toFixed(0)}k`;
-  }
-  return `₦${amount}`;
+  const safeValue = Number.isFinite(value) ? value : 0;
+  return formatMoneyShort(parseMoney(safeValue, "NGN"));
+}
+
+export function formatMoneyValue(money: Money): string {
+  return formatMoney(money);
 }
 
 export function formatNumber(value: number): string {

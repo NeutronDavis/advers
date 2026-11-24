@@ -182,7 +182,7 @@ export default function BoosterShell({
                   {item.badge ? (
                     <span
                       className={`badge badge-xs font-bold ${
-                        isActive ? "bg-white text-primary" : "badge-warning badge-soft"
+                        isActive ? "bg-[var(--color-base-100)] text-[var(--color-primary)]" : "badge-warning badge-soft"
                       }`}
                     >
                       {item.badge}

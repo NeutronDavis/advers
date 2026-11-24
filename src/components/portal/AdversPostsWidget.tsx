@@ -64,9 +64,9 @@ export default function AdversPostsWidget({
   };
 
   return (
-    <section className="bg-[var(--portal-obsidian)] rounded-3xl text-white p-6 sm:p-8 relative overflow-hidden shadow-xl border border-white/5 space-y-5">
-      <div className="absolute right-[-40px] top-[-60px] w-80 h-80 rounded-full border border-white/5 pointer-events-none" />
-      <div className="absolute right-[-80px] top-[-100px] w-[420px] h-[420px] rounded-full border border-white/5 pointer-events-none" />
+    <section className="bg-[var(--portal-obsidian)] rounded-3xl text-[var(--color-neutral-content)] p-6 sm:p-8 relative overflow-hidden shadow-xl border border-[var(--color-neutral-content)]/5 space-y-5">
+      <div className="absolute right-[-40px] top-[-60px] w-80 h-80 rounded-full border border-[var(--color-neutral-content)]/5 pointer-events-none" />
+      <div className="absolute right-[-80px] top-[-100px] w-[420px] h-[420px] rounded-full border border-[var(--color-neutral-content)]/5 pointer-events-none" />
 
       <div className="relative z-10 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
@@ -82,7 +82,7 @@ export default function AdversPostsWidget({
             advertised directly inside the ADVERS app.
           </p>
         </div>
-        <span className="badge badge-sm bg-white/10 border-white/15 text-[var(--portal-gold)] font-bold self-start sm:self-auto">
+        <span className="badge badge-sm bg-[var(--color-neutral-content)]/10 border-[var(--color-neutral-content)]/15 text-[var(--portal-gold)] font-bold self-start sm:self-auto">
           Sponsored content
         </span>
       </div>
@@ -136,11 +136,11 @@ export default function AdversPostsWidget({
                 <div className="absolute inset-0 bg-gradient-to-t from-[var(--portal-obsidian)]/80 via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-[var(--portal-obsidian-2)]/30" />
 
                 <div className="absolute top-4 left-4 flex flex-wrap items-center gap-2">
-                  <span className="badge badge-sm bg-[var(--portal-obsidian)]/80 border-white/20 text-[var(--portal-gold)] font-bold backdrop-blur-sm">
+                  <span className="badge badge-sm bg-[var(--portal-obsidian)]/80 border-[var(--color-neutral-content)]/20 text-[var(--portal-gold)] font-bold backdrop-blur-sm">
                     Sponsored
                   </span>
                   {activePost.category && (
-                    <span className="badge badge-sm bg-white/10 border-white/15 text-white font-medium backdrop-blur-sm">
+                    <span className="badge badge-sm bg-[var(--color-neutral-content)]/10 border-[var(--color-neutral-content)]/15 text-[var(--color-neutral-content)] font-medium backdrop-blur-sm">
                       {activePost.category}
                     </span>
                   )}
@@ -151,7 +151,7 @@ export default function AdversPostsWidget({
                     <button
                       type="button"
                       onClick={() => goTo(activeIndex - 1)}
-                      className="btn btn-circle btn-sm bg-[var(--portal-obsidian)]/75 hover:bg-[var(--portal-obsidian)] border-white/20 text-white backdrop-blur-sm"
+                      className="btn btn-circle btn-sm bg-[var(--portal-obsidian)]/75 hover:bg-[var(--portal-obsidian)] border-[var(--color-neutral-content)]/20 text-[var(--color-neutral-content)] backdrop-blur-sm"
                       aria-label="Previous advertisement"
                     >
                       <ChevronLeft className="w-4 h-4" />
@@ -159,12 +159,12 @@ export default function AdversPostsWidget({
                     <button
                       type="button"
                       onClick={() => goTo(activeIndex + 1)}
-                      className="btn btn-circle btn-sm bg-[var(--portal-obsidian)]/75 hover:bg-[var(--portal-obsidian)] border-white/20 text-white backdrop-blur-sm"
+                      className="btn btn-circle btn-sm bg-[var(--portal-obsidian)]/75 hover:bg-[var(--portal-obsidian)] border-[var(--color-neutral-content)]/20 text-[var(--color-neutral-content)] backdrop-blur-sm"
                       aria-label="Next advertisement"
                     >
                       <ChevronRight className="w-4 h-4" />
                     </button>
-                    <span className="text-[10px] font-bold text-white/80 tabular-nums">
+                    <span className="text-[10px] font-bold text-[var(--color-neutral-content)]/80 tabular-nums">
                       {activeIndex + 1} / {count}
                     </span>
                   </div>
@@ -178,7 +178,7 @@ export default function AdversPostsWidget({
                       <img
                         src={activePost.sponsorLogoUrl}
                         alt={activePost.sponsorName}
-                        className="w-7 h-7 rounded-lg object-cover border border-white/10"
+                        className="w-7 h-7 rounded-lg object-cover border border-[var(--color-neutral-content)]/10"
                       />
                     ) : (
                       <div className="w-7 h-7 rounded-lg bg-[var(--portal-gold)] text-[var(--portal-obsidian)] flex items-center justify-center text-[11px] font-black">
@@ -190,7 +190,7 @@ export default function AdversPostsWidget({
                     </span>
                   </div>
 
-                  <h3 className="text-lg sm:text-xl font-extrabold tracking-tight text-white">
+                  <h3 className="text-lg sm:text-xl font-extrabold tracking-tight text-[var(--color-neutral-content)]">
                     {activePost.title}
                   </h3>
                   <p className="text-xs sm:text-sm text-[var(--portal-obsidian-muted-2)] leading-relaxed line-clamp-4 whitespace-pre-line">
@@ -237,7 +237,7 @@ export default function AdversPostsWidget({
                   className={`h-1.5 rounded-full transition-all ${
                     index === activeIndex
                       ? "w-6 bg-[var(--portal-gold)]"
-                      : "w-1.5 bg-white/25 hover:bg-white/45"
+                      : "w-1.5 bg-[var(--color-neutral-content)]/25 hover:bg-[var(--color-neutral-content)]/45"
                   }`}
                 />
               ))}

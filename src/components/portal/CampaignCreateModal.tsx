@@ -646,7 +646,7 @@ export default function CampaignCreateModal() {
                 <button
                   type="button"
                   onClick={goNext}
-                  className="btn btn-sm text-xs font-black bg-[var(--portal-obsidian)] hover:bg-black text-white rounded-xl px-5 shadow-md flex items-center gap-1.5"
+                  className="btn btn-sm text-xs font-black bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] rounded-xl px-5 shadow-md flex items-center gap-1.5"
                 >
                   <span>Continue</span>
                   <ArrowRight className="w-3.5 h-3.5" />

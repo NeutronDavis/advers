@@ -133,7 +133,7 @@ export default function AdvertiserBoosterJobsClient({
         <button
           type="button"
           onClick={() => setShowForm((current) => !current)}
-          className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl text-xs font-bold gap-1.5 self-start sm:self-auto"
+          className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] border-none rounded-xl text-xs font-bold gap-1.5 self-start sm:self-auto"
         >
           {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
           {showForm ? "Close form" : "Request Booster job"}
@@ -413,7 +413,7 @@ export default function AdvertiserBoosterJobsClient({
             <button
               type="submit"
               disabled={isPending}
-              className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl text-xs font-bold gap-1.5"
+              className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] border-none rounded-xl text-xs font-bold gap-1.5"
             >
               {isPending ? (
                 <span className="loading loading-spinner loading-xs" />
@@ -568,7 +568,7 @@ export default function AdvertiserBoosterJobsClient({
                               )
                             }
                             disabled={isPending}
-                            className="btn btn-xs bg-[var(--portal-obsidian)] text-white border-none rounded-lg font-bold"
+                            className="btn btn-xs bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] border-none rounded-lg font-bold"
                           >
                             Submit rating
                           </button>
@@ -615,7 +615,7 @@ export default function AdvertiserBoosterJobsClient({
                               )
                             }
                             disabled={isPending || !disputeReason.trim()}
-                            className="btn btn-xs btn-error rounded-lg font-bold text-white"
+                            className="btn btn-xs btn-error rounded-lg font-bold text-[var(--color-neutral-content)]"
                           >
                             Submit dispute
                           </button>

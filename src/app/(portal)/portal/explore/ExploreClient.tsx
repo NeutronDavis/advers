@@ -206,7 +206,7 @@ export default function ExploreClient({
             onClick={() => setSelectedCategory(cat.id)}
             className={`btn btn-xs sm:btn-sm rounded-xl text-xs font-bold transition-all ${
               selectedCategory === cat.id
-                ? "bg-[var(--portal-obsidian)] text-white shadow-xs"
+                ? "bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] shadow-xs"
                 : "bg-[var(--portal-surface)] text-[var(--portal-muted)] border-[var(--portal-line)] hover:bg-base-200"
             }`}
           >
@@ -297,7 +297,7 @@ export default function ExploreClient({
               </span>
               <Link
                 href={`/portal/channels/${channel.slug}`}
-                className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl text-xs font-bold px-4"
+                className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] border-none rounded-xl text-xs font-bold px-4"
               >
                 View partners
               </Link>
@@ -333,7 +333,7 @@ export default function ExploreClient({
               onClick={() => setInventoryChannel(channel)}
               className={`btn btn-xs sm:btn-sm rounded-xl text-xs font-bold transition-all ${
                 inventoryChannel === channel
-                  ? "bg-[var(--portal-obsidian)] text-white border-[var(--portal-obsidian)]"
+                  ? "bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] border-[var(--portal-obsidian)]"
                   : "bg-[var(--portal-surface)] text-[var(--portal-muted)] border-[var(--portal-line)]"
               }`}
             >

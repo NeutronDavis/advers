@@ -105,7 +105,7 @@ export default function ChannelPartnersClient({
           </p>
           <Link
             href="/portal/support"
-            className="btn btn-sm bg-[var(--portal-obsidian)] text-white border-none rounded-xl text-xs font-bold"
+            className="btn btn-sm bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] border-none rounded-xl text-xs font-bold"
           >
             Request assistance
           </Link>

@@ -11,23 +11,23 @@
   prefersdark: false;
   color-scheme: light;
 
-  --color-base-100: #faf8ff;
-  --color-base-200: #f2f3ff;
-  --color-base-300: #e2e7ff;
-  --color-base-content: #131b2e;
-  --color-primary: #3525cd;
-  --color-primary-content: #ffffff;
-  --color-secondary: #712ae2;
-  --color-secondary-content: #ffffff;
-  --color-accent: #4f46e5;
+  --color-base-100: #f5f6f8;
+  --color-base-200: #ffffff;
+  --color-base-300: #e8e9ed;
+  --color-base-content: #15171b;
+  --color-primary: #e8b64b;
+  --color-primary-content: #101113;
+  --color-secondary: #131b2e;
+  --color-secondary-content: #f8fafc;
+  --color-accent: #9a752b;
   --color-accent-content: #ffffff;
-  --color-neutral: #131b2e;
-  --color-neutral-content: #faf8ff;
+  --color-neutral: #101113;
+  --color-neutral-content: #f8fafc;
   --color-info: #0284c7;
   --color-info-content: #ffffff;
-  --color-success: #16a34a;
+  --color-success: #16845b;
   --color-success-content: #ffffff;
-  --color-warning: #ea580c;
+  --color-warning: #b45309;
   --color-warning-content: #ffffff;
   --color-error: #dc2626;
   --color-error-content: #ffffff;
@@ -52,14 +52,14 @@
   --color-base-200: #131b2e;
   --color-base-300: #1e293b;
   --color-base-content: #f8fafc;
-  --color-primary: #6366f1;
-  --color-primary-content: #ffffff;
-  --color-secondary: #a855f7;
-  --color-secondary-content: #ffffff;
-  --color-accent: #818cf8;
-  --color-accent-content: #ffffff;
-  --color-neutral: #f8fafc;
-  --color-neutral-content: #0b0f19;
+  --color-primary: #e8b64b;
+  --color-primary-content: #101113;
+  --color-secondary: #1e293b;
+  --color-secondary-content: #f8fafc;
+  --color-accent: #f7d98a;
+  --color-accent-content: #101113;
+  --color-neutral: #131b2e;
+  --color-neutral-content: #f8fafc;
   --color-info: #38bdf8;
   --color-info-content: #0b0f19;
   --color-success: #4ade80;
@@ -81,78 +81,73 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
-/* Portal (Obsidian & Gold) design tokens.
-   Scoped to the advertiser portal so the marketing site and admin console keep
-   using the daisyUI semantic palette. */
+/* ------------------------------------------------------------------
+   Canonical ADVERS tokens (ADR-0005): obsidian + gold.
+   The --portal-* names are temporary compatibility aliases so the 1,200+
+   existing usages keep working during the page-by-page migration.
+   Remove the aliases at the end of Phase 4.
+   ------------------------------------------------------------------ */
 :root {
-  --portal-bg: #f5f6f8;
-  --portal-surface: #ffffff;
-  --portal-surface-muted: #fafafb;
-  --portal-soft: #f8f9fa;
-  --portal-ink: #15171b;
-  --portal-body: #4d5159;
-  --portal-muted: #7c818b;
-  --portal-icon: #858993;
-  --portal-line: #e8e9ed;
-  --portal-line-soft: #f0f0f2;
-  --portal-obsidian: #101113;
-  --portal-obsidian-2: #1c1d20;
-  --portal-obsidian-3: #26272b;
-  --portal-obsidian-line: #303136;
-  --portal-obsidian-muted: #a6a8af;
-  --portal-obsidian-muted-2: #b8bac0;
-  --portal-obsidian-muted-3: #747780;
-  --portal-gold: #e8b64b;
-  --portal-gold-hover: #d6a53b;
-  --portal-gold-ink: #80601f;
-  --portal-gold-ink-strong: #9a752b;
-  --portal-gold-soft: #fbf4df;
-  --portal-gold-soft-2: #fff4d9;
-  --portal-gold-soft-3: #f8f1df;
-  --portal-gold-soft-4: #f5f2ea;
-  --portal-gold-ring: #fbf3dd;
-  --portal-gold-border: #f1e2b5;
-  --portal-success: #16845b;
-  --portal-success-strong: #19764b;
-  --portal-success-soft: #e4f6ec;
-  --portal-warning-soft: #fff1d2;
-  --portal-avatar-bg: #f4dfb1;
-  --portal-avatar-ink: #644514;
+  --color-primary-hover: #d6a53b;
+  --color-primary-soft: #fbf4df;
+  --color-success-strong: #19764b;
+
+  --portal-bg: var(--color-base-100);
+  --portal-surface: var(--color-base-200);
+  --portal-surface-muted: var(--color-base-100);
+  --portal-soft: color-mix(in oklab, var(--color-base-100) 65%, var(--color-base-200));
+  --portal-ink: var(--color-base-content);
+  --portal-body: color-mix(in oklab, var(--color-base-content) 78%, var(--color-base-100));
+  --portal-muted: color-mix(in oklab, var(--color-base-content) 58%, var(--color-base-100));
+  --portal-icon: color-mix(in oklab, var(--color-base-content) 45%, var(--color-base-100));
+  --portal-line: var(--color-base-300);
+  --portal-line-soft: color-mix(in oklab, var(--color-base-300) 55%, var(--color-base-200));
+
+  --portal-obsidian: var(--color-neutral);
+  --portal-obsidian-2: color-mix(in oklab, var(--color-neutral) 88%, var(--color-base-200));
+  --portal-obsidian-3: color-mix(in oklab, var(--color-neutral) 72%, var(--color-base-200));
+  --portal-obsidian-line: color-mix(in oklab, var(--color-neutral-content) 14%, transparent);
+  --portal-obsidian-muted: color-mix(in oklab, var(--color-neutral-content) 62%, transparent);
+  --portal-obsidian-muted-2: color-mix(in oklab, var(--color-neutral-content) 78%, transparent);
+  --portal-obsidian-muted-3: color-mix(in oklab, var(--color-neutral-content) 45%, transparent);
+
+  --portal-gold: var(--color-primary);
+  --portal-gold-hover: var(--color-primary-hover);
+  --portal-gold-ink: color-mix(in oklab, var(--color-primary) 55%, var(--color-neutral));
+  --portal-gold-ink-strong: color-mix(in oklab, var(--color-primary) 45%, var(--color-neutral));
+  --portal-gold-soft: color-mix(in oklab, var(--color-primary) 14%, var(--color-base-200));
+  --portal-gold-soft-2: color-mix(in oklab, var(--color-primary) 20%, var(--color-base-200));
+  --portal-gold-soft-3: color-mix(in oklab, var(--color-primary) 10%, var(--color-base-200));
+  --portal-gold-soft-4: color-mix(in oklab, var(--color-primary) 6%, var(--color-base-200));
+  --portal-gold-ring: color-mix(in oklab, var(--color-primary) 14%, transparent);
+  --portal-gold-border: color-mix(in oklab, var(--color-primary) 32%, transparent);
+
+  --portal-success: var(--color-success);
+  --portal-success-strong: var(--color-success-strong);
+  --portal-success-soft: color-mix(in oklab, var(--color-success) 14%, var(--color-base-200));
+  --portal-warning-soft: color-mix(in oklab, var(--color-warning) 14%, var(--color-base-200));
+
+  --portal-avatar-bg: color-mix(in oklab, var(--color-primary) 28%, var(--color-base-200));
+  --portal-avatar-ink: var(--portal-gold-ink-strong);
 }
 
 [data-theme="dark"] {
-  --portal-bg: #0b0f19;
-  --portal-surface: #131b2e;
-  --portal-surface-muted: #0f172a;
-  --portal-soft: #1e293b;
-  --portal-ink: #f8fafc;
-  --portal-body: #cbd5e1;
-  --portal-muted: #94a3b8;
-  --portal-icon: #64748b;
-  --portal-line: #1e293b;
-  --portal-line-soft: #1e293b;
-  --portal-obsidian: #0b0f19;
-  --portal-obsidian-2: #131b2e;
-  --portal-obsidian-3: #1e293b;
-  --portal-obsidian-line: #334155;
-  --portal-obsidian-muted: #94a3b8;
-  --portal-obsidian-muted-2: #cbd5e1;
-  --portal-obsidian-muted-3: #64748b;
-  --portal-gold: #e8b64b;
-  --portal-gold-hover: #d6a53b;
+  --color-success-strong: #4ade80;
+
   --portal-gold-ink: #f7d98a;
   --portal-gold-ink-strong: #f7d98a;
-  --portal-gold-soft: rgba(232, 182, 75, 0.12);
-  --portal-gold-soft-2: rgba(232, 182, 75, 0.16);
-  --portal-gold-soft-3: rgba(232, 182, 75, 0.1);
-  --portal-gold-soft-4: rgba(232, 182, 75, 0.08);
-  --portal-gold-ring: rgba(232, 182, 75, 0.15);
-  --portal-gold-border: rgba(232, 182, 75, 0.25);
-  --portal-success: #4ade80;
+  --portal-gold-soft: color-mix(in oklab, var(--color-primary) 12%, transparent);
+  --portal-gold-soft-2: color-mix(in oklab, var(--color-primary) 16%, transparent);
+  --portal-gold-soft-3: color-mix(in oklab, var(--color-primary) 10%, transparent);
+  --portal-gold-soft-4: color-mix(in oklab, var(--color-primary) 8%, transparent);
+  --portal-gold-ring: color-mix(in oklab, var(--color-primary) 15%, transparent);
+  --portal-gold-border: color-mix(in oklab, var(--color-primary) 25%, transparent);
+
   --portal-success-strong: #4ade80;
-  --portal-success-soft: rgba(74, 222, 128, 0.14);
-  --portal-warning-soft: rgba(251, 146, 60, 0.16);
-  --portal-avatar-bg: rgba(232, 182, 75, 0.2);
+  --portal-success-soft: color-mix(in oklab, var(--color-success) 14%, transparent);
+  --portal-warning-soft: color-mix(in oklab, var(--color-warning) 16%, transparent);
+
+  --portal-avatar-bg: color-mix(in oklab, var(--color-primary) 20%, transparent);
   --portal-avatar-ink: #f7d98a;
 }
 

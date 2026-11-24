@@ -18,7 +18,7 @@ export default function AuthLayout({
           alt="Advers Outdoor Billboard Showcase"
           className="absolute inset-0 w-full h-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0b0f19]/95 via-[#0b0f19]/50 to-[#0b0f19]/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-neutral)]/95 via-[var(--color-neutral)]/50 to-[var(--color-neutral)]/20" />
 
         {/* Top Brand Logo */}
         <div className="relative z-10">
@@ -28,7 +28,7 @@ export default function AuthLayout({
               alt="Advers Logo"
               className="h-9 w-auto object-contain group-hover:scale-105 transition-transform filter drop-shadow-md brightness-110"
             />
-            <span className="text-2xl font-extrabold text-white tracking-tight">
+            <span className="text-2xl font-extrabold text-[var(--color-neutral-content)] tracking-tight">
               Advers
             </span>
           </Link>
@@ -36,18 +36,18 @@ export default function AuthLayout({
 
         {/* Bottom Hero Caption & Social Proof */}
         <div className="relative z-10 space-y-6 max-w-md">
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white leading-tight tracking-tight">
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-[var(--color-neutral-content)] leading-tight tracking-tight">
             Put Your Brand on <br />
             <span className="text-primary">Every Screen</span>
           </h2>
 
-          <p className="text-white/85 text-base leading-relaxed font-normal">
+          <p className="text-[var(--color-neutral-content)]/85 text-base leading-relaxed font-normal">
             Connect with premium billboard networks across Lagos, Abuja, and Port Harcourt. Manage and track your campaigns seamlessly.
           </p>
 
-          <div className="pt-4 border-t border-white/15 flex items-center gap-6 text-xs text-white/80 font-medium">
+          <div className="pt-4 border-t border-[var(--color-neutral-content)]/15 flex items-center gap-6 text-xs text-[var(--color-neutral-content)]/80 font-medium">
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-[var(--color-success)] shrink-0" />
               <span>2,000+ Screen Slots</span>
             </div>
             <div className="flex items-center gap-2">

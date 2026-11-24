@@ -69,7 +69,7 @@ export default function ProjectsGrid({
 
         <Link
           href="/visibility-journey"
-          className="btn bg-[var(--portal-obsidian)] hover:bg-black text-white text-xs font-bold rounded-xl border-none shadow-md gap-2 shrink-0"
+          className="btn bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] text-xs font-bold rounded-xl border-none shadow-md gap-2 shrink-0"
         >
           <Plus className="w-4 h-4" />
           <span>Add New Package</span>
@@ -155,15 +155,15 @@ export default function ProjectsGrid({
                     alt={project.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/30 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-neutral)]/85 via-[var(--color-neutral)]/30 to-transparent" />
 
                   {/* Top Badges */}
                   <div className="absolute top-3 left-3 right-3 flex justify-between items-center z-10">
                     <span className="badge bg-base-100/90 backdrop-blur-md text-[10px] font-extrabold border-none shadow-xs flex items-center gap-1.5 text-base-content">
                       {project.category === "BILLBOARD" ? (
-                        <Tv className="w-3 h-3 text-amber-500" />
+                        <Tv className="w-3 h-3 text-[var(--color-warning)]" />
                       ) : project.category === "CARE_PLAN" ? (
-                        <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                        <ShieldCheck className="w-3 h-3 text-[var(--color-success)]" />
                       ) : (
                         <Globe className="w-3 h-3 text-primary" />
                       )}
@@ -173,10 +173,10 @@ export default function ProjectsGrid({
                     <span
                       className={`badge text-[10px] font-extrabold border-none shadow-xs ${
                         project.status === "ACTIVE"
-                          ? "bg-emerald-500 text-white"
+                          ? "bg-[var(--color-success)] text-[var(--color-success-content)]"
                           : project.status === "IN_PRODUCTION" || project.status === "ONBOARDING_IN_PROGRESS"
-                          ? "bg-amber-500 text-white animate-pulse"
-                          : "bg-indigo-500 text-white"
+                          ? "bg-[var(--color-warning)] text-[var(--color-neutral-content)] animate-pulse"
+                          : "bg-[var(--color-primary)] text-[var(--color-primary-content)]"
                       }`}
                     >
                       {project.status.replace(/_/g, " ")}
@@ -184,8 +184,8 @@ export default function ProjectsGrid({
                   </div>
 
                   {/* Subtitle Overlay */}
-                  <div className="absolute bottom-3 left-3 right-3 text-white">
-                    <span className="text-[10px] font-bold text-white/80 uppercase tracking-wider block">
+                  <div className="absolute bottom-3 left-3 right-3 text-[var(--color-neutral-content)]">
+                    <span className="text-[10px] font-bold text-[var(--color-neutral-content)]/80 uppercase tracking-wider block">
                       {project.id} • {project.packageTier}
                     </span>
                   </div>
@@ -213,7 +213,7 @@ export default function ProjectsGrid({
 
                   {project.metrics && (
                     <div className="text-xs font-semibold text-base-content/70 flex items-center gap-1.5">
-                      <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                      <Sparkles className="w-3.5 h-3.5 text-[var(--color-warning)] shrink-0" />
                       <span>{project.metrics}</span>
                     </div>
                   )}
@@ -228,7 +228,7 @@ export default function ProjectsGrid({
               <div className="p-5 pt-0">
                 <Link
                   href={project.link}
-                  className="btn btn-outline border-base-300 hover:bg-primary hover:text-white hover:border-primary text-xs font-bold rounded-xl w-full flex items-center justify-between transition-all"
+                  className="btn btn-outline border-base-300 hover:bg-primary hover:text-[var(--color-neutral-content)] hover:border-primary text-xs font-bold rounded-xl w-full flex items-center justify-between transition-all"
                 >
                   <span>View Details</span>
                   <ChevronRight className="w-4 h-4" />

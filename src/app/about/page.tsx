@@ -361,10 +361,10 @@ export default function AboutPage() {
                       <MapPin className="w-3.5 h-3.5 text-accent" />
                       <span>Prime Commercial Hub</span>
                     </div>
-                    <h4 className="text-white text-xl sm:text-2xl font-black mb-1">
+                    <h4 className="text-[var(--color-neutral-content)] text-xl sm:text-2xl font-black mb-1">
                       {loc.city}
                     </h4>
-                    <p className="text-white/80 text-xs sm:text-sm font-normal">
+                    <p className="text-[var(--color-neutral-content)]/80 text-xs sm:text-sm font-normal">
                       {loc.desc}
                     </p>
                   </div>
@@ -380,10 +380,10 @@ export default function AboutPage() {
             <div className="bg-primary p-6 sm:p-16 lg:p-20 rounded-3xl sm:rounded-[3rem] text-center text-primary-content relative overflow-hidden shadow-3d group">
               <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/95 to-secondary opacity-90 pointer-events-none" />
               <div className="relative z-10 space-y-5 sm:space-y-6 max-w-2xl mx-auto">
-                <h2 className="text-2xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
+                <h2 className="text-2xl sm:text-5xl font-extrabold tracking-tight text-[var(--color-neutral-content)] leading-tight">
                   Ready to Put Your Brand on the Map?
                 </h2>
-                <p className="text-white/85 text-base sm:text-lg font-normal leading-relaxed">
+                <p className="text-[var(--color-neutral-content)]/85 text-base sm:text-lg font-normal leading-relaxed">
                   Join growing Nigerian businesses scaling their authority and customer reach with Advers. Choose a package or speak directly with our strategists.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3.5 sm:gap-4 justify-center pt-3 sm:pt-4">
@@ -396,7 +396,7 @@ export default function AboutPage() {
                   </Link>
                   <Link
                     href="/contact"
-                    className="btn btn-outline border-white/30 text-white hover:bg-white/15 hover:border-white py-3.5 sm:py-4 px-6 sm:px-8 rounded-xl font-bold text-base sm:text-lg transition-all text-center"
+                    className="btn btn-outline border-[var(--color-neutral-content)]/30 text-[var(--color-neutral-content)] hover:bg-[var(--color-neutral-content)]/15 hover:border-[var(--color-neutral-content)] py-3.5 sm:py-4 px-6 sm:px-8 rounded-xl font-bold text-base sm:text-lg transition-all text-center"
                   >
                     Talk to Growth Strategists
                   </Link>

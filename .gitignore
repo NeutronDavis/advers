@@ -7,6 +7,9 @@
 # testing
 /coverage
 
+# local database snapshots (may contain customer data)
+/backups/
+
 # next.js
 /.next/
 /out/

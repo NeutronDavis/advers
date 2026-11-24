@@ -85,14 +85,14 @@ export default function PortalShell({
     <div className="min-h-screen bg-[var(--portal-bg)] text-[var(--portal-ink)] flex flex-col md:flex-row antialiased transition-colors duration-300">
       {/* Toast Notification Container */}
       {toastMessage && (
-        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-[var(--portal-obsidian)] text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-2xl shadow-2xl border border-white/10 flex items-center gap-2 animate-fadeIn">
+        <div className="fixed top-5 left-1/2 -translate-x-1/2 z-50 bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] text-xs sm:text-sm font-bold px-5 py-3 rounded-2xl shadow-2xl border border-[var(--color-neutral-content)]/10 flex items-center gap-2 animate-fadeIn">
           <Sparkles className="w-4 h-4 text-warning" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* DESKTOP SIDEBAR (>= md) - Matching Screenshot Obsidian Black */}
-      <aside className="hidden md:flex flex-col w-64 bg-[var(--portal-obsidian)] text-white shrink-0 sticky top-0 h-screen justify-between z-30 p-5 border-r border-[var(--portal-obsidian-3)]">
+      <aside className="hidden md:flex flex-col w-64 bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] shrink-0 sticky top-0 h-screen justify-between z-30 p-5 border-r border-[var(--portal-obsidian-3)]">
         <div className="space-y-6 overflow-y-auto pr-1">
           {/* Brand Header */}
           <Link href="/portal/dashboard" className="flex items-center gap-3 px-2 py-1 group">
@@ -102,7 +102,7 @@ export default function PortalShell({
               className="h-9 w-auto object-contain group-hover:scale-105 transition-transform drop-shadow-sm"
             />
             <div>
-              <span className="font-extrabold text-base tracking-widest text-white block">
+              <span className="font-extrabold text-base tracking-widest text-[var(--color-neutral-content)] block">
                 ADVERS
               </span>
               <span className="text-[9px] font-bold text-[var(--portal-obsidian-muted)] tracking-wider block">
@@ -125,8 +125,8 @@ export default function PortalShell({
                   href={item.href}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs transition-all ${
                     active
-                      ? "bg-[var(--portal-obsidian-3)] text-white font-bold shadow-xs"
-                      : "text-[var(--portal-obsidian-muted-2)] hover:bg-[var(--portal-obsidian-2)] hover:text-white"
+                      ? "bg-[var(--portal-obsidian-3)] text-[var(--color-neutral-content)] font-bold shadow-xs"
+                      : "text-[var(--portal-obsidian-muted-2)] hover:bg-[var(--portal-obsidian-2)] hover:text-[var(--color-neutral-content)]"
                   }`}
                 >
                   <Icon
@@ -154,8 +154,8 @@ export default function PortalShell({
                   href={item.href}
                   className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-medium text-xs transition-all ${
                     active
-                      ? "bg-[var(--portal-obsidian-3)] text-white font-bold"
-                      : "text-[var(--portal-obsidian-muted-2)] hover:bg-[var(--portal-obsidian-2)] hover:text-white"
+                      ? "bg-[var(--portal-obsidian-3)] text-[var(--color-neutral-content)] font-bold"
+                      : "text-[var(--portal-obsidian-muted-2)] hover:bg-[var(--portal-obsidian-2)] hover:text-[var(--color-neutral-content)]"
                   }`}
                 >
                   <Icon
@@ -175,7 +175,7 @@ export default function PortalShell({
           <form action={logoutAction}>
             <button
               type="submit"
-              className="flex items-center gap-2 px-2 text-[var(--portal-obsidian-muted-2)] hover:text-white text-[11px] font-bold transition-colors"
+              className="flex items-center gap-2 px-2 text-[var(--portal-obsidian-muted-2)] hover:text-[var(--color-neutral-content)] text-[11px] font-bold transition-colors"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Sign out</span>

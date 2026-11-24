@@ -24,6 +24,7 @@ type AuthenticatedUser = {
   role: "CLIENT" | "STAFF" | "ADMIN";
   clientId: string | null;
   profileCompleteAt: Date | null;
+  sessionVersion: number;
 };
 
 async function authenticate(
@@ -55,6 +56,7 @@ async function authenticate(
       role: user.role,
       clientId: user.clientId,
       profileCompleteAt: user.profileCompleteAt,
+      sessionVersion: user.sessionVersion,
     },
   };
 }
@@ -93,7 +95,7 @@ export async function loginAction(
   if ("error" in result) return { error: result.error };
 
   await recordLogin(result.user);
-  await setSessionCookie(result.user.id);
+  await setSessionCookie(result.user.id, undefined, result.user.sessionVersion);
   redirect(await landingPathForAuthenticatedUser(result.user));
 }
 
@@ -114,7 +116,7 @@ export async function loginWithCredentials(
   if ("error" in result) return { success: false, error: result.error };
 
   await recordLogin(result.user);
-  await setSessionCookie(result.user.id);
+  await setSessionCookie(result.user.id, undefined, result.user.sessionVersion);
 
   return {
     success: true,
@@ -182,7 +184,7 @@ export async function signupAction(
     return created;
   });
 
-  await setSessionCookie(user.id);
+  await setSessionCookie(user.id, undefined, user.sessionVersion);
   redirect("/portal/billing?onboarding=1");
 }
 
@@ -264,7 +266,7 @@ export async function acceptInviteAction(
       return updatedUser;
     });
 
-    await setSessionCookie(linked.id);
+    await setSessionCookie(linked.id, undefined, linked.sessionVersion);
     redirect("/portal/dashboard");
   }
 
@@ -303,6 +305,6 @@ export async function acceptInviteAction(
     return created;
   });
 
-  await setSessionCookie(user.id);
+  await setSessionCookie(user.id, undefined, user.sessionVersion);
   redirect("/portal/dashboard");
 }

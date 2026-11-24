@@ -96,7 +96,7 @@ export default function Navbar() {
           </Link>
           <Link
             href="/signup"
-            className="bg-[#4f46e5] text-white px-5 lg:px-6 py-2.5 rounded-xl font-bold hover:shadow-lg hover:shadow-indigo-500/30 hover:bg-[#3525cd] transition-all text-sm"
+            className="bg-[var(--color-primary)] text-[var(--color-primary-content)] px-5 lg:px-6 py-2.5 rounded-xl font-bold hover:shadow-lg hover:bg-[var(--color-primary-hover)] transition-all text-sm"
           >
             Get Started
           </Link>
@@ -171,7 +171,7 @@ export default function Navbar() {
             <Link
               href="/signup"
               onClick={() => setMobileOpen(false)}
-              className="btn bg-[#4f46e5] hover:bg-[#3525cd] text-white w-full rounded-xl text-center border-none shadow-md font-bold py-3 text-base block"
+              className="btn bg-[var(--color-primary)] hover:bg-[var(--color-primary-hover)] text-[var(--color-primary-content)] w-full rounded-xl text-center border-none shadow-md font-bold py-3 text-base block"
             >
               Get Started
             </Link>

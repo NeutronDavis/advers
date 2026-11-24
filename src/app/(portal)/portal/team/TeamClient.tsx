@@ -150,7 +150,7 @@ export default function TeamClient({
           <span>Choose a plan before inviting team members.</span>
           <Link
             href="/portal/billing"
-            className="btn btn-xs bg-[var(--portal-obsidian)] text-white border-none rounded-lg font-bold ml-auto"
+            className="btn btn-xs bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] border-none rounded-lg font-bold ml-auto"
           >
             Choose plan
           </Link>
@@ -188,7 +188,7 @@ export default function TeamClient({
           <button
             type="button"
             onClick={copyInvite}
-            className="btn btn-xs bg-[var(--portal-obsidian)] text-white border-none rounded-lg font-bold ml-auto gap-1"
+            className="btn btn-xs bg-[var(--portal-obsidian)] text-[var(--color-neutral-content)] border-none rounded-lg font-bold ml-auto gap-1"
           >
             {copied ? (
               <CheckCircle2 className="w-3 h-3" />
@@ -275,7 +275,7 @@ export default function TeamClient({
               <button
                 type="submit"
                 disabled={isPending || !canInvite}
-                className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-white border-none rounded-xl text-xs font-bold w-full gap-1.5 disabled:opacity-60"
+                className="btn btn-sm bg-[var(--portal-obsidian)] hover:bg-black text-[var(--color-neutral-content)] border-none rounded-xl text-xs font-bold w-full gap-1.5 disabled:opacity-60"
               >
                 {isPending ? (
                   <span className="loading loading-spinner loading-xs" />
