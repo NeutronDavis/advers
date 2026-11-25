@@ -6,9 +6,14 @@
 
 # testing
 /coverage
+/test-results/
+/playwright-report/
 
 # local database snapshots (may contain customer data)
 /backups/
+
+# local media uploads (development storage driver)
+/public/uploads/
 
 # next.js
 /.next/

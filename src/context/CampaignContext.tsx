@@ -12,6 +12,7 @@ import {
   saveCampaignDraftAction,
 } from "@/server/actions/campaigns";
 import type { Campaign } from "@/lib/types/campaign";
+import type { ChannelSpecField } from "@/lib/channel-specs";
 
 export type { Campaign } from "@/lib/types/campaign";
 
@@ -40,12 +41,15 @@ export interface CampaignCreateInput {
   contactPhone?: string;
   creativeAssetUrl?: string;
   creativeAssetType?: string;
+  channelConfigJson?: string;
+  mediaAssetIds?: string[];
   notes?: string;
 }
 
 interface CampaignContextType {
   campaigns: Campaign[];
   businessProfiles: BusinessProfileOption[];
+  channelSpecs: Record<string, ChannelSpecField[]>;
   addCampaign: (campaign: CampaignCreateInput) => Promise<Campaign | null>;
   saveDraft: (campaign: CampaignCreateInput) => Promise<Campaign | null>;
   isModalOpen: boolean;
@@ -68,10 +72,12 @@ export function CampaignProvider({
   children,
   initialCampaigns = [],
   businessProfiles = [],
+  channelSpecs = {},
 }: {
   children: React.ReactNode;
   initialCampaigns?: Campaign[];
   businessProfiles?: BusinessProfileOption[];
+  channelSpecs?: Record<string, ChannelSpecField[]>;
 }) {
   const [campaigns, setCampaigns] = useState<Campaign[]>(initialCampaigns);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -147,6 +153,7 @@ export function CampaignProvider({
       value={{
         campaigns,
         businessProfiles,
+        channelSpecs,
         addCampaign,
         saveDraft,
         isModalOpen,

@@ -12,6 +12,7 @@ import {
   parseMoneyOrDefault,
   subMoney,
   sumMoney,
+  toDecimalString,
   toMoneyDTO,
   zeroMoney,
 } from "../money";
@@ -76,6 +77,12 @@ test("MoneyDTO round-trips through JSON without BigInt errors", () => {
     network: "POLYGON",
   });
   assert.equal(fromMoneyDTO(parsed).amountMinor, BigInt(25_500_000));
+});
+
+test("toDecimalString keeps exact provider-boundary precision", () => {
+  assert.equal(toDecimalString(parseMoney("25.5", "USDC")), "25.500000");
+  assert.equal(toDecimalString(parseMoney("150000", "NGN")), "150000.00");
+  assert.equal(toDecimalString(parseMoney("-0.000001", "USDC")), "-0.000001");
 });
 
 test("formatMoney prints exact values for both currencies", () => {

@@ -1,7 +1,7 @@
 # Plan: ADVERS Platform Update Implementation
 
 **Source:** `doc/ADVERS_Technical_Development_Brief.docx`
-**Status:** Phase 1 core complete — Phase 2 ready. Deliberate deferrals are recorded in `.agents/agent-plans/phase-1-foundation.md`.
+**Status:** Phase 6 QA complete on development — controlled staging/pilot ready. Real-money production is blocked by `.agents/agent-plans/phase-6-qa-release.md` §5.
 **Milestone 1:** Foundation only (Phase 0 + Phase 1). Later phases are specified but not started until Milestone 1 exits.
 
 ---
@@ -53,6 +53,162 @@ Phase 1 core is implemented and verified against the live development database. 
 **Deliberate deferrals:** legacy `Int` remains the UI read source until the Phase 2 wallet rebuild; `requireContext` is not yet applied to every route; theme preference is not yet synced to the account; `--portal-*` aliases remain until Phase 4; ESLint/Playwright are Phase 6.
 
 **Phase 2 blockers:** Yellow Card sandbox credentials, Finance fee percentages (D-07), and minimum deposit/withdrawal amounts (D-15).
+
+---
+
+## Phase 2 Execution Log (2026-11-25)
+
+Phase 2 core is implemented and verified against the live development database using the **mock provider**. Full detail is in `.agents/agent-plans/phase-2-wallet-security.md`.
+
+| Deliverable | Result |
+|---|---|
+| Provider abstraction | Interface, mock provider, Yellow Card stub, env factory |
+| Webhooks | Signed route, `ProviderEvent` persistence, duplicate handling |
+| Wallet | Per-currency wallet, ledger-backed balances, fund/withdraw/address actions |
+| Ledger flows | On-ramp, withdrawal hold, payout, failure reversal, all idempotent |
+| 2FA | TOTP (RFC 6238), AES-GCM secret storage, hashed recovery codes, step-up tokens |
+| UI | Real `/portal/wallet`, sandbox checkout, `/portal/settings/security` |
+| Rate limits | Funding, address changes, TOTP attempts, withdrawals |
+| Migrations | 3 additive Phase 2 migrations applied |
+| Verification | typecheck passed, 62/62 tests, build passed, wallet + security smoke passed, wallet/security pages render 200 |
+
+**Deliberate deferrals:** real Yellow Card adapter, real FX quotes, in-memory → Redis rate limiting, admin reconciliation queue, withdrawal review queue, email notifications, address checksum, recovery-code login UI, wallet freeze admin action.
+
+**Phase 2 production blockers:** Yellow Card sandbox credentials/KYB, fee percentages (D-07), minimums (D-15), Redis-backed rate limiting, and the reconciliation/review queues.
+
+---
+
+## Phase 2 Hardening Log (2026-11-25)
+
+Phase 2 was hardened after the core build. Full detail is in `.agents/agent-plans/phase-2-hardening.md`.
+
+| Hardening item | Result |
+|---|---|
+| Rate limiting | MySQL-backed `RateLimitBucket`, shared across processes, with cleanup script |
+| Address safety | EIP-55 checksum validation, zero-address rejection, checksum normalization |
+| Admin reconciliation | `/admin/reconciliation`: retry/ignore provider events, resolve withdrawals, freeze/activate/close wallets |
+| Recovery codes | One-time recovery code disables 2FA and lets the user re-enrol |
+| Notifications | In-app updates for funding, withdrawals, 2FA and wallet status; safe post-ledger delivery |
+| Statement export | `/portal/wallet/statement` CSV download |
+| Webhook hardening | 256 KB limit, attempt tracking, duplicate detection, persisted errors |
+| Migration | `20261125150000_phase2_hardening` applied after backup |
+| Verification | typecheck passed, 67/67 tests, build passed, wallet + security smoke passed, admin/wallet/statement renders checked |
+
+**Still external blockers:** real Yellow Card adapter, real FX quotes, D-07 fees, D-15 minimums, email/SMS delivery, contract-address RPC detection, and a pre-payout finance approval step.
+
+---
+
+## Phase 3 Execution Log (2026-11-25)
+
+Initial AdBooster marketplace slice is complete. Full detail is in `.agents/agent-plans/phase-3-marketplace.md`.
+
+| Deliverable | Result |
+|---|---|
+| Profile model | Handle, cover, location, availability, response time, starting price |
+| Social models | Likes, comments, reviews, recommendations, reports |
+| Ranking | D-11 weights engine + 6 tests |
+| Discovery | Real `/portal/adboosters` with search, filters, sort, pagination |
+| Public profile | `/portal/adboosters/[handle]` with portfolio, services, reviews, comments, recommendations |
+| Social actions | Like, recommend, comment, verified review, report; rate-limited and moderation-gated |
+| Moderation | `/admin/marketplace` with comment/review/report queues and content removal |
+| Profile editor | Marketplace presence fields and unique handle management |
+| Seed | `npm run seed:marketplace` populated 8 demo profiles |
+| Verification | typecheck passed, 76/76 tests, build passed, marketplace/profile/admin pages render 200 |
+
+**Remaining Phase 3 refinements:** structured services/packages, portfolio records, ranking admin overrides, moderation bulk/appeals, direct engagement flow, stronger anti-abuse signals, SQL-backed pagination.
+
+---
+
+## Phase 4 Execution Log (2026-11-25)
+
+Phase 4 core is complete. Full detail is in `.agents/agent-plans/phase-4-account-settings-theme.md`.
+
+| Deliverable | Result |
+|---|---|
+| Profile settings | Username, avatar, name/phone/company, email change, password change |
+| Theme | Preference card + persisted `ThemeToggle` across shells |
+| Account switching | Sidebar switchers, settings card, dual-role demo seed |
+| Danger zone | Deactivate and deletion request with password + confirmation |
+| Email change | 24h hashed token, confirmation page, dev verification link |
+| Migration | `20261125170000_phase4_account_settings` applied after backup |
+| Verification | typecheck passed, 76/76 tests, build passed, settings/switch/email pages render |
+
+**Deferrals:** email delivery provider, logged-out confirmation redirect, server-rendered theme to remove first-paint flash, manual WCAG contrast QA, avatar uploads (Phase 5), hard account deletion, per-device session list, stricter booster route context redirects.
+
+---
+
+## Phase 5 Execution Log (2026-11-25)
+
+Phase 5 core is complete. Full detail is in `.agents/agent-plans/phase-5-ad-builder-media.md`.
+
+| Deliverable | Result |
+|---|---|
+| Channel specs | `ChannelSpec` model, 42 seeded fields, admin editor |
+| Media assets | `MediaAsset` + `CampaignMediaAsset`, local storage driver, upload action |
+| Image inspection | `sharp` dimensions and size caps |
+| Dynamic builder | Channel-first fields, uploads, previews, inline validation, drafts |
+| Server validation | Required fields and asset rules re-checked on create, draft and submit |
+| Migration | `20261125180000_phase5_media_channel_specs` applied after backup |
+| Verification | typecheck passed, 83/83 tests, build passed, media smoke passed, admin/portal pages render |
+
+**Deferrals:** S3/signed direct uploads, server-side audio/video probing, antivirus scan, thumbnails/transcoding, partner-level spec overrides, draft autosave, campaign media gallery.
+
+---
+
+## Phase 3 Refinements Log (2026-11-25)
+
+Structured services, packages, portfolio records and direct engagement requests are complete. Full detail is in `.agents/agent-plans/phase-3-refinements.md`.
+
+| Deliverable | Result |
+|---|---|
+| Services/packages | `BoosterService`, `BoosterPackage`, structured editor sync, public display |
+| Portfolio | `PortfolioItem` model with media/external links, legacy JSON backfill |
+| Engagement requests | Advertiser request dialog, Booster accept/decline inbox, notifications |
+| Backfill | 12 services and 6 portfolio items migrated from legacy JSON |
+| Migration | `20261125190000_phase3_services_requests` applied after backup |
+| Verification | typecheck passed, 87/87 tests, build passed, profile/request pages render |
+
+**Remaining Phase 3 work:** portfolio media upload UI, package includes editor, service-level filters, accepted-request → job conversion, read receipts, ranking overrides, anti-abuse signals, moderation bulk actions, SQL pagination.
+
+---
+
+## Phase 3 Refinements Round 2 Log (2026-11-25)
+
+The remaining high-value Phase 3 refinements are complete. Full detail is appended to `.agents/agent-plans/phase-3-refinements.md`.
+
+| Deliverable | Result |
+|---|---|
+| Portfolio media | Upload/edit/delete media portfolio items; legacy rows preserved |
+| Package includes | Fifth quick-entry field and public display |
+| Discovery | Category/search now match structured services and packages |
+| Request→job | Accepted request creates a draft assigned BoosterJob |
+| Read receipts | `VIEWED` status, `viewedAt`, unread request badge |
+| Ranking admin | Manual ±20 boost, sponsored flag, ranking notes, admin tab |
+| Moderation bulk | Approve/reject selected comments and reviews |
+| Anti-abuse | New accounts need a completed job before recommending |
+| Migration | `20261125200000_phase3_refinement_final` applied after backup |
+| Verification | typecheck passed, 88/88 tests, build passed, pages render |
+
+**Remaining non-critical Phase 3 items:** SQL ranking/pagination above 120 candidates, moderation appeals/history, service platform filter, sponsorship billing, portfolio ordering controls.
+
+---
+
+## Phase 6 QA Log (2026-11-25)
+
+Phase 6 QA is complete on the development environment. Full detail is in `.agents/agent-plans/phase-6-qa-release.md`.
+
+| Deliverable | Result |
+|---|---|
+| Typecheck | Passed |
+| Unit tests | **88/88 passed** |
+| Build | Passed |
+| Playwright E2E | **4/4 passed** (settings, marketplace, TV builder, admin) |
+| Smoke suite | wallet, security, media, ledger all passed |
+| Phase 1 verifier / cleanup | Passed |
+| Security hardening | Mandatory session version, extra rate limits, audit log, security headers |
+| Migration status | Up to date |
+
+**Production blockers:** Yellow Card adapter, real FX/fee/minimum decisions, durable media storage + antivirus, email/SMS delivery, pre-payout finance approval, CSP/pen test, and a staging rehearsal.
 
 ---
 
@@ -364,6 +520,23 @@ Reuse patterns: server-action + Zod + `getSession()` + `AuditLog`/`ActivityLog` 
 - **2026-11-24**: User instruction — "start Phase 1 now in this session". Phase 1 core executed.
 - **2026-11-24**: Database backup taken (43 tables, 282 rows); baseline migration recorded; Phase 1 additive migration applied; 60 legacy money rows backfilled and verified; ledger smoke test passed.
 - **2026-11-24**: Phase 1 deferrals accepted for the milestone: legacy `Int` remains the UI read source until Phase 2; route adoption of `requireContext` is Phase 2/4; theme persistence is Phase 4; ESLint/Playwright are Phase 6.
+- **2026-11-25**: User instruction — "start Phase 2". Phase 2 core executed against the mock provider.
+- **2026-11-25**: Three additive Phase 2 migrations applied after a fresh database backup; Phase 2 wallet and security smoke tests passed.
+- **2026-11-25**: Phase 2 production path remains gated on Yellow Card sandbox credentials, D-07 fee percentages, D-15 minimums, and a Redis-backed rate limiter.
+- **2026-11-25**: User instruction — "Harden Phase 2". Implemented DB-backed rate limiting, EIP-55 checksums, admin reconciliation/wallet controls, recovery-code flow, notifications, CSV statements, and webhook hardening.
+- **2026-11-25**: `20261125150000_phase2_hardening` applied after a fresh database backup; 67/67 tests, typecheck, build, wallet/security smoke, and page render checks passed.
+- **2026-11-25**: User instruction — "Start Phase 3". Initial AdBooster profile and marketplace slice executed.
+- **2026-11-25**: `20261125160000_phase3_marketplace` applied after a fresh backup; 8 demo profiles seeded; 76/76 tests, typecheck, build, and marketplace/profile/admin render checks passed.
+- **2026-11-25**: User instruction — "okay lt do phase 4 , 5 then 3". Phase 4 executed first.
+- **2026-11-25**: `20261125170000_phase4_account_settings` applied after a fresh backup; dual-role demo seeded; settings, switching and email-confirm pages verified.
+- **2026-11-25**: User instruction — "go on with phase 5 , then 3". Phase 5 executed.
+- **2026-11-25**: `20261125180000_phase5_media_channel_specs` applied after a fresh backup; 42 channel fields seeded; media smoke passed; 83/83 tests and build passed.
+- **2026-11-25**: User instruction — "go on with phase 3". Structured services/packages/portfolio and direct engagement requests executed.
+- **2026-11-25**: `20261125190000_phase3_services_requests` applied after a fresh backup; 12 services and 6 portfolio items backfilled; 87/87 tests and build passed.
+- **2026-11-25**: User instruction — "continue with the remaining Phase 3 refinements first before pahase 6". Round 2 refinements executed.
+- **2026-11-25**: `20261125200000_phase3_refinement_final` applied after a fresh backup; 88/88 tests and build passed.
+- **2026-11-25**: User instruction — "go on with phase 6". QA and release-readiness executed.
+- **2026-11-25**: Playwright E2E added (4/4 passing), full smoke suite passed, security headers and session/rate-limit hardening applied.
 
 ## Key Decisions & Trade-offs
 
@@ -403,9 +576,47 @@ Resolved in Phase 0 sign-off:
 - Refunds: **original USD value**, ledger reversal.
 
 Still open:
-1. **Fee percentages and minimum deposit/withdrawal** — Finance, blocks Phase 2 pricing/withdrawal validation.
+1. **Fee percentages and minimum deposit/withdrawal** — Finance, blocks Phase 2 production pricing/withdrawal validation.
 2. **Moderation SLA** — Product, blocks Phase 3 launch criteria.
 3. **Storage vendor and scan provider** (S3-compatible/R2/Cloudinary + antivirus hook) — blocks Phase 5.
-4. **Yellow Card sandbox credentials and KYB onboarding** — blocks the provider spike and Phase 2.
-5. **Staging database snapshot** before the Phase 1 migration rehearsal.
-6. **Provider confirmation** that USDC payouts to external Polygon wallets are supported for a Nigerian business.
+4. **Yellow Card sandbox credentials and KYB onboarding** — blocks the real provider adapter and Phase 2 production.
+5. **Provider confirmation** that USDC payouts to external Polygon wallets are supported for a Nigerian business.
+6. **Real Yellow Card adapter** — map on-ramp, payout, and webhook signature endpoints.
+7. **Pre-payout finance approval** — the current flow calls the provider on request; add an approval gate before real payouts.
+8. **Scheduled reconciliation job** — the admin queue is manual; add a worker for failed events and stale pending withdrawals.
+9. **Email/SMS delivery adapter** — notifications create channel rows but nothing sends them yet.
+10. **Contract-address detection** — EIP-55 format validation is in place; detecting contracts needs an RPC provider.
+11. **Schedule `npm run cleanup:phase2`** — expired rate-limit buckets, step-up tokens, and FX quotes.
+12. **Marketplace pagination at scale** — move rank scoring into SQL or a materialized table beyond 120 candidates.
+13. **Moderation appeals/history** — bulk actions exist; add appeals and moderator assignment.
+14. **Service platform filter** — category filtering is in place; add platform-level filtering.
+15. **Sponsorship billing** — the sponsored flag is operational but not monetised.
+16. **Portfolio ordering controls** — media items sort by upload order.
+17. **Read-receipt notifications** — advertisers do not yet see when a Booster viewed a request.
+18. **Server-rendered theme** — apply the saved preference before hydration to remove the first-paint flash; complete manual WCAG AA checks.
+19. **Email delivery + logged-out verification redirect** — connect Resend/SES and preserve `next` through login.
+20. **Avatar media uploads** — URL-only today; wire to Phase 5 storage.
+21. **Per-device session management** — `sessionVersion` revocation exists; add a device list.
+22. **Stricter booster route context** — redirect USER-context sessions away from Booster routes unless onboarding.
+23. **Production media storage** — replace `public/uploads` with S3/R2/Cloudinary and signed direct uploads.
+24. **Server-side audio/video probing** — add `music-metadata`/`mp4box` or an ffprobe worker; client metadata is trusted in v1.
+25. **Antivirus/media scan hook** — assets are created with `scanStatus=PENDING`.
+26. **Partner-level channel overrides** — specs are per channel today; add `partnerId` overrides.
+27. **Campaign media gallery** — surface `CampaignMediaAsset` on campaign detail.
+28. **Thumbnails/transcoding** — generate poster frames and compressed variants.
+29. **CSP + external penetration test** — baseline security headers are in place; CSP is not.
+30. **Staging rehearsal** — run migrations, smokes and E2E against a production-shaped staging environment.
+31. **Manual accessibility pass** — axe/Lighthouse, screen-reader and WCAG AA contrast checks.
+32. **ESLint** — no ESLint configuration is committed; current gate is typecheck + tests + build.
+33. **Load/performance testing** — marketplace ranking, wallet webhooks and upload endpoints.
+
+Resolved during Phase 1/2/3/4/5/6:
+- Database backup taken before each migration; migrations are additive and applied.
+- Wallet, ledger, 2FA and step-up foundations are in place.
+- MySQL-backed rate limiting, admin reconciliation, wallet freeze/close, recovery-code flow, CSV statements, and webhook attempt tracking are in place.
+- AdBooster profiles, marketplace discovery, likes/comments/reviews/recommendations, reports, ranking, and moderation are in place.
+- Profile settings, account switching, theme persistence, email-change tokens, password change and danger-zone controls are in place.
+- Channel-specific specs, media uploads, previews, validation and admin spec management are in place.
+- Structured services, packages, portfolio records, and direct advertiser-to-Booster engagement requests are in place.
+- Portfolio media uploads, package includes, service-aware filters, request→job conversion, read receipts, ranking overrides, sponsored labels, bulk moderation, and recommendation anti-abuse are in place.
+- Playwright E2E, security headers, mandatory session versioning, and the full smoke suite are in place.

@@ -152,6 +152,24 @@ export function getChannelByType(
   );
 }
 
+const MARKETING_LABEL_ALIASES: Record<string, ChannelTypeValue> = {
+  "Digital billboards (DOOH)": "DIGITAL_BILLBOARD",
+  "Static billboards (OOH)": "STATIC_BILLBOARD",
+  "FM radio advertising": "FM_RADIO",
+  "Television advertising": "TELEVISION",
+  "Newspapers & Press": "NEWSPAPER",
+  "Podcast advertising": "PODCAST",
+  "AdBoosters network": "ADBOOSTERS",
+  "Influencer Hub": "INFLUENCER",
+};
+
+/** Maps the campaign form's display label to a channel type. */
+export function getChannelTypeByMarketingLabel(
+  label: string
+): ChannelTypeValue | undefined {
+  return MARKETING_LABEL_ALIASES[label] ?? getChannelByLabel(label)?.channelType;
+}
+
 export function channelHref(slug: string): string {
   return `/portal/channels/${slug}`;
 }

@@ -9,6 +9,7 @@ import type {
 } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { assertBalanced, type LedgerLineDraft } from "@/lib/ledger";
+import { ledgerAccountKey } from "@/lib/ledger-account-key";
 import {
   assertSupportedNetwork,
   isCurrencyCode,
@@ -41,15 +42,7 @@ export interface PostLedgerInput {
   status?: LedgerTransactionStatus;
 }
 
-/** Stable, unique key for an account tuple. */
-export function ledgerAccountKey(spec: LedgerAccountSpec): string {
-  return [
-    spec.userId ?? "SYSTEM",
-    spec.type,
-    spec.currency,
-    spec.network ?? "NONE",
-  ].join(":");
-}
+export { ledgerAccountKey };
 
 function validateAccountSpec(spec: LedgerAccountSpec): void {
   if (!isCurrencyCode(spec.currency)) {

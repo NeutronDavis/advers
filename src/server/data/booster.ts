@@ -37,8 +37,14 @@ export interface BoosterProfileData {
   id: string;
   userId: string;
   displayName: string;
+  handle: string | null;
   businessName: string | null;
   logoUrl: string | null;
+  coverUrl: string | null;
+  location: string | null;
+  availabilityStatus: string;
+  responseTimeHours: number | null;
+  startingPrice: number | null;
   bio: string | null;
   isBusiness: boolean;
   categories: string[];
@@ -46,6 +52,34 @@ export interface BoosterProfileData {
   coverage: string[];
   portfolio: { title: string; url: string; description?: string }[];
   rates: { label: string; amount: string }[];
+  services: Array<{
+    id: string;
+    title: string;
+    description: string | null;
+    category: string | null;
+    platform: string | null;
+    priceMin: number | null;
+    priceMax: number | null;
+    currency: string;
+    deliveryDays: number | null;
+  }>;
+  packages: Array<{
+    id: string;
+    name: string;
+    description: string | null;
+    price: number;
+    currency: string;
+    deliveryDays: number | null;
+    revisions: number | null;
+    includes: string[];
+  }>;
+  portfolioItems: Array<{
+    id: string;
+    title: string;
+    description: string | null;
+    mediaUrl: string | null;
+    externalUrl: string | null;
+  }>;
   availableHours: string | null;
   verificationStatus: string;
   verificationLabel: string;
@@ -179,15 +213,31 @@ function mapJob(job: {
 export async function getBoosterProfileForUser(
   userId: string
 ): Promise<BoosterProfileData | null> {
-  const profile = await prisma.boosterProfile.findUnique({ where: { userId } });
+  const profile = await prisma.boosterProfile.findUnique({
+    where: { userId },
+    include: {
+      services: { where: { active: true }, orderBy: { sortOrder: "asc" } },
+      packages: { where: { active: true }, orderBy: { sortOrder: "asc" } },
+      portfolioItems: {
+        orderBy: { sortOrder: "asc" },
+        include: { mediaAsset: { select: { url: true } } },
+      },
+    },
+  });
   if (!profile) return null;
 
   return {
     id: profile.id,
     userId: profile.userId,
     displayName: profile.displayName,
+    handle: profile.handle,
     businessName: profile.businessName,
     logoUrl: profile.logoUrl,
+    coverUrl: profile.coverUrl,
+    location: profile.location,
+    availabilityStatus: profile.availabilityStatus,
+    responseTimeHours: profile.responseTimeHours,
+    startingPrice: profile.startingPrice,
     bio: profile.bio,
     isBusiness: profile.isBusiness,
     categories: parseStringArray(profile.categoriesJson),
@@ -199,6 +249,34 @@ export async function getBoosterProfileForUser(
       description?: string;
     }>(profile.portfolioJson),
     rates: parseJsonArray<{ label: string; amount: string }>(profile.ratesJson),
+    services: profile.services.map((service) => ({
+      id: service.id,
+      title: service.title,
+      description: service.description,
+      category: service.category,
+      platform: service.platform,
+      priceMin: service.priceMin,
+      priceMax: service.priceMax,
+      currency: service.currency,
+      deliveryDays: service.deliveryDays,
+    })),
+    packages: profile.packages.map((item) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      price: item.price,
+      currency: item.currency,
+      deliveryDays: item.deliveryDays,
+      revisions: item.revisions,
+      includes: parseStringArray(item.includesJson),
+    })),
+    portfolioItems: profile.portfolioItems.map((item) => ({
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      mediaUrl: item.mediaAsset?.url ?? null,
+      externalUrl: item.externalUrl,
+    })),
     availableHours: profile.availableHours,
     verificationStatus: profile.verificationStatus,
     verificationLabel:

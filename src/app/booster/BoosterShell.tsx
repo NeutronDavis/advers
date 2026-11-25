@@ -16,9 +16,11 @@ import {
   Sparkles,
   SlidersHorizontal,
   ShieldCheck,
+  MessageSquare,
   X,
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import AccountContextSwitcher from "@/components/AccountContextSwitcher";
 import { logoutAction } from "@/server/actions/auth";
 import type { AuthSessionUser } from "@/lib/types/dto";
 
@@ -35,11 +37,13 @@ export default function BoosterShell({
   user,
   hasProfile,
   unreadNotifications,
+  unreadRequests = 0,
   children,
 }: {
   user: AuthSessionUser;
   hasProfile: boolean;
   unreadNotifications: number;
+  unreadRequests?: number;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -49,6 +53,12 @@ export default function BoosterShell({
     { name: "Dashboard", href: "/booster", icon: LayoutDashboard },
     { name: "Marketplace", href: "/booster/jobs", icon: Compass },
     { name: "My applications", href: "/booster/applications", icon: ClipboardList },
+    {
+      name: "Direct requests",
+      href: "/booster/requests",
+      icon: MessageSquare,
+      badge: unreadRequests > 0 ? unreadRequests : undefined,
+    },
     { name: "My team", href: "/booster/team", icon: Users },
     { name: "Earnings", href: "/booster/earnings", icon: Wallet },
     { name: "My profile", href: "/booster/profile", icon: UserCircle },
@@ -93,7 +103,7 @@ export default function BoosterShell({
           </div>
         </Link>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
+          <ThemeToggle preference={user.themePreference} persist />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="btn btn-square btn-ghost btn-sm"
@@ -156,6 +166,8 @@ export default function BoosterShell({
               }`}
             />
           </div>
+
+          <AccountContextSwitcher user={user} />
 
           <div className="space-y-1">
             <div className="text-[10px] font-bold text-base-content/50 uppercase tracking-wider px-3 mb-2">
@@ -227,7 +239,7 @@ export default function BoosterShell({
             <span className="text-[10px] text-base-content/40 font-mono">
               ADVERS BOOSTERS
             </span>
-            <ThemeToggle />
+            <ThemeToggle preference={user.themePreference} persist />
           </div>
         </div>
       </aside>

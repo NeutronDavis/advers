@@ -12,6 +12,7 @@ import {
   CreditCard,
   ArrowRight,
   Bell,
+  ShieldCheck,
   Mail,
   Smartphone,
   MessageSquare,
@@ -21,13 +22,27 @@ import {
   type AccountSettingsState,
 } from "@/server/actions/account";
 import { updateNotificationPreferencesAction } from "@/server/actions/notifications";
+import AccountExperienceCard from "./AccountExperienceCard";
+import EmailChangeCard from "./EmailChangeCard";
+import PasswordCard from "./PasswordCard";
+import ThemePreferenceCard from "./ThemePreferenceCard";
+import DangerZoneCard from "./DangerZoneCard";
 
 export default function SettingsClient({
   initial,
   isOwner,
   notificationPreferences,
+  account,
 }: {
-  initial: { name: string; email: string; phone: string; company: string };
+  initial: {
+    name: string;
+    email: string;
+    phone: string;
+    company: string;
+    username: string;
+    avatarUrl: string;
+    themePreference: "LIGHT" | "DARK" | "SYSTEM";
+  };
   isOwner: boolean;
   notificationPreferences: {
     inApp: boolean;
@@ -35,10 +50,18 @@ export default function SettingsClient({
     sms: boolean;
     whatsapp: boolean;
   };
+  account: {
+    context: "USER" | "BOOSTER" | "ADMIN";
+    hasClient: boolean;
+    hasBooster: boolean;
+    boosterHandle: string | null;
+  };
 }) {
   const [name, setName] = useState(initial.name);
   const [phone, setPhone] = useState(initial.phone);
   const [company, setCompany] = useState(initial.company);
+  const [username, setUsername] = useState(initial.username);
+  const [avatarUrl, setAvatarUrl] = useState(initial.avatarUrl);
   const [state, formAction, isPending] = useActionState<
     AccountSettingsState,
     FormData
@@ -75,14 +98,23 @@ export default function SettingsClient({
             Manage your contact profile, business name and account credentials.
           </p>
         </div>
-        <Link
-          href="/portal/billing"
-          className="btn btn-sm bg-[var(--portal-soft)] border-[var(--portal-line)] text-[var(--portal-body)] rounded-xl text-xs font-bold gap-1.5 self-start sm:self-auto"
-        >
-          <CreditCard className="w-3.5 h-3.5" />
-          <span>Plan &amp; billing</span>
-          <ArrowRight className="w-3 h-3" />
-        </Link>
+        <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+          <Link
+            href="/portal/settings/security"
+            className="btn btn-sm bg-[var(--portal-soft)] border-[var(--portal-line)] text-[var(--portal-body)] rounded-xl text-xs font-bold gap-1.5"
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Security &amp; 2FA</span>
+          </Link>
+          <Link
+            href="/portal/billing"
+            className="btn btn-sm bg-[var(--portal-soft)] border-[var(--portal-line)] text-[var(--portal-body)] rounded-xl text-xs font-bold gap-1.5"
+          >
+            <CreditCard className="w-3.5 h-3.5" />
+            <span>Plan &amp; billing</span>
+            <ArrowRight className="w-3 h-3" />
+          </Link>
+        </div>
       </div>
 
       <div className="bg-[var(--portal-surface)] rounded-3xl p-6 sm:p-8 border border-[var(--portal-line)] shadow-xs space-y-5">
@@ -147,6 +179,61 @@ export default function SettingsClient({
                   Only the account owner can change the company name.
                 </p>
               )}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-[96px_1fr] gap-4 items-start">
+            <div className="space-y-2">
+              <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-[var(--portal-line)] bg-[var(--portal-soft)]">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <User className="h-8 w-8 text-[var(--portal-muted)]" />
+                )}
+              </div>
+              <p className="text-[10px] text-[var(--portal-muted)]">Profile photo</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="settings-username"
+                  className="text-xs font-bold uppercase tracking-wider text-[var(--portal-muted)] block mb-1"
+                >
+                  Username
+                </label>
+                <div className="flex items-center gap-1">
+                  <span className="text-sm text-[var(--portal-muted)]">@</span>
+                  <input
+                    id="settings-username"
+                    type="text"
+                    name="username"
+                    value={username}
+                    onChange={(event) => setUsername(event.target.value)}
+                    placeholder="your-handle"
+                    className="input input-bordered w-full bg-[var(--portal-soft)] border-[var(--portal-line)] text-sm h-11 rounded-xl"
+                  />
+                </div>
+                <p className="text-[10px] text-[var(--portal-muted)] mt-1">
+                  Lowercase letters, numbers, underscores or hyphens.
+                </p>
+              </div>
+              <div>
+                <label
+                  htmlFor="settings-avatar"
+                  className="text-xs font-bold uppercase tracking-wider text-[var(--portal-muted)] block mb-1"
+                >
+                  Profile photo URL
+                </label>
+                <input
+                  id="settings-avatar"
+                  type="url"
+                  name="avatarUrl"
+                  value={avatarUrl}
+                  onChange={(event) => setAvatarUrl(event.target.value)}
+                  placeholder="https://..."
+                  className="input input-bordered w-full bg-[var(--portal-soft)] border-[var(--portal-line)] text-sm h-11 rounded-xl"
+                />
+              </div>
             </div>
           </div>
 
@@ -312,6 +399,18 @@ export default function SettingsClient({
           </button>
         </div>
       </div>
+
+      <AccountExperienceCard
+        context={account.context}
+        hasClient={account.hasClient}
+        hasBooster={account.hasBooster}
+        boosterHandle={account.boosterHandle}
+      />
+
+      <ThemePreferenceCard initial={initial.themePreference} />
+      <EmailChangeCard email={initial.email} />
+      <PasswordCard />
+      <DangerZoneCard />
     </div>
   );
 }

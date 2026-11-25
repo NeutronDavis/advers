@@ -5,6 +5,12 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { BOOSTER_CATEGORY_LABELS } from "@/lib/booster-status";
+import { slugifyHandle } from "@/lib/marketplace";
+import {
+  parsePackageLines,
+  parsePortfolioLines,
+  parseServiceLines,
+} from "@/lib/marketplace-structured";
 import { dispatchNotification } from "@/lib/notifications";
 import { parseStringArray } from "@/server/data/booster";
 
@@ -30,18 +36,45 @@ function parseLines(value?: string): string[] {
 
 const ProfileSchema = z.object({
   displayName: z.string().min(2, "Display name is required."),
+  handle: z.string().max(40).optional(),
   businessName: z.string().optional(),
   logoUrl: z.string().optional(),
-  bio: z.string().optional(),
+  coverUrl: z.string().optional(),
+  location: z.string().max(120).optional(),
+  availabilityStatus: z
+    .enum(["AVAILABLE", "BUSY", "UNAVAILABLE"])
+    .optional(),
+  responseTimeHours: z.number().int().min(1).max(720).optional(),
+  startingPrice: z.number().int().min(0).max(100_000_000).optional(),
+  bio: z.string().max(2000).optional(),
   isBusiness: z.boolean().optional(),
   categories: z.array(z.string()).min(1, "Select at least one Booster category."),
   skills: z.string().optional(),
   coverage: z.string().optional(),
   portfolio: z.string().optional(),
   rates: z.string().optional(),
+  packages: z.string().optional(),
   availableHours: z.string().optional(),
   paymentInfo: z.string().optional(),
 });
+
+async function uniqueHandle(raw: string, userId: string): Promise<string> {
+  const base = slugifyHandle(raw);
+  const existing = await prisma.boosterProfile.findFirst({
+    where: { handle: base, NOT: { userId } },
+    select: { id: true },
+  });
+  if (!existing) return base;
+  for (let suffix = 2; suffix < 100; suffix += 1) {
+    const candidate = `${base}-${suffix}`;
+    const taken = await prisma.boosterProfile.findFirst({
+      where: { handle: candidate, NOT: { userId } },
+      select: { id: true },
+    });
+    if (!taken) return candidate;
+  }
+  return `${base}-${Date.now().toString(36).slice(-4)}`;
+}
 
 const VerificationSchema = z.object({
   documents: z.string().min(1, "Add at least one verification document."),
@@ -71,33 +104,46 @@ export async function upsertBoosterProfileAction(
     return { success: false, error: "Select at least one valid Booster category." };
   }
 
-  const portfolio = parseLines(parsed.data.portfolio)
-    .map((line) => {
-      const [title, url, description] = line.split("|").map((part) => part.trim());
-      return { title: title || "", url: url || "", description: description || "" };
-    })
-    .filter((item) => item.title && item.url);
+  const portfolio = parsePortfolioLines(parsed.data.portfolio ?? "");
+  const services = parseServiceLines(parsed.data.rates ?? "");
+  const packages = parsePackageLines(parsed.data.packages ?? "");
 
-  const rates = parseLines(parsed.data.rates)
-    .map((line) => {
-      const [label, amount] = line.split("|").map((part) => part.trim());
-      return { label: label || "", amount: amount || "" };
-    })
-    .filter((item) => item.label && item.amount);
+  // Keep the legacy JSON fields in sync for older screens and fallbacks.
+  const legacyPortfolio = portfolio.map((item) => ({
+    title: item.title,
+    url: item.externalUrl,
+    description: item.description ?? "",
+  }));
+  const legacyRates = services.map((service) => ({
+    label: service.title,
+    amount: service.priceMin ? `₦${service.priceMin.toLocaleString("en-NG")}` : "",
+  }));
 
-  const profile = await prisma.boosterProfile.upsert({
-    where: { userId: session.id },
+  const handle = await uniqueHandle(
+    parsed.data.handle?.trim() || parsed.data.displayName,
+    session.id
+  );
+
+  const profile = await prisma.$transaction(async (tx) => {
+    const saved = await tx.boosterProfile.upsert({
+      where: { userId: session.id },
     update: {
       displayName: parsed.data.displayName.trim(),
+      handle,
       businessName: parsed.data.businessName?.trim() || null,
       logoUrl: parsed.data.logoUrl?.trim() || null,
+      coverUrl: parsed.data.coverUrl?.trim() || null,
+      location: parsed.data.location?.trim() || null,
+      availabilityStatus: parsed.data.availabilityStatus || "AVAILABLE",
+      responseTimeHours: parsed.data.responseTimeHours ?? null,
+      startingPrice: parsed.data.startingPrice ?? null,
       bio: parsed.data.bio?.trim() || null,
       isBusiness: parsed.data.isBusiness || false,
       categoriesJson: JSON.stringify(validCategories),
       skillsJson: JSON.stringify(splitList(parsed.data.skills)),
       coverageJson: JSON.stringify(splitList(parsed.data.coverage)),
-      portfolioJson: JSON.stringify(portfolio),
-      ratesJson: JSON.stringify(rates),
+      portfolioJson: JSON.stringify(legacyPortfolio),
+      ratesJson: JSON.stringify(legacyRates),
       availableHours: parsed.data.availableHours?.trim() || null,
       paymentInfoJson: parsed.data.paymentInfo
         ? JSON.stringify({ details: parsed.data.paymentInfo.trim() })
@@ -106,21 +152,77 @@ export async function upsertBoosterProfileAction(
     create: {
       userId: session.id,
       displayName: parsed.data.displayName.trim(),
+      handle,
       businessName: parsed.data.businessName?.trim() || null,
       logoUrl: parsed.data.logoUrl?.trim() || null,
+      coverUrl: parsed.data.coverUrl?.trim() || null,
+      location: parsed.data.location?.trim() || null,
+      availabilityStatus: parsed.data.availabilityStatus || "AVAILABLE",
+      responseTimeHours: parsed.data.responseTimeHours ?? null,
+      startingPrice: parsed.data.startingPrice ?? null,
       bio: parsed.data.bio?.trim() || null,
       isBusiness: parsed.data.isBusiness || false,
       categoriesJson: JSON.stringify(validCategories),
       skillsJson: JSON.stringify(splitList(parsed.data.skills)),
       coverageJson: JSON.stringify(splitList(parsed.data.coverage)),
-      portfolioJson: JSON.stringify(portfolio),
-      ratesJson: JSON.stringify(rates),
+      portfolioJson: JSON.stringify(legacyPortfolio),
+      ratesJson: JSON.stringify(legacyRates),
       availableHours: parsed.data.availableHours?.trim() || null,
       paymentInfoJson: parsed.data.paymentInfo
         ? JSON.stringify({ details: parsed.data.paymentInfo.trim() })
         : null,
       status: "ACTIVE",
-    },
+      },
+    });
+
+    await tx.boosterService.deleteMany({ where: { boosterId: saved.id } });
+    if (services.length > 0) {
+      await tx.boosterService.createMany({
+        data: services.map((service, index) => ({
+          boosterId: saved.id,
+          title: service.title,
+          description: service.description ?? null,
+          priceMin: service.priceMin,
+          priceMax: service.priceMax,
+          currency: "NGN",
+          deliveryDays: service.deliveryDays ?? null,
+          sortOrder: index,
+        })),
+      });
+    }
+
+    await tx.boosterPackage.deleteMany({ where: { boosterId: saved.id } });
+    if (packages.length > 0) {
+      await tx.boosterPackage.createMany({
+        data: packages.map((item, index) => ({
+          boosterId: saved.id,
+          name: item.name,
+          description: item.description,
+          price: item.price,
+          currency: "NGN",
+          deliveryDays: item.deliveryDays,
+          includesJson: item.includes.length ? JSON.stringify(item.includes) : null,
+          sortOrder: index,
+        })),
+      });
+    }
+
+    await tx.portfolioItem.deleteMany({
+      where: { boosterId: saved.id, mediaAssetId: null },
+    });
+    if (portfolio.length > 0) {
+      await tx.portfolioItem.createMany({
+        data: portfolio.map((item, index) => ({
+          boosterId: saved.id,
+          title: item.title,
+          description: item.description,
+          externalUrl: item.externalUrl,
+          sortOrder: index,
+        })),
+      });
+    }
+
+    return saved;
   });
 
   await prisma.activityLog.create({

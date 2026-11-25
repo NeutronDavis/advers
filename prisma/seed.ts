@@ -168,7 +168,13 @@ async function main() {
   // 3. User Media Wallet & Transactions
   console.log("💳 Seeding advertiser media wallet...");
   const clientWallet = await prisma.wallet.upsert({
-    where: { userId: clientUser.id },
+    where: {
+      userId_currency_network: {
+        userId: clientUser.id,
+        currency: "NGN",
+        network: "NONE",
+      },
+    },
     update: {
       availableBalance: 485000,
       escrowBalance: 225000,
@@ -177,6 +183,8 @@ async function main() {
     create: {
       id: "wallet-olumide-01",
       userId: clientUser.id,
+      currency: "NGN",
+      network: "NONE",
       availableBalance: 485000,
       escrowBalance: 225000,
       totalSpent: 710000,

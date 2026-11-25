@@ -19,6 +19,8 @@ import {
   Briefcase,
   ShieldAlert,
   Megaphone,
+  RefreshCw,
+  Flag,
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { logoutAction } from "@/server/actions/auth";
@@ -77,12 +79,15 @@ export default function AdminShell({
       badge: "3 New",
     },
     { name: "Media Inventory", href: "/admin/inventory", icon: Tv },
+    { name: "Channel Specs", href: "/admin/channel-specs", icon: SlidersHorizontal },
     { name: "Booster Jobs", href: "/admin/boosters/jobs", icon: Briefcase },
     { name: "Influencer Hub", href: "/admin/influencers", icon: Users },
     { name: "Trust & Disputes", href: "/admin/trust", icon: ShieldAlert },
     { name: "Proof of Performance", href: "/admin/pop", icon: FileCheck },
     { name: "AdBoosters Network", href: "/admin/adboosters", icon: Sparkles },
+    { name: "Marketplace Moderation", href: "/admin/marketplace", icon: Flag },
     { name: "Escrow & Settlements", href: "/admin/finance", icon: Receipt },
+    { name: "Reconciliation", href: "/admin/reconciliation", icon: RefreshCw },
     { name: "Users & Advertisers", href: "/admin/users", icon: Users },
   ];
 
@@ -107,7 +112,7 @@ export default function AdminShell({
           </span>
         </Link>
         <div className="flex items-center gap-2">
-          <ThemeToggle />
+          <ThemeToggle preference={user.themePreference} persist />
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="btn btn-square btn-ghost btn-sm text-base-content"
@@ -220,7 +225,7 @@ export default function AdminShell({
 
           <div className="flex items-center justify-between pt-1">
             <span className="text-[10px] text-base-content/40 font-mono">ADVERS BACKOFFICE</span>
-            <ThemeToggle />
+            <ThemeToggle preference={user.themePreference} persist />
           </div>
         </div>
       </aside>

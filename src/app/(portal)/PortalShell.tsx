@@ -20,8 +20,10 @@ import {
   UserCog,
   Briefcase,
   BarChart3,
+  MessageSquare,
 } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import AccountContextSwitcher from "@/components/AccountContextSwitcher";
 import { useCampaign } from "@/context/CampaignContext";
 import CampaignCreateModal from "@/components/portal/CampaignCreateModal";
 import { logoutAction } from "@/server/actions/auth";
@@ -57,6 +59,7 @@ export default function PortalShell({
     { label: "AdBoosters", href: "/portal/adboosters", icon: Sparkles },
     { label: "Influencer Hub", href: "/portal/influencers", icon: Users },
     { label: "Booster jobs", href: "/portal/booster-jobs", icon: Briefcase },
+    { label: "Booster requests", href: "/portal/booster-requests", icon: MessageSquare },
     { label: "Business profiles", href: "/portal/business-profiles", icon: Building2 },
   ];
 
@@ -172,6 +175,7 @@ export default function PortalShell({
 
         {/* Sidebar Footer */}
         <div className="pt-4 space-y-3">
+          <AccountContextSwitcher user={user} className="text-[var(--portal-obsidian-muted-2)]" />
           <form action={logoutAction}>
             <button
               type="submit"
@@ -184,7 +188,7 @@ export default function PortalShell({
 
           <div className="flex items-center justify-between px-2 pt-2 text-[var(--portal-obsidian-muted-3)] text-[11px]">
             <span>ADVERS v2.4</span>
-            <ThemeToggle />
+            <ThemeToggle preference={user.themePreference} persist />
           </div>
         </div>
       </aside>

@@ -256,6 +256,20 @@ export function isNegativeMoney(money: Money): boolean {
 }
 
 /**
+ * Exact decimal string in major units, with the currency's full precision.
+ * Use this at provider boundaries that expect a decimal string.
+ */
+export function toDecimalString(money: Money): string {
+  const decimals = decimalsFor(money.currency);
+  const negative = money.amountMinor < ZERO;
+  const absolute = negative ? -money.amountMinor : money.amountMinor;
+  const scale = pow10(decimals);
+  const whole = absolute / scale;
+  const fraction = (absolute % scale).toString().padStart(decimals, "0");
+  return `${negative ? "-" : ""}${whole.toString()}.${fraction}`;
+}
+
+/**
  * Exact display formatter. Does not go through `Number`, so large balances and
  * six-decimal USDC amounts are printed without precision loss.
  */

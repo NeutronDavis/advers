@@ -29,8 +29,20 @@ export default function BoosterProfileForm({
   const [saved, setSaved] = useState(false);
 
   const [displayName, setDisplayName] = useState(profile?.displayName || userName);
+  const [handle, setHandle] = useState(profile?.handle || "");
   const [businessName, setBusinessName] = useState(profile?.businessName || "");
   const [logoUrl, setLogoUrl] = useState(profile?.logoUrl || "");
+  const [coverUrl, setCoverUrl] = useState(profile?.coverUrl || "");
+  const [location, setLocation] = useState(profile?.location || "");
+  const [availabilityStatus, setAvailabilityStatus] = useState(
+    profile?.availabilityStatus || "AVAILABLE"
+  );
+  const [responseTimeHours, setResponseTimeHours] = useState(
+    profile?.responseTimeHours != null ? String(profile.responseTimeHours) : ""
+  );
+  const [startingPrice, setStartingPrice] = useState(
+    profile?.startingPrice != null ? String(profile.startingPrice) : ""
+  );
   const [bio, setBio] = useState(profile?.bio || "");
   const [isBusiness, setIsBusiness] = useState(profile?.isBusiness || false);
   const [categories, setCategories] = useState<string[]>(profile?.categories || []);
@@ -45,7 +57,26 @@ export default function BoosterProfileForm({
       .join("\n") || ""
   );
   const [rates, setRates] = useState(
-    profile?.rates.map((rate) => `${rate.label} | ${rate.amount}`).join("\n") || ""
+    profile?.services.length
+      ? profile.services
+          .map(
+            (service) =>
+              `${service.title} | ${service.priceMin ? `₦${service.priceMin.toLocaleString("en-NG")}` : ""}${
+                service.description ? ` | ${service.description}` : ""
+              }`
+          )
+          .join("\n")
+      : profile?.rates.map((rate) => `${rate.label} | ${rate.amount}`).join("\n") || ""
+  );
+  const [packages, setPackages] = useState(
+    profile?.packages
+      .map(
+        (item) =>
+          `${item.name} | ₦${item.price.toLocaleString("en-NG")} | ${
+            item.deliveryDays ?? ""
+          } | ${item.description ?? ""} | ${item.includes.join(", ")}`
+      )
+      .join("\n") || ""
   );
   const [availableHours, setAvailableHours] = useState(profile?.availableHours || "");
   const [paymentInfo, setPaymentInfo] = useState("");
@@ -66,8 +97,14 @@ export default function BoosterProfileForm({
     startTransition(async () => {
       const result = await upsertBoosterProfileAction({
         displayName,
+        handle,
         businessName,
         logoUrl,
+        coverUrl,
+        location,
+        availabilityStatus: availabilityStatus as "AVAILABLE" | "BUSY" | "UNAVAILABLE",
+        responseTimeHours: responseTimeHours ? Number(responseTimeHours) : undefined,
+        startingPrice: startingPrice ? Number(startingPrice) : undefined,
         bio,
         isBusiness,
         categories,
@@ -75,6 +112,7 @@ export default function BoosterProfileForm({
         coverage,
         portfolio,
         rates,
+        packages,
         availableHours,
         paymentInfo,
       });
@@ -203,6 +241,125 @@ export default function BoosterProfileForm({
           </div>
         </div>
 
+        <div className="pt-3 border-t border-base-200 space-y-3">
+          <div>
+            <h2 className="text-sm font-bold flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-primary" />
+              Marketplace presence
+            </h2>
+            <p className="text-[11px] text-base-content/60">
+              These fields control how your profile appears in the AdBooster
+              marketplace and filters.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-1">
+              <label htmlFor="booster-handle" className="text-xs font-bold">
+                Public handle
+              </label>
+              <div className="flex items-center gap-1">
+                <span className="text-xs text-base-content/50">@</span>
+                <input
+                  id="booster-handle"
+                  type="text"
+                  value={handle}
+                  onChange={(event) => setHandle(event.target.value)}
+                  placeholder="ada-creates"
+                  className="input input-bordered w-full text-sm rounded-xl bg-base-200/50"
+                />
+              </div>
+              <p className="text-[10px] text-base-content/50">
+                Leave blank to generate one from your display name.
+              </p>
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="booster-location" className="text-xs font-bold">
+                Primary location
+              </label>
+              <input
+                id="booster-location"
+                type="text"
+                value={location}
+                onChange={(event) => setLocation(event.target.value)}
+                placeholder="Lagos, Nigeria"
+                className="input input-bordered w-full text-sm rounded-xl bg-base-200/50"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <label htmlFor="booster-cover" className="text-xs font-bold">
+              Cover image URL
+            </label>
+            <input
+              id="booster-cover"
+              type="url"
+              value={coverUrl}
+              onChange={(event) => setCoverUrl(event.target.value)}
+              placeholder="https://..."
+              className="input input-bordered w-full text-sm rounded-xl bg-base-200/50"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="space-y-1">
+              <label htmlFor="booster-availability" className="text-xs font-bold">
+                Availability
+              </label>
+              <select
+                id="booster-availability"
+                value={availabilityStatus}
+                onChange={(event) => setAvailabilityStatus(event.target.value)}
+                className="select select-bordered w-full text-sm rounded-xl bg-base-200/50"
+              >
+                <option value="AVAILABLE">Available now</option>
+                <option value="BUSY">Limited availability</option>
+                <option value="UNAVAILABLE">Unavailable</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="booster-response" className="text-xs font-bold">
+                Response time (hours)
+              </label>
+              <input
+                id="booster-response"
+                type="number"
+                min="1"
+                max="720"
+                value={responseTimeHours}
+                onChange={(event) => setResponseTimeHours(event.target.value)}
+                placeholder="e.g. 24"
+                className="input input-bordered w-full text-sm rounded-xl bg-base-200/50"
+              />
+            </div>
+            <div className="space-y-1">
+              <label htmlFor="booster-starting" className="text-xs font-bold">
+                Starting price (₦)
+              </label>
+              <input
+                id="booster-starting"
+                type="number"
+                min="0"
+                step="1000"
+                value={startingPrice}
+                onChange={(event) => setStartingPrice(event.target.value)}
+                placeholder="e.g. 50000"
+                className="input input-bordered w-full text-sm rounded-xl bg-base-200/50"
+              />
+            </div>
+          </div>
+
+          {profile?.handle && (
+            <Link
+              href={`/portal/adboosters/${profile.handle}`}
+              className="text-[11px] font-bold text-primary hover:underline inline-flex items-center gap-1"
+            >
+              View public profile
+              <span aria-hidden>↗</span>
+            </Link>
+          )}
+        </div>
+
         <div className="space-y-1">
           <label htmlFor="booster-bio" className="text-xs font-bold">
             Bio / about you
@@ -303,17 +460,31 @@ export default function BoosterProfileForm({
           </div>
           <div className="space-y-1">
             <label htmlFor="booster-rates" className="text-xs font-bold">
-              Rates (one per line: Service | Amount)
+              Services (one per line: Service | Amount | optional description)
             </label>
             <textarea
               id="booster-rates"
               rows={4}
               value={rates}
               onChange={(event) => setRates(event.target.value)}
-              placeholder={"Logo design | ₦80,000\nFlyer design | ₦25,000"}
+              placeholder={"Logo design | ₦80,000 | Three concepts\nFlyer design | ₦25,000"}
               className="textarea textarea-bordered w-full text-xs rounded-xl bg-base-200/50"
             />
           </div>
+        </div>
+
+        <div className="space-y-1">
+          <label htmlFor="booster-packages" className="text-xs font-bold">
+            Packages (Name | Price | Delivery days | Description | Includes, comma separated)
+          </label>
+          <textarea
+            id="booster-packages"
+            rows={3}
+            value={packages}
+            onChange={(event) => setPackages(event.target.value)}
+            placeholder={"Launch kit | ₦250,000 | 7 | Launch campaign | Two posters, 30s video, 3 revisions"}
+            className="textarea textarea-bordered w-full text-xs rounded-xl bg-base-200/50"
+          />
         </div>
 
         <div className="space-y-1 pt-3 border-t border-base-200">

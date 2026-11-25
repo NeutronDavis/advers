@@ -3,6 +3,7 @@ import { requireUser } from "@/lib/auth";
 import { getCampaignsForUser } from "@/server/data/campaigns";
 import { getEntitlements, getUsage } from "@/lib/entitlements";
 import { getUnreadNotificationCount } from "@/server/data/booster";
+import { getChannelSpecs } from "@/server/data/channel-specs";
 import { prisma } from "@/lib/prisma";
 import { CampaignProvider } from "@/context/CampaignContext";
 import PlanStatusBanner from "@/components/portal/PlanStatusBanner";
@@ -16,7 +17,7 @@ export default async function PortalLayout({
   children: React.ReactNode;
 }) {
   const user = await requireUser();
-  const [campaigns, entitlements, usage, businessProfiles, unreadNotifications] =
+  const [campaigns, entitlements, usage, businessProfiles, unreadNotifications, channelSpecs] =
     await Promise.all([
       getCampaignsForUser(user),
       getEntitlements(user.clientId),
@@ -31,12 +32,14 @@ export default async function PortalLayout({
           })
         : Promise.resolve([]),
       getUnreadNotificationCount(user.id),
+      getChannelSpecs(),
     ]);
 
   return (
     <CampaignProvider
       initialCampaigns={campaigns}
       businessProfiles={businessProfiles}
+      channelSpecs={channelSpecs}
     >
       <PortalShell user={user} unreadNotifications={unreadNotifications}>
         <PlanStatusBanner

@@ -14,7 +14,20 @@ import {
   User,
   Image as ImageIcon,
   Layers,
+  Upload,
+  Trash2,
+  FileText,
+  Music,
+  Video,
 } from "lucide-react";
+import { getChannelTypeByMarketingLabel } from "@/lib/channels";
+import type { ChannelSpecField } from "@/lib/channel-specs";
+import type { MediaAssetDTO } from "@/lib/media";
+import {
+  validateChannelSubmission,
+  type ChannelAssetMeta,
+} from "@/lib/channel-validation";
+import { uploadMediaAssetAction } from "@/server/actions/media";
 
 const EMPTY_FORM = {
   name: "",
@@ -43,6 +56,7 @@ export default function CampaignCreateModal() {
     selectedInventoryId,
     selectedMediaSlotId,
     businessProfiles,
+    channelSpecs,
     closeCreateModal,
     addCampaign,
     saveDraft,
@@ -53,12 +67,19 @@ export default function CampaignCreateModal() {
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [savingDraft, setSavingDraft] = useState(false);
+  const [channelConfig, setChannelConfig] = useState<Record<string, string>>({});
+  const [channelAssets, setChannelAssets] = useState<Record<string, MediaAssetDTO>>({});
+  const [channelErrors, setChannelErrors] = useState<Record<string, string>>({});
+  const [uploadingField, setUploadingField] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isModalOpen) return;
 
     setStep(1);
     setError(null);
+    setChannelConfig({});
+    setChannelAssets({});
+    setChannelErrors({});
     setForm(() => {
       const next = { ...EMPTY_FORM };
       if (selectedChannel?.startsWith("Influencer:")) {
@@ -80,6 +101,140 @@ export default function CampaignCreateModal() {
 
   const update = (field: keyof typeof EMPTY_FORM, value: string) => {
     setForm((current) => ({ ...current, [field]: value }));
+  };
+
+  const channelType = getChannelTypeByMarketingLabel(form.channel) ?? "DIGITAL_BILLBOARD";
+  const channelFields: ChannelSpecField[] = channelSpecs[channelType] ?? [];
+
+  const assetMeta: Record<string, ChannelAssetMeta> = Object.fromEntries(
+    Object.entries(channelAssets).map(([key, asset]) => [
+      key,
+      {
+        id: asset.id,
+        kind: asset.kind,
+        mime: asset.mime,
+        bytes: asset.bytes,
+        width: asset.width,
+        height: asset.height,
+        durationSec: asset.durationSec,
+      },
+    ])
+  );
+
+  const validateChannel = (requireRequired: boolean): boolean => {
+    const result = validateChannelSubmission({
+      fields: channelFields,
+      config: channelConfig,
+      assets: assetMeta,
+      requireRequired,
+    });
+    setChannelErrors(result.errors);
+    return result.valid;
+  };
+
+  const changeChannel = (value: string) => {
+    update("channel", value);
+    setChannelConfig({});
+    setChannelAssets({});
+    setChannelErrors({});
+  };
+
+  const setChannelValue = (key: string, value: string) => {
+    setChannelConfig((current) => ({ ...current, [key]: value }));
+    setChannelErrors((current) => {
+      if (!current[key]) return current;
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+  };
+
+  async function readMediaMetadata(file: File): Promise<{
+    width?: number;
+    height?: number;
+    durationSec?: number;
+  }> {
+    const url = URL.createObjectURL(file);
+    try {
+      if (file.type.startsWith("image/")) {
+        const image = new Image();
+        image.src = url;
+        await image.decode();
+        return { width: image.naturalWidth, height: image.naturalHeight };
+      }
+      if (file.type.startsWith("video/")) {
+        const video = document.createElement("video");
+        video.preload = "metadata";
+        video.src = url;
+        await new Promise<void>((resolve, reject) => {
+          video.onloadedmetadata = () => resolve();
+          video.onerror = () => reject(new Error("Could not read video metadata."));
+        });
+        return {
+          width: video.videoWidth,
+          height: video.videoHeight,
+          durationSec: Number.isFinite(video.duration) ? Math.round(video.duration) : undefined,
+        };
+      }
+      if (file.type.startsWith("audio/")) {
+        const audio = document.createElement("audio");
+        audio.preload = "metadata";
+        audio.src = url;
+        await new Promise<void>((resolve, reject) => {
+          audio.onloadedmetadata = () => resolve();
+          audio.onerror = () => reject(new Error("Could not read audio metadata."));
+        });
+        return {
+          durationSec: Number.isFinite(audio.duration) ? Math.round(audio.duration) : undefined,
+        };
+      }
+    } catch {
+      return {};
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+    return {};
+  }
+
+  const uploadChannelFile = async (field: ChannelSpecField, file: File) => {
+    setError(null);
+    setChannelErrors((current) => {
+      const next = { ...current };
+      delete next[field.key];
+      return next;
+    });
+    setUploadingField(field.key);
+    try {
+      const metadata = await readMediaMetadata(file);
+      const data = new FormData();
+      data.append("file", file);
+      if (metadata.width) data.append("width", String(metadata.width));
+      if (metadata.height) data.append("height", String(metadata.height));
+      if (metadata.durationSec) data.append("durationSec", String(metadata.durationSec));
+
+      const result = await uploadMediaAssetAction(data);
+      if (!result.success) {
+        setChannelErrors((current) => ({ ...current, [field.key]: result.error }));
+        return;
+      }
+      setChannelAssets((current) => ({ ...current, [field.key]: result.asset }));
+      setChannelValue(field.key, result.asset.id);
+    } finally {
+      setUploadingField(null);
+    }
+  };
+
+  const removeChannelFile = (field: ChannelSpecField) => {
+    setChannelAssets((current) => {
+      const next = { ...current };
+      delete next[field.key];
+      return next;
+    });
+    setChannelConfig((current) => {
+      const next = { ...current };
+      delete next[field.key];
+      return next;
+    });
   };
 
   const validateStepOne = (): boolean => {
@@ -108,6 +263,10 @@ export default function CampaignCreateModal() {
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     if (submitting || !validateStepOne()) return;
+    if (!validateChannel(true)) {
+      setError("Complete the highlighted channel requirements.");
+      return;
+    }
 
     setSubmitting(true);
     setError(null);
@@ -131,12 +290,16 @@ export default function CampaignCreateModal() {
       contactPhone: form.contactPhone || undefined,
       creativeAssetUrl: form.creativeAssetUrl || undefined,
       creativeAssetType: form.creativeAssetType || undefined,
+      channelConfigJson: JSON.stringify(channelConfig),
+      mediaAssetIds: Object.values(channelAssets).map((asset) => asset.id),
       notes: form.notes || undefined,
     });
 
     setSubmitting(false);
     if (created) {
       setForm(EMPTY_FORM);
+      setChannelConfig({});
+      setChannelAssets({});
       setStep(1);
     }
   };
@@ -145,6 +308,10 @@ export default function CampaignCreateModal() {
     if (savingDraft || submitting) return;
     if (!form.name.trim()) {
       setError("Give the draft a name before saving.");
+      return;
+    }
+    if (!validateChannel(false)) {
+      setError("Fix the highlighted channel requirement before saving.");
       return;
     }
 
@@ -170,12 +337,16 @@ export default function CampaignCreateModal() {
       contactPhone: form.contactPhone || undefined,
       creativeAssetUrl: form.creativeAssetUrl || undefined,
       creativeAssetType: form.creativeAssetType || undefined,
+      channelConfigJson: JSON.stringify(channelConfig),
+      mediaAssetIds: Object.values(channelAssets).map((asset) => asset.id),
       notes: form.notes || undefined,
     });
 
     setSavingDraft(false);
     if (created) {
       setForm(EMPTY_FORM);
+      setChannelConfig({});
+      setChannelAssets({});
       setStep(1);
     }
   };
@@ -272,7 +443,7 @@ export default function CampaignCreateModal() {
                     id="campChannel"
                     required
                     value={form.channel}
-                    onChange={(event) => update("channel", event.target.value)}
+                    onChange={(event) => changeChannel(event.target.value)}
                     className="select select-bordered w-full text-sm rounded-xl bg-[var(--portal-soft)] border-[var(--portal-line)]"
                   >
                     <option value="">Choose a channel</option>
@@ -490,6 +661,34 @@ export default function CampaignCreateModal() {
           {/* Step 3: Contact & creative */}
           {step === 3 && (
             <div className="space-y-4 animate-fadeIn">
+              {channelFields.length > 0 && (
+                <div className="rounded-2xl border border-[var(--portal-gold-border)] bg-[var(--portal-gold-soft)] p-4 space-y-4">
+                  <div>
+                    <div className="flex items-center gap-2 text-xs font-black text-[var(--portal-ink)]">
+                      <Sparkles className="h-4 w-4 text-[var(--portal-gold-ink)]" />
+                      {form.channel} requirements
+                    </div>
+                    <p className="mt-1 text-[11px] text-[var(--portal-muted)]">
+                      Only the fields required for this channel are shown. Individual
+                      stations, publishers and screen owners may impose tighter limits.
+                    </p>
+                  </div>
+                  {channelFields.map((field) => (
+                    <ChannelFieldInput
+                      key={field.key}
+                      field={field}
+                      value={channelConfig[field.key] ?? ""}
+                      asset={channelAssets[field.key] ?? null}
+                      error={channelErrors[field.key]}
+                      uploading={uploadingField === field.key}
+                      onChange={(value) => setChannelValue(field.key, value)}
+                      onFile={(file) => uploadChannelFile(field, file)}
+                      onRemove={() => removeChannelFile(field)}
+                    />
+                  ))}
+                </div>
+              )}
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1">
                   <label htmlFor="campContactName" className="text-xs font-bold text-[var(--portal-ink)]">
@@ -598,6 +797,29 @@ export default function CampaignCreateModal() {
                   {selectedProfile?.name || "Account default profile"} ·{" "}
                   {form.startDate || "Flexible start"} to {form.endDate || "Flexible end"}
                 </div>
+                {channelFields.some(
+                  (field) => channelConfig[field.key] || channelAssets[field.key]
+                ) && (
+                  <div className="pt-1 space-y-0.5">
+                    {channelFields.map((field) => {
+                      const asset = channelAssets[field.key];
+                      const value = channelConfig[field.key];
+                      if (!asset && !value) return null;
+                      return (
+                        <div key={field.key} className="truncate">
+                          <span className="font-bold">{field.label}:</span>{" "}
+                          {asset ? (
+                            <span className="font-mono text-[10px]">
+                              {asset.mime} · {Math.round(asset.bytes / 1024)} KB
+                            </span>
+                          ) : (
+                            value
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               <div className="p-3 bg-[var(--portal-soft)] rounded-xl flex items-start gap-2.5 text-xs text-[var(--portal-muted)]">
@@ -669,6 +891,182 @@ export default function CampaignCreateModal() {
           </div>
         </form>
       </div>
+    </div>
+  );
+}
+
+function AssetPreview({ asset }: { asset: MediaAssetDTO }) {
+  if (asset.kind === "IMAGE") {
+    return (
+      <img
+        src={asset.url}
+        alt="Uploaded media preview"
+        className="max-h-40 w-full rounded-xl border border-[var(--portal-line)] object-contain bg-[var(--portal-soft)]"
+      />
+    );
+  }
+  if (asset.kind === "VIDEO") {
+    return (
+      <video
+        src={asset.url}
+        controls
+        className="max-h-48 w-full rounded-xl border border-[var(--portal-line)] bg-black"
+      />
+    );
+  }
+  if (asset.kind === "AUDIO") {
+    return (
+      <audio src={asset.url} controls className="w-full">
+        Your browser does not support audio playback.
+      </audio>
+    );
+  }
+  return (
+    <a
+      href={asset.url}
+      target="_blank"
+      rel="noreferrer"
+      className="link inline-flex items-center gap-1 text-xs font-bold"
+    >
+      <FileText className="h-4 w-4" />
+      Open uploaded document
+    </a>
+  );
+}
+
+function ChannelFieldInput({
+  field,
+  value,
+  asset,
+  error,
+  uploading,
+  onChange,
+  onFile,
+  onRemove,
+}: {
+  field: ChannelSpecField;
+  value: string;
+  asset: MediaAssetDTO | null;
+  error?: string;
+  uploading: boolean;
+  onChange: (value: string) => void;
+  onFile: (file: File) => void;
+  onRemove: () => void;
+}) {
+  const label = (
+    <span className="text-xs font-bold text-[var(--portal-ink)]">
+      {field.label}
+      {field.required ? " *" : ""}
+    </span>
+  );
+
+  return (
+    <div className="space-y-1.5">
+      {field.inputType === "FILE" ? (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            {label}
+            {asset && (
+              <button
+                type="button"
+                className="btn btn-ghost btn-xs text-error"
+                onClick={onRemove}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Remove
+              </button>
+            )}
+          </div>
+          {asset ? (
+            <div className="space-y-2 rounded-xl border border-[var(--portal-line)] bg-[var(--portal-surface)] p-3">
+              <AssetPreview asset={asset} />
+              <div className="flex flex-wrap items-center gap-2 text-[10px] text-[var(--portal-muted)]">
+                {asset.kind === "VIDEO" ? (
+                  <Video className="h-3.5 w-3.5" />
+                ) : asset.kind === "AUDIO" ? (
+                  <Music className="h-3.5 w-3.5" />
+                ) : (
+                  <ImageIcon className="h-3.5 w-3.5" />
+                )}
+                <span className="font-mono">{asset.mime}</span>
+                <span>{Math.round(asset.bytes / 1024)} KB</span>
+                {asset.durationSec ? <span>{asset.durationSec}s</span> : null}
+                {asset.width && asset.height ? (
+                  <span>
+                    {asset.width}×{asset.height}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+          ) : (
+            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-[var(--portal-line)] bg-[var(--portal-surface)] px-4 py-6 text-xs font-bold text-[var(--portal-muted)] hover:border-[var(--portal-gold-border)] hover:text-[var(--portal-ink)]">
+              {uploading ? (
+                <span className="loading loading-spinner loading-xs" />
+              ) : (
+                <Upload className="h-4 w-4" />
+              )}
+              {uploading ? "Uploading…" : "Choose file"}
+              <input
+                type="file"
+                accept={field.accept}
+                className="hidden"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) onFile(file);
+                  event.target.value = "";
+                }}
+              />
+            </label>
+          )}
+        </div>
+      ) : field.inputType === "TEXTAREA" ? (
+        <>
+          {label}
+          <textarea
+            className="textarea textarea-bordered w-full text-sm rounded-xl bg-[var(--portal-surface)]"
+            rows={3}
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+          />
+        </>
+      ) : field.inputType === "SELECT" ? (
+        <>
+          {label}
+          <select
+            className="select select-bordered w-full text-sm rounded-xl bg-[var(--portal-surface)]"
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+          >
+            <option value="">Choose an option</option>
+            {(field.options ?? []).map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </>
+      ) : (
+        <>
+          {label}
+          <input
+            type={
+              field.inputType === "NUMBER"
+                ? "number"
+                : field.inputType === "DATE"
+                  ? "date"
+                  : "text"
+            }
+            className="input input-bordered w-full text-sm rounded-xl bg-[var(--portal-surface)]"
+            value={value}
+            onChange={(event) => onChange(event.target.value)}
+          />
+        </>
+      )}
+
+      {field.help && (
+        <p className="text-[10px] text-[var(--portal-muted)]">{field.help}</p>
+      )}
+      {error && <p className="text-[10px] font-bold text-error">{error}</p>}
     </div>
   );
 }

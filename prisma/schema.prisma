@@ -205,6 +205,55 @@ enum BoosterProfileStatus {
   SUSPENDED
 }
 
+enum BoosterAvailability {
+  AVAILABLE
+  BUSY
+  UNAVAILABLE
+}
+
+enum MarketplaceReportTarget {
+  PROFILE
+  COMMENT
+  REVIEW
+  RECOMMENDATION
+}
+
+enum MarketplaceReportStatus {
+  OPEN
+  REVIEWING
+  RESOLVED
+  DISMISSED
+}
+
+enum MediaAssetKind {
+  IMAGE
+  VIDEO
+  AUDIO
+  DOCUMENT
+}
+
+enum MediaScanStatus {
+  PENDING
+  CLEAN
+  INFECTED
+  NEEDS_REVIEW
+}
+
+enum MediaAssetStatus {
+  UPLOADED
+  VALIDATED
+  REJECTED
+}
+
+enum BoosterEngagementStatus {
+  REQUESTED
+  VIEWED
+  ACCEPTED
+  DECLINED
+  CONVERTED
+  CANCELLED
+}
+
 enum NotificationChannel {
   IN_APP
   EMAIL
@@ -222,6 +271,8 @@ enum LedgerEntryType {
   REFUND
   WITHDRAWAL
   ADJUSTMENT
+  DEPOSIT
+  PAYOUT
 }
 
 enum LedgerStatus {
@@ -246,6 +297,30 @@ enum WithdrawalStatus {
   APPROVED
   PAID
   REJECTED
+  CANCELLED
+}
+
+enum WalletStatus {
+  ACTIVE
+  FROZEN
+  CLOSED
+}
+
+enum PayoutDestinationType {
+  USDC_WALLET
+  BANK_ACCOUNT
+}
+
+enum PayoutDestinationStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum PayoutStatus {
+  REQUESTED
+  PROCESSING
+  PAID
+  FAILED
   CANCELLED
 }
 
@@ -316,50 +391,64 @@ enum AdversPostStatus {
 }
 
 model User {
-  id                        String                  @id @default(cuid())
-  email                     String                  @unique
-  username                  String?                 @unique
-  passwordHash              String?
-  name                      String
-  phone                     String?
-  avatarUrl                 String?
-  coverUrl                  String?
-  themePreference           ThemePreference         @default(SYSTEM)
-  sessionVersion            Int                     @default(1)
-  role                      Role                    @default(CLIENT)
-  orgRole                   OrgRole                 @default(MEMBER)
-  status                    UserStatus              @default(UNVERIFIED)
-  source                    String?                 @default("ORGANIC")
-  utmSource                 String?
-  utmCampaign               String?
-  emailVerifiedAt           DateTime?
-  profileCompleteAt         DateTime?
-  termsAcceptedAt           DateTime?
-  termsVersion              String?                 @default("1.0")
-  lastLoginAt               DateTime?
-  clientId                  String?
-  client                    Client?                 @relation(fields: [clientId], references: [id], onDelete: SetNull)
-  invoices                  Invoice[]
-  campaigns                 Campaign[]
-  wallet                    Wallet?
-  ledgerAccounts            LedgerAccount[]
-  activityLogs              ActivityLog[]
-  auditLogs                 AuditLog[]              @relation("AuditActor")
-  campaignStatusEvents      CampaignStatusEvent[]   @relation("CampaignStatusActor")
-  boosterProfile            BoosterProfile?
-  boosterJobsCreated        BoosterJob[]            @relation("BoosterJobCreator")
-  boosterDeliverableReviews BoosterDeliverable[]    @relation("DeliverableReviewer")
-  boosterVerifications      BoosterProfile[]        @relation("BoosterVerifier")
-  withdrawalsReviewed       Withdrawal[]            @relation("WithdrawalReviewer")
-  ratingsGiven              Rating[]                @relation("RatingReviewer")
-  disputesOpened            Dispute[]               @relation("DisputeOpener")
-  disputesReviewed          Dispute[]               @relation("DisputeReviewer")
-  notifications             Notification[]
-  notificationPreference    NotificationPreference?
-  influencerProfile         InfluencerProfile?
-  adversPostsCreated        AdversPost[]            @relation("AdversPostCreator")
-  createdAt                 DateTime                @default(now())
-  updatedAt                 DateTime                @updatedAt
+  id                         String                     @id @default(cuid())
+  email                      String                     @unique
+  username                   String?                    @unique
+  passwordHash               String?
+  name                       String
+  phone                      String?
+  avatarUrl                  String?
+  coverUrl                   String?
+  themePreference            ThemePreference            @default(SYSTEM)
+  sessionVersion             Int                        @default(1)
+  role                       Role                       @default(CLIENT)
+  orgRole                    OrgRole                    @default(MEMBER)
+  status                     UserStatus                 @default(UNVERIFIED)
+  source                     String?                    @default("ORGANIC")
+  utmSource                  String?
+  utmCampaign                String?
+  emailVerifiedAt            DateTime?
+  profileCompleteAt          DateTime?
+  termsAcceptedAt            DateTime?
+  termsVersion               String?                    @default("1.0")
+  lastLoginAt                DateTime?
+  deletionRequestedAt        DateTime?
+  clientId                   String?
+  client                     Client?                    @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  invoices                   Invoice[]
+  campaigns                  Campaign[]
+  wallets                    Wallet[]
+  ledgerAccounts             LedgerAccount[]
+  twoFactorSecret            TwoFactorSecret?
+  stepUpTokens               StepUpToken[]
+  payoutDestinations         PayoutDestination[]
+  advertiserWithdrawals      AdvertiserWithdrawal[]
+  boosterLikes               BoosterLike[]
+  boosterComments            BoosterComment[]
+  boosterReviews             BoosterReview[]            @relation("BoosterReviewReviewer")
+  boosterRecommendations     BoosterRecommendation[]
+  marketplaceReports         MarketplaceReport[]        @relation("MarketplaceReporter")
+  marketplaceReportsReviewed MarketplaceReport[]        @relation("MarketplaceReportReviewer")
+  emailChangeRequests        EmailChangeRequest[]
+  mediaAssets                MediaAsset[]
+  boosterEngagementRequests  BoosterEngagementRequest[] @relation("BoosterEngagementRequester")
+  activityLogs               ActivityLog[]
+  auditLogs                  AuditLog[]                 @relation("AuditActor")
+  campaignStatusEvents       CampaignStatusEvent[]      @relation("CampaignStatusActor")
+  boosterProfile             BoosterProfile?
+  boosterJobsCreated         BoosterJob[]               @relation("BoosterJobCreator")
+  boosterDeliverableReviews  BoosterDeliverable[]       @relation("DeliverableReviewer")
+  boosterVerifications       BoosterProfile[]           @relation("BoosterVerifier")
+  withdrawalsReviewed        Withdrawal[]               @relation("WithdrawalReviewer")
+  ratingsGiven               Rating[]                   @relation("RatingReviewer")
+  disputesOpened             Dispute[]                  @relation("DisputeOpener")
+  disputesReviewed           Dispute[]                  @relation("DisputeReviewer")
+  notifications              Notification[]
+  notificationPreference     NotificationPreference?
+  influencerProfile          InfluencerProfile?
+  adversPostsCreated         AdversPost[]               @relation("AdversPostCreator")
+  createdAt                  DateTime                   @default(now())
+  updatedAt                  DateTime                   @updatedAt
 
   @@index([email])
   @@index([clientId])
@@ -368,25 +457,26 @@ model User {
 }
 
 model Client {
-  id                 String              @id @default(cuid())
-  name               String
-  industry           String?
-  address            String?             @db.Text
-  notes              String?             @db.Text
-  users              User[]
-  engagements        Engagement[]
-  campaigns          Campaign[]
-  invitations        Invitation[]
-  invoices           Invoice[]
-  quotes             Quote[]
-  renewals           Renewal[]
-  subscriptions      Subscription[]
-  businessProfiles   BusinessProfile[]
-  boosterJobs        BoosterJob[]
-  influencerRequests InfluencerRequest[]
-  activityLogs       ActivityLog[]
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
+  id                        String                     @id @default(cuid())
+  name                      String
+  industry                  String?
+  address                   String?                    @db.Text
+  notes                     String?                    @db.Text
+  users                     User[]
+  engagements               Engagement[]
+  campaigns                 Campaign[]
+  invitations               Invitation[]
+  invoices                  Invoice[]
+  quotes                    Quote[]
+  renewals                  Renewal[]
+  subscriptions             Subscription[]
+  businessProfiles          BusinessProfile[]
+  boosterJobs               BoosterJob[]
+  boosterEngagementRequests BoosterEngagementRequest[]
+  influencerRequests        InfluencerRequest[]
+  activityLogs              ActivityLog[]
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
 }
 
 model Invitation {
@@ -664,52 +754,54 @@ enum CampaignStatus {
 }
 
 model Campaign {
-  id                 String                @id @default(cuid())
-  campaignNumber     String                @unique
-  name               String
-  channel            ChannelType
-  status             CampaignStatus        @default(PENDING_REVIEW)
-  objective          String
-  targetLocation     String
-  budget             Int // legacy whole Naira (₦)
-  currency           String                @default("NGN")
-  budgetMinor        BigInt?
-  duration           String // e.g. "2 weeks"
-  startDate          DateTime?
-  endDate            DateTime?
-  creativeAssetUrl   String?
-  creativeAssetType  String? // e.g. "MP4 Video 1080x1920"
-  arconCode          String? // ARCON approval number
-  complianceNotes    String?               @db.Text
-  channelConfigJson  String?               @db.Text
-  productService     String?
-  targetAudience     String?               @db.Text
-  contactName        String?
-  contactEmail       String?
-  contactPhone       String?
-  notes              String?               @db.Text
-  userId             String
-  user               User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  clientId           String?
-  client             Client?               @relation(fields: [clientId], references: [id], onDelete: SetNull)
-  businessProfileId  String?
-  businessProfile    BusinessProfile?      @relation(fields: [businessProfileId], references: [id], onDelete: SetNull)
-  inventoryId        String?
-  inventory          MediaInventory?       @relation(fields: [inventoryId], references: [id], onDelete: SetNull)
-  mediaSlotId        String?
-  mediaSlot          MediaSlot?            @relation(fields: [mediaSlotId], references: [id], onDelete: SetNull)
-  proofs             ProofOfPerformance[]
-  boosterLinks       BoosterLink[]
-  settlements        MediaSettlement[]
-  quotes             Quote[]
-  invoices           Invoice[]
-  statusEvents       CampaignStatusEvent[]
-  boosterJobs        BoosterJob[]
-  influencerRequests InfluencerRequest[]
-  disputes           Dispute[]
-  ledgerEntries      LedgerEntry[]
-  createdAt          DateTime              @default(now())
-  updatedAt          DateTime              @updatedAt
+  id                        String                     @id @default(cuid())
+  campaignNumber            String                     @unique
+  name                      String
+  channel                   ChannelType
+  status                    CampaignStatus             @default(PENDING_REVIEW)
+  objective                 String
+  targetLocation            String
+  budget                    Int // legacy whole Naira (₦)
+  currency                  String                     @default("NGN")
+  budgetMinor               BigInt?
+  duration                  String // e.g. "2 weeks"
+  startDate                 DateTime?
+  endDate                   DateTime?
+  creativeAssetUrl          String?
+  creativeAssetType         String? // e.g. "MP4 Video 1080x1920"
+  arconCode                 String? // ARCON approval number
+  complianceNotes           String?                    @db.Text
+  channelConfigJson         String?                    @db.Text
+  productService            String?
+  targetAudience            String?                    @db.Text
+  contactName               String?
+  contactEmail              String?
+  contactPhone              String?
+  notes                     String?                    @db.Text
+  userId                    String
+  user                      User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  clientId                  String?
+  client                    Client?                    @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  businessProfileId         String?
+  businessProfile           BusinessProfile?           @relation(fields: [businessProfileId], references: [id], onDelete: SetNull)
+  inventoryId               String?
+  inventory                 MediaInventory?            @relation(fields: [inventoryId], references: [id], onDelete: SetNull)
+  mediaSlotId               String?
+  mediaSlot                 MediaSlot?                 @relation(fields: [mediaSlotId], references: [id], onDelete: SetNull)
+  proofs                    ProofOfPerformance[]
+  mediaAssets               CampaignMediaAsset[]
+  boosterLinks              BoosterLink[]
+  settlements               MediaSettlement[]
+  quotes                    Quote[]
+  invoices                  Invoice[]
+  statusEvents              CampaignStatusEvent[]
+  boosterJobs               BoosterJob[]
+  boosterEngagementRequests BoosterEngagementRequest[]
+  influencerRequests        InfluencerRequest[]
+  disputes                  Dispute[]
+  ledgerEntries             LedgerEntry[]
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
 
   @@index([userId])
   @@index([clientId])
@@ -845,13 +937,14 @@ model MediaSettlement {
 
 model Wallet {
   id                    String              @id @default(cuid())
-  userId                String              @unique
+  userId                String
   user                  User                @relation(fields: [userId], references: [id], onDelete: Cascade)
   availableBalance      Int                 @default(0)
   escrowBalance         Int                 @default(0)
   totalSpent            Int                 @default(0)
   currency              String              @default("NGN")
-  network               String?
+  network               String              @default("NONE")
+  status                WalletStatus        @default(ACTIVE)
   availableBalanceMinor BigInt?
   escrowBalanceMinor    BigInt?
   totalSpentMinor       BigInt?
@@ -859,22 +952,29 @@ model Wallet {
   createdAt             DateTime            @default(now())
   updatedAt             DateTime            @updatedAt
 
+  @@unique([userId, currency, network])
   @@index([userId])
 }
 
 model WalletTransaction {
-  id          String   @id @default(cuid())
-  walletId    String
-  wallet      Wallet   @relation(fields: [walletId], references: [id], onDelete: Cascade)
-  type        String // "DEPOSIT", "ESCROW_LOCK", "ESCROW_RELEASE", "REFUND"
-  amount      Int // legacy whole Naira (₦)
-  currency    String   @default("NGN")
-  network     String?
-  amountMinor BigInt?
-  reference   String   @unique
-  description String
-  status      String   @default("SUCCESS")
-  createdAt   DateTime @default(now())
+  id                String    @id @default(cuid())
+  walletId          String
+  wallet            Wallet    @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  type              String // "DEPOSIT", "ESCROW_LOCK", "ESCROW_RELEASE", "REFUND"
+  amount            Int // legacy whole Naira (₦)
+  currency          String    @default("NGN")
+  network           String?
+  amountMinor       BigInt?
+  reference         String    @unique
+  idempotencyKey    String?   @unique
+  provider          String?
+  providerReference String?
+  metadataJson      String?   @db.Text
+  description       String
+  status            String    @default("SUCCESS")
+  completedAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @default(now()) @updatedAt
 
   @@index([walletId])
   @@index([createdAt])
@@ -965,49 +1065,67 @@ model CampaignStatusEvent {
 // ==========================================
 
 model BoosterProfile {
-  id                        String                    @id @default(cuid())
-  userId                    String                    @unique
-  user                      User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                        String                     @id @default(cuid())
+  userId                    String                     @unique
+  user                      User                       @relation(fields: [userId], references: [id], onDelete: Cascade)
   displayName               String
+  handle                    String?                    @unique
   businessName              String?
   logoUrl                   String?
-  bio                       String?                   @db.Text
-  isBusiness                Boolean                   @default(false)
-  categoriesJson            String                    @db.Text
-  skillsJson                String?                   @db.Text
-  coverageJson              String?                   @db.Text
-  portfolioJson             String?                   @db.Text
-  ratesJson                 String?                   @db.Text
-  paymentInfoJson           String?                   @db.Text
+  coverUrl                  String?
+  location                  String?
+  availabilityStatus        BoosterAvailability        @default(AVAILABLE)
+  responseTimeHours         Int?
+  startingPrice             Int?
+  bio                       String?                    @db.Text
+  isBusiness                Boolean                    @default(false)
+  categoriesJson            String                     @db.Text
+  skillsJson                String?                    @db.Text
+  coverageJson              String?                    @db.Text
+  portfolioJson             String?                    @db.Text
+  ratesJson                 String?                    @db.Text
+  paymentInfoJson           String?                    @db.Text
   availableHours            String?
-  verificationStatus        BoosterVerificationStatus @default(UNVERIFIED)
-  verificationDocumentsJson String?                   @db.Text
-  verificationNotes         String?                   @db.Text
-  verificationSubmittedNote String?                   @db.Text
+  verificationStatus        BoosterVerificationStatus  @default(UNVERIFIED)
+  verificationDocumentsJson String?                    @db.Text
+  verificationNotes         String?                    @db.Text
+  verificationSubmittedNote String?                    @db.Text
   verificationLevel         String?
   verificationSubmittedAt   DateTime?
   verificationReviewedAt    DateTime?
   verifiedAt                DateTime?
   verifiedById              String?
-  verifiedBy                User?                     @relation("BoosterVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
-  fraudRisk                 String                    @default("LOW")
-  fraudNotes                String?                   @db.Text
-  status                    BoosterProfileStatus      @default(ACTIVE)
-  ratingAvg                 Float                     @default(0)
-  ratingCount               Int                       @default(0)
-  completedJobs             Int                       @default(0)
+  verifiedBy                User?                      @relation("BoosterVerifier", fields: [verifiedById], references: [id], onDelete: SetNull)
+  fraudRisk                 String                     @default("LOW")
+  fraudNotes                String?                    @db.Text
+  status                    BoosterProfileStatus       @default(ACTIVE)
+  ratingAvg                 Float                      @default(0)
+  ratingCount               Int                        @default(0)
+  completedJobs             Int                        @default(0)
+  rankingBoost              Float                      @default(0)
+  sponsored                 Boolean                    @default(false)
+  rankingNote               String?                    @db.Text
   applications              BoosterApplication[]
   deliverables              BoosterDeliverable[]
-  assignedJobs              BoosterJob[]              @relation("AssignedBooster")
+  assignedJobs              BoosterJob[]               @relation("AssignedBooster")
   earnings                  BoosterEarning[]
   withdrawals               Withdrawal[]
   ratingsReceived           Rating[]
   disputesAgainst           Dispute[]
   ledgerEntries             LedgerEntry[]
-  teamsManaged              BoosterTeam[]             @relation("TeamManager")
-  teamMemberships           BoosterTeamMember[]       @relation("TeamMemberships")
-  createdAt                 DateTime                  @default(now())
-  updatedAt                 DateTime                  @updatedAt
+  likes                     BoosterLike[]
+  comments                  BoosterComment[]
+  reviews                   BoosterReview[]
+  recommendations           BoosterRecommendation[]
+  services                  BoosterService[]
+  packages                  BoosterPackage[]
+  portfolioItems            PortfolioItem[]
+  engagementRequests        BoosterEngagementRequest[]
+  marketplaceReports        MarketplaceReport[]
+  teamsManaged              BoosterTeam[]              @relation("TeamManager")
+  teamMemberships           BoosterTeamMember[]        @relation("TeamMemberships")
+  createdAt                 DateTime                   @default(now())
+  updatedAt                 DateTime                   @updatedAt
 
   @@index([verificationStatus])
   @@index([status])
@@ -1048,6 +1166,7 @@ model BoosterJob {
   deliverables          BoosterDeliverable[]
   earning               BoosterEarning?
   ratings               Rating[]
+  profileReviews        BoosterReview[]
   disputes              Dispute[]
   ledgerEntries         LedgerEntry[]
   createdAt             DateTime             @default(now())
@@ -1438,11 +1557,379 @@ model ProviderEvent {
   payloadJson    String              @db.Text
   signatureValid Boolean             @default(false)
   status         ProviderEventStatus @default(RECEIVED)
+  attempts       Int                 @default(0)
+  lastAttemptAt  DateTime?
   processedAt    DateTime?
   error          String?             @db.Text
   createdAt      DateTime            @default(now())
 
   @@unique([provider, eventId])
   @@index([status])
+  @@index([createdAt])
+}
+
+model RateLimitBucket {
+  key       String   @id
+  count     Int      @default(0)
+  resetAt   DateTime
+  updatedAt DateTime @updatedAt
+
+  @@index([resetAt])
+}
+
+// ==========================================
+// PHASE 2: ADVERTISER WALLET, PAYOUTS & 2FA
+// ==========================================
+
+model PayoutDestination {
+  id          String                  @id @default(cuid())
+  userId      String
+  user        User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        PayoutDestinationType   @default(USDC_WALLET)
+  label       String
+  network     String                  @default("POLYGON")
+  address     String
+  status      PayoutDestinationStatus @default(ACTIVE)
+  isDefault   Boolean                 @default(false)
+  withdrawals AdvertiserWithdrawal[]
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+
+  @@unique([userId, network, address])
+  @@index([userId])
+  @@index([status])
+}
+
+model AdvertiserWithdrawal {
+  id                String             @id @default(cuid())
+  userId            String
+  user              User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  destinationId     String?
+  destination       PayoutDestination? @relation(fields: [destinationId], references: [id], onDelete: SetNull)
+  amountMinor       BigInt
+  feeMinor          BigInt             @default(0)
+  currency          String             @default("USDC")
+  network           String             @default("POLYGON")
+  status            PayoutStatus       @default(REQUESTED)
+  provider          String?
+  providerReference String?
+  idempotencyKey    String             @unique
+  notes             String?            @db.Text
+  requestedAt       DateTime           @default(now())
+  processedAt       DateTime?
+  paidAt            DateTime?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model TwoFactorSecret {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  encryptedSecret   String    @db.Text
+  recoveryCodesJson String    @db.Text
+  confirmedAt       DateTime?
+  lastUsedAt        DateTime?
+  disabledAt        DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([confirmedAt])
+}
+
+model StepUpToken {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique
+  action     String
+  resourceId String?
+  expiresAt  DateTime
+  usedAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId, action])
+  @@index([expiresAt])
+}
+
+// ==========================================
+// PHASE 3: ADBOOSTER MARKETPLACE
+// ==========================================
+
+model BoosterLike {
+  id        String         @id @default(cuid())
+  boosterId String
+  booster   BoosterProfile @relation(fields: [boosterId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+
+  @@unique([boosterId, userId])
+  @@index([boosterId])
+  @@index([userId])
+}
+
+model BoosterComment {
+  id              String                @id @default(cuid())
+  boosterId       String
+  booster         BoosterProfile        @relation(fields: [boosterId], references: [id], onDelete: Cascade)
+  userId          String
+  user            User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  body            String                @db.Text
+  moderationState RatingModerationState @default(PENDING)
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  @@index([boosterId, moderationState])
+  @@index([userId])
+}
+
+model BoosterReview {
+  id              String                @id @default(cuid())
+  boosterId       String
+  booster         BoosterProfile        @relation(fields: [boosterId], references: [id], onDelete: Cascade)
+  reviewerId      String
+  reviewer        User                  @relation("BoosterReviewReviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
+  jobId           String?
+  job             BoosterJob?           @relation(fields: [jobId], references: [id], onDelete: SetNull)
+  score           Int
+  body            String?               @db.Text
+  verified        Boolean               @default(false)
+  moderationState RatingModerationState @default(PENDING)
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  @@unique([boosterId, reviewerId])
+  @@index([boosterId, moderationState])
+  @@index([reviewerId])
+  @@index([jobId])
+}
+
+model BoosterRecommendation {
+  id        String         @id @default(cuid())
+  boosterId String
+  booster   BoosterProfile @relation(fields: [boosterId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  note      String?        @db.Text
+  createdAt DateTime       @default(now())
+
+  @@unique([boosterId, userId])
+  @@index([boosterId])
+  @@index([userId])
+}
+
+model MarketplaceReport {
+  id           String                  @id @default(cuid())
+  reporterId   String
+  reporter     User                    @relation("MarketplaceReporter", fields: [reporterId], references: [id], onDelete: Cascade)
+  targetType   MarketplaceReportTarget
+  targetId     String
+  boosterId    String?
+  booster      BoosterProfile?         @relation(fields: [boosterId], references: [id], onDelete: SetNull)
+  reason       String                  @db.Text
+  details      String?                 @db.Text
+  status       MarketplaceReportStatus @default(OPEN)
+  reviewedById String?
+  reviewedBy   User?                   @relation("MarketplaceReportReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt   DateTime?
+  resolution   String?                 @db.Text
+  createdAt    DateTime                @default(now())
+  updatedAt    DateTime                @updatedAt
+
+  @@index([status])
+  @@index([targetType, targetId])
+  @@index([reporterId])
+  @@index([boosterId])
+}
+
+// ==========================================
+// PHASE 4: ACCOUNT SETTINGS
+// ==========================================
+
+model EmailChangeRequest {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  newEmail  String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// ==========================================
+// PHASE 5: MEDIA ASSETS & CHANNEL SPECS
+// ==========================================
+
+model MediaAsset {
+  id             String               @id @default(cuid())
+  ownerId        String
+  owner          User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  kind           MediaAssetKind
+  storageKey     String               @unique
+  url            String
+  mime           String
+  bytes          Int
+  width          Int?
+  height         Int?
+  durationSec    Int?
+  metadataSource String               @default("SERVER")
+  checksum       String
+  scanStatus     MediaScanStatus      @default(PENDING)
+  status         MediaAssetStatus     @default(UPLOADED)
+  campaignLinks  CampaignMediaAsset[]
+  portfolioItems PortfolioItem[]
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  @@index([ownerId])
+  @@index([kind])
+  @@index([status])
+}
+
+model CampaignMediaAsset {
+  id         String     @id @default(cuid())
+  campaignId String
+  campaign   Campaign   @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  assetId    String
+  asset      MediaAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  fieldKey   String
+  sortOrder  Int        @default(0)
+  createdAt  DateTime   @default(now())
+
+  @@unique([campaignId, assetId])
+  @@index([assetId])
+}
+
+model ChannelSpec {
+  id             String      @id @default(cuid())
+  channel        ChannelType
+  fieldKey       String
+  label          String
+  inputType      String
+  required       Boolean     @default(false)
+  optionsJson    String?     @db.Text
+  mediaKind      String?
+  accept         String?
+  maxBytes       Int?
+  minWidth       Int?
+  maxWidth       Int?
+  minHeight      Int?
+  maxHeight      Int?
+  minDurationSec Int?
+  maxDurationSec Int?
+  helpText       String?     @db.Text
+  groupName      String      @default("Channel requirements")
+  sortOrder      Int         @default(0)
+  active         Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@unique([channel, fieldKey])
+  @@index([channel, active])
+}
+
+// ==========================================
+// PHASE 3 REFINEMENTS: SERVICES, PORTFOLIO & REQUESTS
+// ==========================================
+
+model BoosterService {
+  id                 String                     @id @default(cuid())
+  boosterId          String
+  booster            BoosterProfile             @relation(fields: [boosterId], references: [id], onDelete: Cascade)
+  category           String?
+  title              String
+  description        String?                    @db.Text
+  platform           String?
+  priceMin           Int?
+  priceMax           Int?
+  currency           String                     @default("NGN")
+  deliveryDays       Int?
+  active             Boolean                    @default(true)
+  sortOrder          Int                        @default(0)
+  engagementRequests BoosterEngagementRequest[]
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+
+  @@index([boosterId, active])
+  @@index([category])
+}
+
+model BoosterPackage {
+  id                 String                     @id @default(cuid())
+  boosterId          String
+  booster            BoosterProfile             @relation(fields: [boosterId], references: [id], onDelete: Cascade)
+  name               String
+  description        String?                    @db.Text
+  price              Int
+  currency           String                     @default("NGN")
+  deliveryDays       Int?
+  revisions          Int?
+  includesJson       String?                    @db.Text
+  active             Boolean                    @default(true)
+  sortOrder          Int                        @default(0)
+  engagementRequests BoosterEngagementRequest[]
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+
+  @@index([boosterId, active])
+}
+
+model PortfolioItem {
+  id           String         @id @default(cuid())
+  boosterId    String
+  booster      BoosterProfile @relation(fields: [boosterId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?        @db.Text
+  mediaAssetId String?
+  mediaAsset   MediaAsset?    @relation(fields: [mediaAssetId], references: [id], onDelete: SetNull)
+  externalUrl  String?
+  sortOrder    Int            @default(0)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([boosterId])
+  @@index([mediaAssetId])
+}
+
+model BoosterEngagementRequest {
+  id           String                  @id @default(cuid())
+  boosterId    String
+  booster      BoosterProfile          @relation(fields: [boosterId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User                    @relation("BoosterEngagementRequester", fields: [userId], references: [id], onDelete: Cascade)
+  clientId     String?
+  client       Client?                 @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  campaignId   String?
+  campaign     Campaign?               @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  serviceId    String?
+  service      BoosterService?         @relation(fields: [serviceId], references: [id], onDelete: SetNull)
+  packageId    String?
+  package      BoosterPackage?         @relation(fields: [packageId], references: [id], onDelete: SetNull)
+  title        String
+  brief        String                  @db.Text
+  budget       Int?
+  currency     String                  @default("NGN")
+  timeline     String?
+  contactEmail String?
+  contactPhone String?
+  status       BoosterEngagementStatus @default(REQUESTED)
+  responseNote String?                 @db.Text
+  respondedAt  DateTime?
+  viewedAt     DateTime?
+  createdAt    DateTime                @default(now())
+  updatedAt    DateTime                @updatedAt
+
+  @@index([boosterId, status])
+  @@index([userId])
+  @@index([clientId])
   @@index([createdAt])
 }

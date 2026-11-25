@@ -93,6 +93,13 @@ async function main(): Promise<void> {
     await prisma.ledgerAccount.deleteMany({
       where: { key: { in: [fromKey, toKey] } },
     });
+    await prisma.ledgerAccount.deleteMany({
+      where: {
+        key: { startsWith: "SYSTEM:PROVIDER_SETTLEMENT:" },
+        lines: { none: {} },
+        balanceMinor: BigInt(0),
+      },
+    });
     await prisma.$disconnect();
   }
 }

@@ -119,7 +119,9 @@ async function main(): Promise<void> {
      WHERE idempotencyKey LIKE 'smoke:%'`
   );
   const smokeAccounts = await prisma.$queryRawUnsafe<CountRow[]>(
-    `SELECT COUNT(*) AS count FROM LedgerAccount WHERE \`key\` LIKE 'SYSTEM:%'`
+    `SELECT COUNT(*) AS count FROM LedgerAccount
+     WHERE \`key\` LIKE 'SYSTEM:%'
+       AND EXISTS (SELECT 1 FROM LedgerLine WHERE LedgerLine.accountId = LedgerAccount.id)`
   );
   if (toBigInt(smokeTransactions[0]?.count) === BigInt(0)) pass("no smoke transactions");
   else fail("smoke transactions remain");

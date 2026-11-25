@@ -64,8 +64,9 @@ export async function getAdBoostersList() {
 
 export async function getWalletDetails(userId: string) {
   try {
-    const wallet = await prisma.wallet.findUnique({
+    const wallet = await prisma.wallet.findFirst({
       where: { userId },
+      orderBy: { createdAt: "asc" },
       include: {
         transactions: {
           orderBy: { createdAt: "desc" },

@@ -9,12 +9,21 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "seed": "npx tsx prisma/seed.ts",
+    "seed:marketplace": "npx tsx scripts/seed-marketplace.ts",
+    "seed:dual-role": "npx tsx scripts/seed-dual-role.ts",
+    "seed:channel-specs": "npx tsx scripts/seed-channel-specs.ts",
+    "backfill:marketplace-structured": "npx tsx scripts/backfill-marketplace-structured.ts",
     "test": "npx tsx --test src/lib/__tests__/*.test.ts",
     "typecheck": "tsc --noEmit",
+    "test:e2e": "playwright test",
     "backfill:money": "npx tsx scripts/backfill-money.ts",
     "db:backup": "npx tsx scripts/backup-database.ts",
     "db:migrate": "prisma migrate deploy",
     "ledger:smoke": "npx tsx scripts/ledger-smoke.ts",
+    "wallet:smoke": "npx tsx scripts/wallet-smoke.ts",
+    "security:smoke": "npx tsx scripts/security-smoke.ts",
+    "media:smoke": "npx tsx scripts/media-smoke.ts",
+    "cleanup:phase2": "npx tsx scripts/cleanup-phase2.ts",
     "verify:phase1": "npx tsx scripts/verify-phase1.ts"
   },
   "prisma": {
@@ -25,6 +34,7 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@noble/hashes": "^1.8.0",
     "@prisma/client": "^6.4.0",
     "bcryptjs": "^3.0.2",
     "lucide-react": "^1.54.0",
@@ -35,6 +45,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^26.6.4",

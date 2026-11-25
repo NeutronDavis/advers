@@ -137,9 +137,9 @@ export const getSession = cache(async (): Promise<AuthSessionUser | null> => {
 
   if (!user || user.status === "DEACTIVATED") return null;
 
-  // If the token was issued with a version and it no longer matches, the
-  // session has been revoked.
-  if (payload.ver !== undefined && payload.ver !== user.sessionVersion) {
+  // Versioned sessions are mandatory. Legacy cookies without a version are
+  // rejected so a password change can always revoke older sessions.
+  if (payload.ver === undefined || payload.ver !== user.sessionVersion) {
     return null;
   }
 

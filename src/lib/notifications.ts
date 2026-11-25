@@ -43,6 +43,23 @@ export async function getNotificationPreferences(
  * are simulated as additional channel records until provider adapters are
  * connected; they are marked read so they do not inflate the in-app unread count.
  */
+/**
+ * Notification delivery must never roll back a financial transaction. Use this
+ * wrapper after money has moved; failures are logged and swallowed.
+ */
+export async function dispatchNotificationSafe(
+  input: NotificationInput
+): Promise<void> {
+  try {
+    await dispatchNotification(input);
+  } catch (error) {
+    console.error(
+      "Notification delivery failed:",
+      error instanceof Error ? error.message : error
+    );
+  }
+}
+
 export async function dispatchNotification(
   input: NotificationInput
 ): Promise<void> {

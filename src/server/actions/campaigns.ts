@@ -8,6 +8,13 @@ import { getSession } from "@/lib/session";
 import { canCreateCampaignWorkspace } from "@/lib/entitlements";
 import { canTransitionCampaign } from "@/lib/campaign-status";
 import { mapCampaignRecord } from "@/server/data/campaigns";
+import { getChannelSpecFields } from "@/server/data/channel-specs";
+import { enforceRateLimit } from "@/server/security/rate-limit";
+import {
+  parseChannelConfig,
+  validateChannelSubmission,
+  type ChannelAssetMeta,
+} from "@/lib/channel-validation";
 import type { Campaign } from "@/lib/types/campaign";
 
 const OptionalDate = z
@@ -43,6 +50,8 @@ const CreateCampaignSchema = z.object({
   contactPhone: z.string().optional(),
   creativeAssetUrl: z.string().optional(),
   creativeAssetType: z.string().optional(),
+  channelConfigJson: z.string().optional(),
+  mediaAssetIds: z.array(z.string()).max(20).optional(),
   notes: z.string().optional(),
 });
 
@@ -68,6 +77,90 @@ function resolveChannel(value: string): ChannelType {
   return CHANNEL_MAP[value] || ChannelType.DIGITAL_BILLBOARD;
 }
 
+async function prepareChannelSubmission(input: {
+  channel: ChannelType;
+  channelConfigJson?: string;
+  mediaAssetIds?: string[];
+  ownerId: string;
+  requireRequired: boolean;
+}): Promise<
+  | {
+      ok: true;
+      config: Record<string, string>;
+      links: Array<{ assetId: string; fieldKey: string; sortOrder: number }>;
+      primary: { url: string; mime: string } | null;
+    }
+  | { ok: false; error: string }
+> {
+  const fields = await getChannelSpecFields(input.channel);
+  const config = parseChannelConfig(input.channelConfigJson);
+  const fileFieldValues = fields
+    .filter((field) => field.inputType === "FILE")
+    .map((field) => config[field.key])
+    .filter(Boolean);
+  const ids = Array.from(
+    new Set([...(input.mediaAssetIds ?? []), ...fileFieldValues])
+  );
+
+  const assets = ids.length
+    ? await prisma.mediaAsset.findMany({
+        where: { id: { in: ids }, ownerId: input.ownerId },
+      })
+    : [];
+  const assetMap = new Map(assets.map((asset) => [asset.id, asset]));
+  const assetsByField: Record<string, ChannelAssetMeta> = {};
+
+  for (const field of fields) {
+    if (field.inputType !== "FILE") continue;
+    const assetId = config[field.key];
+    if (!assetId) continue;
+    const asset = assetMap.get(assetId);
+    if (!asset) continue;
+    assetsByField[field.key] = {
+      id: asset.id,
+      kind: asset.kind,
+      mime: asset.mime,
+      bytes: asset.bytes,
+      width: asset.width,
+      height: asset.height,
+      durationSec: asset.durationSec,
+    };
+  }
+
+  const validation = validateChannelSubmission({
+    fields,
+    config,
+    assets: assetsByField,
+    requireRequired: input.requireRequired,
+  });
+  if (!validation.valid) {
+    return {
+      ok: false,
+      error:
+        Object.values(validation.errors)[0] ??
+        "Complete the channel-specific requirements.",
+    };
+  }
+
+  const links = fields
+    .filter((field) => field.inputType === "FILE" && config[field.key])
+    .map((field, index) => ({
+      assetId: config[field.key],
+      fieldKey: field.key,
+      sortOrder: index,
+    }))
+    .filter((link) => assetMap.has(link.assetId));
+
+  const primary = links.length > 0 ? assetMap.get(links[0].assetId) ?? null : null;
+
+  return {
+    ok: true,
+    config,
+    links,
+    primary: primary ? { url: primary.url, mime: primary.mime } : null,
+  };
+}
+
 export type CreateCampaignInput = z.input<typeof CreateCampaignSchema>;
 
 export type CreateCampaignResult =
@@ -88,6 +181,18 @@ export async function createCampaignAction(
     };
   }
 
+  const limited = await enforceRateLimit(
+    `campaign-create:${session.id}`,
+    20,
+    60 * 60_000
+  );
+  if (!limited.allowed) {
+    return {
+      success: false,
+      error: "Too many campaign submissions. Try again later.",
+    };
+  }
+
   const parsed = CreateCampaignSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0].message };
@@ -99,6 +204,18 @@ export async function createCampaignAction(
       success: false,
       error: workspaceCheck.reason || "Campaign workspace limit reached.",
     };
+  }
+
+  const channelType = resolveChannel(parsed.data.channel);
+  const channelPrep = await prepareChannelSubmission({
+    channel: channelType,
+    channelConfigJson: parsed.data.channelConfigJson,
+    mediaAssetIds: parsed.data.mediaAssetIds,
+    ownerId: session.id,
+    requireRequired: true,
+  });
+  if (!channelPrep.ok) {
+    return { success: false, error: channelPrep.error };
   }
 
   let businessProfileId: string | null = null;
@@ -159,7 +276,7 @@ export async function createCampaignAction(
           Math.random() * 90 + 10
         )}`,
         name: parsed.data.name.trim(),
-        channel: resolveChannel(parsed.data.channel),
+        channel: channelType,
         status: CampaignStatus.SUBMITTED,
         objective: parsed.data.goal,
         targetLocation: parsed.data.location,
@@ -172,8 +289,11 @@ export async function createCampaignAction(
         contactName: parsed.data.contactName?.trim() || null,
         contactEmail: parsed.data.contactEmail?.trim() || null,
         contactPhone: parsed.data.contactPhone?.trim() || null,
-        creativeAssetUrl: parsed.data.creativeAssetUrl?.trim() || null,
-        creativeAssetType: parsed.data.creativeAssetType?.trim() || null,
+        creativeAssetUrl:
+          parsed.data.creativeAssetUrl?.trim() || channelPrep.primary?.url || null,
+        creativeAssetType:
+          parsed.data.creativeAssetType?.trim() || channelPrep.primary?.mime || null,
+        channelConfigJson: JSON.stringify(channelPrep.config),
         notes: parsed.data.notes?.trim() || null,
         businessProfileId,
         inventoryId,
@@ -182,6 +302,17 @@ export async function createCampaignAction(
         clientId: session.clientId,
       },
     });
+
+    if (channelPrep.links.length > 0) {
+      await tx.campaignMediaAsset.createMany({
+        data: channelPrep.links.map((link) => ({
+          campaignId: created.id,
+          assetId: link.assetId,
+          fieldKey: link.fieldKey,
+          sortOrder: link.sortOrder,
+        })),
+      });
+    }
 
     await tx.campaignStatusEvent.create({
       data: {
@@ -231,6 +362,8 @@ const SaveDraftSchema = z.object({
   contactPhone: z.string().optional(),
   creativeAssetUrl: z.string().optional(),
   creativeAssetType: z.string().optional(),
+  channelConfigJson: z.string().optional(),
+  mediaAssetIds: z.array(z.string()).max(20).optional(),
   notes: z.string().optional(),
 });
 
@@ -250,6 +383,15 @@ export async function saveCampaignDraftAction(
     };
   }
 
+  const limited = await enforceRateLimit(
+    `campaign-draft:${session.id}`,
+    40,
+    60 * 60_000
+  );
+  if (!limited.allowed) {
+    return { success: false, error: "Too many draft saves. Try again later." };
+  }
+
   const parsed = SaveDraftSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0].message };
@@ -261,6 +403,20 @@ export async function saveCampaignDraftAction(
       success: false,
       error: workspaceCheck.reason || "Campaign workspace limit reached.",
     };
+  }
+
+  const channelType = parsed.data.channel
+    ? resolveChannel(parsed.data.channel)
+    : ChannelType.DIGITAL_BILLBOARD;
+  const channelPrep = await prepareChannelSubmission({
+    channel: channelType,
+    channelConfigJson: parsed.data.channelConfigJson,
+    mediaAssetIds: parsed.data.mediaAssetIds,
+    ownerId: session.id,
+    requireRequired: false,
+  });
+  if (!channelPrep.ok) {
+    return { success: false, error: channelPrep.error };
   }
 
   let businessProfileId: string | null = null;
@@ -300,9 +456,7 @@ export async function saveCampaignDraftAction(
           Math.random() * 90 + 10
         )}`,
         name: parsed.data.name.trim(),
-        channel: parsed.data.channel
-          ? resolveChannel(parsed.data.channel)
-          : ChannelType.DIGITAL_BILLBOARD,
+        channel: channelType,
         status: CampaignStatus.DRAFT,
         objective: parsed.data.goal || "To be defined",
         targetLocation: parsed.data.location || "To be confirmed",
@@ -315,8 +469,11 @@ export async function saveCampaignDraftAction(
         contactName: parsed.data.contactName?.trim() || null,
         contactEmail: parsed.data.contactEmail?.trim() || null,
         contactPhone: parsed.data.contactPhone?.trim() || null,
-        creativeAssetUrl: parsed.data.creativeAssetUrl?.trim() || null,
-        creativeAssetType: parsed.data.creativeAssetType?.trim() || null,
+        creativeAssetUrl:
+          parsed.data.creativeAssetUrl?.trim() || channelPrep.primary?.url || null,
+        creativeAssetType:
+          parsed.data.creativeAssetType?.trim() || channelPrep.primary?.mime || null,
+        channelConfigJson: JSON.stringify(channelPrep.config),
         notes: parsed.data.notes?.trim() || null,
         businessProfileId,
         inventoryId,
@@ -325,6 +482,17 @@ export async function saveCampaignDraftAction(
         clientId: session.clientId,
       },
     });
+
+    if (channelPrep.links.length > 0) {
+      await tx.campaignMediaAsset.createMany({
+        data: channelPrep.links.map((link) => ({
+          campaignId: created.id,
+          assetId: link.assetId,
+          fieldKey: link.fieldKey,
+          sortOrder: link.sortOrder,
+        })),
+      });
+    }
 
     await tx.campaignStatusEvent.create({
       data: {
@@ -377,6 +545,39 @@ export async function submitCampaignDraftAction(
   }
   if (!canTransitionCampaign(campaign.status, "SUBMITTED")) {
     return { success: false, error: "This draft cannot be submitted." };
+  }
+
+  const channelFields = await getChannelSpecFields(campaign.channel);
+  const channelConfig = parseChannelConfig(campaign.channelConfigJson);
+  const mediaLinks = await prisma.campaignMediaAsset.findMany({
+    where: { campaignId: campaign.id },
+    include: { asset: true },
+  });
+  const assetsByField: Record<string, ChannelAssetMeta> = {};
+  for (const link of mediaLinks) {
+    assetsByField[link.fieldKey] = {
+      id: link.asset.id,
+      kind: link.asset.kind,
+      mime: link.asset.mime,
+      bytes: link.asset.bytes,
+      width: link.asset.width,
+      height: link.asset.height,
+      durationSec: link.asset.durationSec,
+    };
+  }
+  const channelValidation = validateChannelSubmission({
+    fields: channelFields,
+    config: channelConfig,
+    assets: assetsByField,
+    requireRequired: true,
+  });
+  if (!channelValidation.valid) {
+    return {
+      success: false,
+      error:
+        Object.values(channelValidation.errors)[0] ??
+        "Complete the channel-specific requirements before submitting.",
+    };
   }
 
   await prisma.$transaction(async (tx) => {

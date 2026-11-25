@@ -12,3 +12,15 @@
 - 
 
 - go through the ADVERS_Technical_Development_Brief.docx file and give me your thought 
+
+- what do we need to impliment this 
+Remaining production blockers
+1. Yellow Card adapter (on-ramp, payout, webhook contract).
+2. Real FX quotes, D-07 fee percentages, D-15 minimums.
+3. Durable media storage + antivirus scan.
+4. Email/SMS delivery provider.
+5. Pre-payout finance approval.
+6. CSP and external penetration test.
+7. Staging rehearsal with production-shaped data.
+8. Manual accessibility/contrast and load/performance testing.
+9. ESLint configuration (current gate is typecheck + tests + build).

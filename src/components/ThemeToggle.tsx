@@ -1,25 +1,56 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import { Sun, Moon } from "lucide-react";
+import { updateThemePreferenceAction } from "@/server/actions/account";
 
-export default function ThemeToggle() {
+type Preference = "LIGHT" | "DARK" | "SYSTEM";
+
+function applyTheme(theme: "light" | "dark") {
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("advers-theme", theme);
+}
+
+export default function ThemeToggle({
+  preference,
+  persist = false,
+}: {
+  preference?: Preference;
+  persist?: boolean;
+}) {
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [mounted, setMounted] = useState(false);
+  const [, startTransition] = useTransition();
 
   useEffect(() => {
     setMounted(true);
-    const savedTheme =
-      (localStorage.getItem("advers-theme") as "light" | "dark") || "light";
-    setTheme(savedTheme);
-    document.documentElement.setAttribute("data-theme", savedTheme);
-  }, []);
+    const saved = localStorage.getItem("advers-theme") as "light" | "dark" | null;
+
+    let resolved: "light" | "dark";
+    if (preference === "SYSTEM") {
+      resolved = window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    } else if (preference === "LIGHT" || preference === "DARK") {
+      resolved = preference.toLowerCase() as "light" | "dark";
+    } else {
+      resolved = saved ?? "light";
+    }
+
+    setTheme(resolved);
+    applyTheme(resolved);
+  }, [preference]);
 
   const toggleTheme = () => {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    localStorage.setItem("advers-theme", newTheme);
-    document.documentElement.setAttribute("data-theme", newTheme);
+    applyTheme(newTheme);
+
+    if (persist) {
+      startTransition(async () => {
+        await updateThemePreferenceAction(newTheme === "dark" ? "DARK" : "LIGHT");
+      });
+    }
   };
 
   if (!mounted) {
@@ -43,11 +74,7 @@ export default function ThemeToggle() {
         checked={theme === "dark"}
         onChange={toggleTheme}
       />
-
-      {/* Sun icon (shown when theme is dark) */}
       <Sun className="swap-on w-5 h-5 text-[var(--portal-gold)]" />
-
-      {/* Moon icon (shown when theme is light) */}
       <Moon className="swap-off w-5 h-5 text-[var(--portal-gold)]" />
     </label>
   );
